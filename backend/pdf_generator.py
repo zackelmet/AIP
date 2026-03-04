@@ -1,5 +1,5 @@
 """
-PDF Generator with MSP Pentesting Branding
+PDF Generator with Affordable Pentesting Branding
 """
 
 from weasyprint import HTML, CSS
@@ -11,7 +11,7 @@ def generate_pdf_report(pentest_id, target_url, pentest_type, vulnerabilities, e
     Generate branded PDF report from pentest results
     """
     
-    # HTML template with MSP branding
+    # HTML template with Affordable Pentesting branding
     html_template = """
 <!DOCTYPE html>
 <html>
@@ -22,7 +22,7 @@ def generate_pdf_report(pentest_id, target_url, pentest_type, vulnerabilities, e
             size: A4;
             margin: 2cm;
             @top-center {
-                content: "MSP Pentesting - Confidential Report";
+                content: "Affordable Pentesting - Confidential Report";
                 font-family: 'Chakra Petch', sans-serif;
                 font-size: 10pt;
                 color: #666;
@@ -58,14 +58,14 @@ def generate_pdf_report(pentest_id, target_url, pentest_type, vulnerabilities, e
         
         .tagline {
             font-size: 14pt;
-            color: #4590e2;
+            color: #34D399;
             margin-bottom: 20px;
         }
         
         .report-meta {
             background: #f8f9fa;
             padding: 20px;
-            border-left: 4px solid #4590e2;
+            border-left: 4px solid #34D399;
             margin: 20px 0;
         }
         
@@ -87,7 +87,7 @@ def generate_pdf_report(pentest_id, target_url, pentest_type, vulnerabilities, e
         h1 {
             color: #0a141f;
             font-size: 24pt;
-            border-bottom: 3px solid #4590e2;
+            border-bottom: 3px solid #34D399;
             padding-bottom: 10px;
             margin-top: 30px;
         }
@@ -96,12 +96,12 @@ def generate_pdf_report(pentest_id, target_url, pentest_type, vulnerabilities, e
             color: #0a141f;
             font-size: 18pt;
             margin-top: 25px;
-            border-left: 4px solid #4590e2;
+            border-left: 4px solid #34D399;
             padding-left: 15px;
         }
         
         h3 {
-            color: #4590e2;
+            color: #34D399;
             font-size: 14pt;
             margin-top: 20px;
         }
@@ -201,7 +201,7 @@ def generate_pdf_report(pentest_id, target_url, pentest_type, vulnerabilities, e
 </head>
 <body>
     <div class="header">
-        <div class="logo">MSP PENTESTING</div>
+        <div class="logo">AFFORDABLE PENTESTING</div>
         <div class="tagline">AI-Powered Penetration Testing</div>
     </div>
     
@@ -286,13 +286,13 @@ def generate_pdf_report(pentest_id, target_url, pentest_type, vulnerabilities, e
     <div class="disclaimer">
         <strong>Disclaimer:</strong> This penetration test report is provided for informational purposes only. 
         The findings represent potential security vulnerabilities identified at the time of testing. 
-        MSP Pentesting is not responsible for any actions taken based on this report. 
+        Affordable Pentesting is not responsible for any actions taken based on this report. 
         Always consult with qualified security professionals before implementing changes.
     </div>
     
     <div class="footer">
-        <p><strong>MSP Pentesting</strong> | AI-Powered Security Testing</p>
-        <p>© 2026 MSP Pentesting. All rights reserved. | Confidential Report</p>
+        <p><strong>Affordable Pentesting</strong> | AI-Powered Security Testing</p>
+        <p>© 2026 Affordable Pentesting. All rights reserved. | Confidential Report</p>
     </div>
 </body>
 </html>

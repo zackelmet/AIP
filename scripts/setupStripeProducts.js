@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Stripe Products Setup for MSP Pentesting PTaaS Platform
+ * Stripe Products Setup for Affordable Pentesting PTaaS Platform
  * 
  * Creates products and pricing for:
  * - AI-driven automated pentests (single purchase + monthly subscription)
@@ -90,7 +90,7 @@ const PRODUCTS = [
 ];
 
 async function setupProducts() {
-  console.log('🚀 Setting up Stripe products for MSP Pentesting PTaaS...\n');
+  console.log('🚀 Setting up Stripe products for Affordable Pentesting PTaaS...\n');
 
   if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY.trim() === '') {
     console.error('❌ Error: STRIPE_SECRET_KEY not found in .env.local');

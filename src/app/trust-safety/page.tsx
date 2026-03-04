@@ -10,16 +10,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 export const metadata = {
-  title: "Trust + Safety Center — MSP Pentesting",
+  title: "Trust + Safety Center — Affordable Pentesting",
   description:
     "Our commitment to ethical penetration testing, data security, and responsible disclosure.",
-  metadataBase: new URL("https://msppentesting.vercel.app"),
+  metadataBase: new URL("https://affordable-pentesting.vercel.app"),
   openGraph: {
-    title: "Trust + Safety Center — MSP Pentesting",
+    title: "Trust + Safety Center — Affordable Pentesting",
     description:
       "Our commitment to ethical penetration testing, data security, and responsible disclosure.",
-    url: "https://msppentesting.vercel.app/trust-safety",
-    siteName: "MSP Pentesting",
+    url: "https://affordable-pentesting.vercel.app/trust-safety",
+    siteName: "Affordable Pentesting",
   },
 };
 
@@ -29,8 +29,8 @@ const sections = [
     title: "Terms of Service",
     anchor: "terms",
     content: [
-      "By purchasing and using MSP Pentesting services you agree to these terms in full. If you do not agree, do not use the platform.",
-      "MSP Pentesting provides automated and AI-assisted penetration testing services. All testing is performed exclusively on targets for which you have provided explicit written authorisation.",
+      "By purchasing and using Affordable Pentesting services you agree to these terms in full. If you do not agree, do not use the platform.",
+      "Affordable Pentesting provides automated and AI-assisted penetration testing services. All testing is performed exclusively on targets for which you have provided explicit written authorisation.",
       "Credits are non-refundable once a pentest job has been dispatched to our backend systems. Unused credits may be refunded within 14 days of purchase — contact support.",
       "We reserve the right to suspend or terminate accounts that violate these terms without notice or refund.",
       "These terms are governed by the laws of the United States. Full terms document coming soon.",
@@ -44,7 +44,7 @@ const sections = [
       "We collect only the data necessary to provide our services: your email address, payment information (processed by Stripe — we never see card details), and scan targets you submit.",
       "Scan results and reports are stored in Google Cloud Storage, accessible only to you and our backend systems. We do not sell or share your data with third parties.",
       "We use Firebase Authentication for identity management. Firestore is used to store account and pentest metadata.",
-      "You may request deletion of your account and associated data at any time by contacting support@msppentesting.com.",
+      "You may request deletion of your account and associated data at any time by contacting support@affordablepentesting.com.",
       "Full privacy policy document coming soon.",
     ],
   },
@@ -56,7 +56,7 @@ const sections = [
       "You must have explicit, written authorisation from the system owner before submitting any target for testing. Verbal permission is not sufficient.",
       "By submitting a target you are legally attesting that you own the system or hold documented permission from the owner to conduct penetration testing.",
       "Submitting targets you do not own or have not obtained authorisation for is a criminal offence in most jurisdictions (e.g., CFAA in the United States, Computer Misuse Act in the UK).",
-      "MSP Pentesting operates in good faith on your attestation. Any misuse is solely your legal responsibility.",
+      "Affordable Pentesting operates in good faith on your attestation. Any misuse is solely your legal responsibility.",
     ],
   },
   {
@@ -74,7 +74,7 @@ const sections = [
     title: "Responsible Disclosure",
     anchor: "disclosure",
     content: [
-      "If you discover a security vulnerability in the MSP Pentesting platform itself, please disclose it responsibly to security@msppentesting.com.",
+      "If you discover a security vulnerability in the Affordable Pentesting platform itself, please disclose it responsibly to security@affordablepentesting.com.",
       "We commit to acknowledging your report within 48 hours, working to remediate confirmed issues within 30 days, and not pursuing legal action against good-faith security researchers.",
       "We do not currently operate a bug bounty programme, but we will credit researchers who assist us in improving our security.",
     ],
@@ -85,10 +85,10 @@ export default function TrustSafetyPage() {
   return (
     <main className="min-h-screen bg-[#0a141f] text-white">
       {/* Hero */}
-      <div className="border-b border-[#4590e2]/30 bg-gradient-to-b from-[#0a141f] to-[#0a1828]">
+      <div className="border-b border-[#34D399]/30 bg-gradient-to-b from-[#0a141f] to-[#0a1828]">
         <div className="max-w-4xl mx-auto px-6 py-20 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#4590e2]/20 border border-[#4590e2]/40 mb-6">
-            <FontAwesomeIcon icon={faShieldHalved} className="text-3xl text-[#4590e2]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#34D399]/20 border border-[#34D399]/40 mb-6">
+            <FontAwesomeIcon icon={faShieldHalved} className="text-3xl text-[#34D399]" />
           </div>
           <h1
             className="text-4xl lg:text-5xl font-bold text-white mb-4"
@@ -97,7 +97,7 @@ export default function TrustSafetyPage() {
             Trust + Safety Center
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Our policies governing the ethical, legal, and responsible use of MSP Pentesting services.
+            Our policies governing the ethical, legal, and responsible use of Affordable Pentesting services.
           </p>
           <p className="mt-3 text-sm text-gray-500">Last updated: March 2026</p>
         </div>
@@ -110,7 +110,7 @@ export default function TrustSafetyPage() {
             <a
               key={s.anchor}
               href={`#${s.anchor}`}
-              className="whitespace-nowrap text-gray-400 hover:text-[#4590e2] transition-colors"
+              className="whitespace-nowrap text-gray-400 hover:text-[#34D399] transition-colors"
             >
               {s.title}
             </a>

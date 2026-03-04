@@ -88,11 +88,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         } flex flex-col`}
       >
         {/* Logo */}
-        <div className="p-6 border-b border-[#4590e2]">
-          <Link href="https://msppentesting.vercel.app/" className="flex items-center gap-3">
+        <div className="p-6 border-b border-[#34D399]">
+          <Link href="https://affordable-pentesting.vercel.app/" className="flex items-center gap-3">
             <Image
-              src="/msp pentesting logo (1) (3) (1).png"
-              alt="MSP Pentesting"
+              src="/affordablepentestinglogo.svg"
+              alt="Affordable Pentesting"
               width={44}
               height={44}
               className="w-11 h-11 flex-shrink-0"
@@ -101,7 +101,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               className="text-white font-semibold text-base tracking-wide leading-tight"
               style={{ fontFamily: "var(--font-chakra-petch)" }}
             >
-              AI Pentesting
+              Affordable Pentesting
             </span>
           </Link>
         </div>
@@ -116,7 +116,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   isActive
-                    ? "bg-[#4590e2]/20 text-[#4590e2] font-semibold border border-[#4590e2]/30"
+                    ? "bg-[#34D399]/20 text-[#34D399] font-semibold border border-[#34D399]/30"
                     : "text-gray-300 hover:bg-white/5 hover:text-white"
                 }`}
                 onClick={() => setSidebarOpen(false)}
@@ -211,17 +211,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
         {/* Mobile header with hamburger */}
-        <header className="lg:hidden bg-[#0a141f] border-b border-[#4590e2] px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+        <header className="lg:hidden bg-[#0a141f] border-b border-[#34D399] px-4 py-3 flex items-center justify-between sticky top-0 z-30">
           <button
             onClick={() => setSidebarOpen(true)}
             className="p-2 text-gray-400 hover:text-white"
           >
             <FontAwesomeIcon icon={faBars} className="w-6 h-6" />
           </button>
-          <Link href="https://msppentesting.vercel.app/" className="flex items-center gap-2">
+          <Link href="https://affordable-pentesting.vercel.app/" className="flex items-center gap-2">
             <Image
-              src="/msp pentesting logo (1) (3) (1).png"
-              alt="MSP Pentesting"
+              src="/affordablepentestinglogo.svg"
+              alt="Affordable Pentesting"
               width={32}
               height={32}
               className="w-8 h-8"
@@ -230,7 +230,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               className="font-semibold text-white text-sm"
               style={{ fontFamily: "var(--font-chakra-petch)" }}
             >
-              AI Pentesting
+              Affordable Pentesting
             </span>
           </Link>
           <div className="w-10" /> {/* Spacer for centering */}

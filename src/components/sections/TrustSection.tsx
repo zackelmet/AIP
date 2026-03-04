@@ -13,7 +13,7 @@ export default function TrustSection() {
 
         <div className="prose lg:prose-xl mx-auto mb-12">
           <p className="text-lg leading-relaxed">
-            Security teams and MSPs rely on MSP Pentesting for comprehensive
+            Security teams rely on Affordable Pentesting for comprehensive
             penetration testing services. From AI-driven automated scans to
             expert-led manual assessments, we deliver the insights you need
             to secure your infrastructure.

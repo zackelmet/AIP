@@ -58,10 +58,10 @@ export default function SupportPage() {
   return (
     <main className="min-h-screen bg-[#0a141f] text-white">
       {/* Hero */}
-      <div className="border-b border-[#4590e2]/30 bg-gradient-to-b from-[#0a141f] to-[#0a1828]">
+      <div className="border-b border-[#34D399]/30 bg-gradient-to-b from-[#0a141f] to-[#0a1828]">
         <div className="max-w-4xl mx-auto px-6 py-20 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#4590e2]/20 border border-[#4590e2]/40 mb-6">
-            <FontAwesomeIcon icon={faHeadset} className="text-3xl text-[#4590e2]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#34D399]/20 border border-[#34D399]/40 mb-6">
+            <FontAwesomeIcon icon={faHeadset} className="text-3xl text-[#34D399]" />
           </div>
           <h1
             className="text-4xl lg:text-5xl font-bold text-white mb-4"
@@ -84,13 +84,13 @@ export default function SupportPage() {
 
           <Link
             href="/trust-safety"
-            className="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#4590e2]/40 rounded-xl transition-all group"
+            className="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#34D399]/40 rounded-xl transition-all group"
           >
-            <div className="p-2 rounded-lg bg-[#4590e2]/15 border border-[#4590e2]/30">
-              <FontAwesomeIcon icon={faShieldHalved} className="text-[#4590e2]" />
+            <div className="p-2 rounded-lg bg-[#34D399]/15 border border-[#34D399]/30">
+              <FontAwesomeIcon icon={faShieldHalved} className="text-[#34D399]" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white group-hover:text-[#4590e2] transition-colors">
+              <p className="text-sm font-semibold text-white group-hover:text-[#34D399] transition-colors">
                 Trust + Safety
               </p>
               <p className="text-xs text-gray-500">Policies &amp; legal</p>
@@ -98,17 +98,17 @@ export default function SupportPage() {
           </Link>
 
           <Link
-            href="mailto:support@msppentesting.com"
-            className="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#4590e2]/40 rounded-xl transition-all group"
+            href="mailto:support@affordablepentesting.com"
+            className="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#34D399]/40 rounded-xl transition-all group"
           >
-            <div className="p-2 rounded-lg bg-[#4590e2]/15 border border-[#4590e2]/30">
-              <FontAwesomeIcon icon={faEnvelope} className="text-[#4590e2]" />
+            <div className="p-2 rounded-lg bg-[#34D399]/15 border border-[#34D399]/30">
+              <FontAwesomeIcon icon={faEnvelope} className="text-[#34D399]" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white group-hover:text-[#4590e2] transition-colors">
+              <p className="text-sm font-semibold text-white group-hover:text-[#34D399] transition-colors">
                 Email Us
               </p>
-              <p className="text-xs text-gray-500">support@msppentesting.com</p>
+              <p className="text-xs text-gray-500">support@affordablepentesting.com</p>
             </div>
           </Link>
 

@@ -165,7 +165,7 @@ export default function AuthForm() {
               Start Pentesting in 5 Minutes.
             </h1>
             <p className="text-base lg:text-lg neon-subtle max-w-xl">
-              Join the security teams that already trust MSP Pentesting to run
+              Join the security teams that already trust Affordable Pentesting to run
               fast, AI-powered autonomous pentests.
             </p>
             <div className="flex flex-wrap gap-3 justify-center lg:justify-start text-sm text-[var(--text-muted)]">

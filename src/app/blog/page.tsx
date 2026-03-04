@@ -3,19 +3,19 @@ import Image from "next/image";
 import { getAllPosts } from "@/lib/blog/mdx";
 
 export const metadata = {
-  title: "Blog - AI Pentesting",
-  description: "Security insights, pentesting tips, and vulnerability research from MSP Pentesting.",
-  metadataBase: new URL("https://msppentesting.vercel.app"),
+  title: "Blog - Affordable Pentesting",
+  description: "Security insights, pentesting tips, and vulnerability research from Affordable Pentesting.",
+  metadataBase: new URL("https://affordable-pentesting.vercel.app"),
   openGraph: {
-    title: "Blog - AI Pentesting",
-    description: "Security insights, pentesting tips, and vulnerability research from MSP Pentesting.",
-    url: "https://msppentesting.vercel.app/blog",
-    siteName: "MSP Pentesting",
+    title: "Blog - Affordable Pentesting",
+    description: "Security insights, pentesting tips, and vulnerability research from Affordable Pentesting.",
+    url: "https://affordable-pentesting.vercel.app/blog",
+    siteName: "Affordable Pentesting",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Blog - AI Pentesting",
-    description: "Security insights, pentesting tips, and vulnerability research from MSP Pentesting.",
+    title: "Blog - Affordable Pentesting",
+    description: "Security insights, pentesting tips, and vulnerability research from Affordable Pentesting.",
   },
 };
 

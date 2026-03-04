@@ -13,8 +13,8 @@ const config: Config = {
         serif: ['"Roboto Slab"', "ui-serif", "Georgia", "serif"],
       },
       colors: {
-        'msp-dark': '#0a141f',
-        'msp-blue': '#4590e2',
+        'ap-dark': '#0a141f',
+        'ap-green': '#34D399',
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

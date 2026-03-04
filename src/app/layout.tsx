@@ -17,31 +17,31 @@ const chakraPetch = Chakra_Petch({
 });
 
 export const metadata: Metadata = {
-  title: "MSP Pentesting - Penetration Testing as a Service",
+  title: "Affordable Pentesting - Penetration Testing as a Service",
   description:
     "AI-powered automated pentests and expert-led manual penetration testing. Get comprehensive security assessments from certified professionals.",
-  metadataBase: new URL("https://msppentesting.vercel.app"),
+  metadataBase: new URL("https://affordable-pentesting.vercel.app"),
   openGraph: {
-    title: "MSP Pentesting - Penetration Testing as a Service",
+    title: "Affordable Pentesting - Penetration Testing as a Service",
     description:
       "AI-powered automated pentests and expert-led manual penetration testing.",
-    url: "https://msppentesting.vercel.app",
-    siteName: "MSP Pentesting",
+    url: "https://affordable-pentesting.vercel.app",
+    siteName: "Affordable Pentesting",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MSP Pentesting - Penetration Testing as a Service",
+    title: "Affordable Pentesting - Penetration Testing as a Service",
     description:
       "AI-powered automated pentests and expert-led manual penetration testing.",
   },
   icons: {
     icon: [
-      { url: "/msp pentesting logo (1) (3) (1).png" },
-      { url: "/msp pentesting logo (1) (3) (1).png", sizes: "32x32" },
-      { url: "/msp pentesting logo (1) (3) (1).png", sizes: "16x16" },
+      { url: "/affordablepentestinglogo.svg" },
+      { url: "/affordablepentestinglogo.svg", sizes: "32x32" },
+      { url: "/affordablepentestinglogo.svg", sizes: "16x16" },
     ],
-    shortcut: "/msp pentesting logo (1) (3) (1).png",
-    apple: "/msp pentesting logo (1) (3) (1).png",
+    shortcut: "/affordablepentestinglogo.svg",
+    apple: "/affordablepentestinglogo.svg",
   },
 };
 
