@@ -42,13 +42,13 @@ const SEVERITY_COLORS = {
   critical: 'bg-red-100 text-red-800 border-red-300',
   high: 'bg-orange-100 text-orange-800 border-orange-300',
   medium: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-  low: 'bg-blue-100 text-blue-800 border-blue-300',
+  low: 'bg-emerald-100 text-emerald-800 border-emerald-300',
   info: 'bg-gray-100 text-gray-800 border-gray-300',
 };
 
 const STATUS_COLORS = {
   pending: 'bg-yellow-100 text-yellow-800',
-  reviewing: 'bg-blue-100 text-blue-800',
+  reviewing: 'bg-emerald-100 text-emerald-800',
   approved: 'bg-green-100 text-green-800',
   in_progress: 'bg-indigo-100 text-indigo-800',
   completed: 'bg-gray-100 text-gray-800',
@@ -174,7 +174,7 @@ export default function MyResultsPage() {
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`px-6 py-4 text-sm font-medium border-b-2 ${
                     activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
+                      ? 'border-emerald-500 text-emerald-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
@@ -193,7 +193,7 @@ export default function MyResultsPage() {
                     <p className="text-gray-500 mb-4">No pentest requests yet</p>
                     <Link
                       href="/pricing"
-                      className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                      className="inline-block px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
                     >
                       Request a Pentest
                     </Link>
@@ -230,7 +230,7 @@ export default function MyResultsPage() {
                           <div className="mt-3 pt-3 border-t">
                             <Link
                               href={`/app/engagements/${request.engagementId}`}
-                              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                              className="text-emerald-600 hover:text-emerald-800 text-sm font-medium"
                             >
                               View Engagement →
                             </Link>

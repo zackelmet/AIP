@@ -37,7 +37,7 @@ interface PentestRequest {
 
 const STATUS_COLORS = {
   pending: 'bg-yellow-100 text-yellow-800',
-  reviewing: 'bg-blue-100 text-blue-800',
+  reviewing: 'bg-emerald-100 text-emerald-800',
   scoping: 'bg-purple-100 text-purple-800',
   approved: 'bg-green-100 text-green-800',
   in_progress: 'bg-indigo-100 text-indigo-800',
@@ -259,7 +259,7 @@ export default function AdminRequestsPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <button
                         onClick={() => setSelectedRequest(request)}
-                        className="text-blue-600 hover:text-blue-800 font-medium"
+                        className="text-emerald-600 hover:text-emerald-800 font-medium"
                       >
                         View Details
                       </button>

@@ -33,7 +33,7 @@ const activityIcons: Record<ActivityType, any> = {
 };
 
 const activityColors: Record<ActivityType, string> = {
-  manual_test: "bg-blue-100 text-blue-600",
+  manual_test: "bg-emerald-100 text-emerald-600",
   ai_scan: "bg-purple-100 text-purple-600",
   nmap_scan: "bg-cyan-100 text-cyan-600",
   openvas_scan: "bg-orange-100 text-orange-600",

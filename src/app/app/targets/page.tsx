@@ -337,7 +337,7 @@ export default function TargetsPage() {
                   className="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-start justify-between mb-4">
-                    <div className="p-2 rounded-lg bg-blue-50 border border-blue-200 text-[#0A1128]">
+                    <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-[#0A1128]">
                       <FontAwesomeIcon icon={faBullseye} />
                     </div>
                     <div className="flex gap-2">
@@ -488,7 +488,7 @@ export default function TargetsPage() {
           )}
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6">
           <h3 className="font-semibold text-[#0A1128] mb-2">
             💡 About saved targets
           </h3>

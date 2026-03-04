@@ -240,9 +240,9 @@ export default function Home() {
               <Image
                 src="/affordablepentestinglogo.svg"
                 alt="Affordable Pentesting"
-                width={52}
-                height={52}
-                className="h-13 w-auto"
+                width={36}
+                height={36}
+                className="h-9 w-9"
               />
               <span
                 className="text-white font-bold text-3xl tracking-wide"

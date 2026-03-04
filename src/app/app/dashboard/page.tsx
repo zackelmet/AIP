@@ -176,18 +176,18 @@ function DashboardInner({
         {/* Credits Grid */}
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Web App Credits Card */}
-          <div className="bg-gradient-to-br from-[#0a141f] to-[#0a141f]/80 border border-[#4590e2]/30 rounded-xl p-6 shadow-lg">
+          <div className="bg-gradient-to-br from-[#0a141f] to-[#0a141f]/80 border border-[#34D399]/30 rounded-xl p-6 shadow-lg">
             <div className="flex items-start justify-between mb-4">
-              <div className="p-3 rounded-lg bg-[#4590e2]/20 border border-[#4590e2]/40">
-                <FontAwesomeIcon icon={faGlobe} className="text-2xl text-[#4590e2]" />
+              <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
+                <FontAwesomeIcon icon={faGlobe} className="text-2xl text-[#34D399]" />
               </div>
               <button
                 onClick={() => openPurchaseModal('web_app')}
-                className="buy-credits-btn flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#4590e2]/10 hover:bg-[#4590e2]/25 border border-[#4590e2]/50 hover:border-[#4590e2] transition-colors cursor-pointer"
+                className="buy-credits-btn flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#34D399]/10 hover:bg-[#34D399]/25 border border-[#34D399]/50 hover:border-[#34D399] transition-colors cursor-pointer"
                 title="Purchase Web App credits"
               >
-                <span className="text-sm font-semibold text-[#4590e2]">Buy Credits</span>
-                <FontAwesomeIcon icon={faPlus} className="text-[#4590e2] text-xs" />
+                <span className="text-sm font-semibold text-[#34D399]">Buy Credits</span>
+                <FontAwesomeIcon icon={faPlus} className="text-[#34D399] text-xs" />
               </button>
             </div>
             <div>
@@ -198,18 +198,18 @@ function DashboardInner({
           </div>
 
           {/* External IP Credits Card */}
-          <div className="bg-gradient-to-br from-[#0a141f] to-[#0a141f]/80 border border-[#4590e2]/30 rounded-xl p-6 shadow-lg">
+          <div className="bg-gradient-to-br from-[#0a141f] to-[#0a141f]/80 border border-[#34D399]/30 rounded-xl p-6 shadow-lg">
             <div className="flex items-start justify-between mb-4">
-              <div className="p-3 rounded-lg bg-[#4590e2]/20 border border-[#4590e2]/40">
-                <FontAwesomeIcon icon={faServer} className="text-2xl text-[#4590e2]" />
+              <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
+                <FontAwesomeIcon icon={faServer} className="text-2xl text-[#34D399]" />
               </div>
               <button
                 onClick={() => openPurchaseModal('external_ip')}
-                className="buy-credits-btn flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#4590e2]/10 hover:bg-[#4590e2]/25 border border-[#4590e2]/50 hover:border-[#4590e2] transition-colors cursor-pointer"
+                className="buy-credits-btn flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#34D399]/10 hover:bg-[#34D399]/25 border border-[#34D399]/50 hover:border-[#34D399] transition-colors cursor-pointer"
                 title="Purchase External IP credits"
               >
-                <span className="text-sm font-semibold text-[#4590e2]">Buy Credits</span>
-                <FontAwesomeIcon icon={faPlus} className="text-[#4590e2] text-xs" />
+                <span className="text-sm font-semibold text-[#34D399]">Buy Credits</span>
+                <FontAwesomeIcon icon={faPlus} className="text-[#34D399] text-xs" />
               </button>
             </div>
             <div>
@@ -222,7 +222,7 @@ function DashboardInner({
           {/* Start Pentest CTA Card */}
           <Link 
             href="/app/new-pentest"
-            className="bg-gradient-to-br from-[#4590e2] to-[#3a7bc8] border border-[#4590e2] rounded-xl p-6 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex flex-col items-center justify-center text-center group"
+            className="bg-gradient-to-br from-[#34D399] to-[#10b981] border border-[#34D399] rounded-xl p-6 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex flex-col items-center justify-center text-center group"
           >
             <div className="p-4 rounded-full bg-white/10 mb-3 group-hover:bg-white/20 transition-colors">
               <FontAwesomeIcon icon={faShieldHalved} className="text-4xl text-white" />
@@ -234,10 +234,10 @@ function DashboardInner({
 
         {/* No credits banner */}
         {credits.web_app === 0 && credits.external_ip === 0 && (
-          <div className="bg-gradient-to-r from-[#4590e2]/10 to-[#4590e2]/5 border border-[#4590e2]/30 rounded-xl p-6">
+          <div className="bg-gradient-to-r from-[#34D399]/10 to-[#34D399]/5 border border-[#34D399]/30 rounded-xl p-6">
             <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-[#4590e2]/20 border border-[#4590e2]/40">
-                <FontAwesomeIcon icon={faShieldHalved} className="text-2xl text-[#4590e2]" />
+              <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
+                <FontAwesomeIcon icon={faShieldHalved} className="text-2xl text-[#34D399]" />
               </div>
               <div className="flex-1">
                 <h3 className="font-bold text-xl text-white mb-2">
@@ -250,7 +250,7 @@ function DashboardInner({
                 <div className="flex gap-3">
                   <button
                     onClick={() => openPurchaseModal('web_app')}
-                    className="px-6 py-3 bg-[#4590e2] hover:bg-[#3a7bc8] text-white font-semibold rounded-lg transition-colors"
+                    className="px-6 py-3 bg-[#34D399] hover:bg-[#10b981] text-white font-semibold rounded-lg transition-colors"
                   >
                     Buy Web App Credits
                   </button>
@@ -273,7 +273,7 @@ function DashboardInner({
               <h2 className="text-2xl font-bold text-white">Recent Pentests</h2>
               <Link
                 href="/app/pentests"
-                className="text-[#4590e2] hover:text-[#3a7bc8] text-sm font-semibold transition-colors"
+                className="text-[#34D399] hover:text-[#10b981] text-sm font-semibold transition-colors"
               >
                 View All →
               </Link>
@@ -282,12 +282,12 @@ function DashboardInner({
               {recentScans.map((scan: any) => (
                 <div
                   key={scan.scanId}
-                  className="p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 hover:border-[#4590e2]/30 transition-all"
+                  className="p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 hover:border-[#34D399]/30 transition-all"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="px-3 py-1 bg-[#4590e2] text-white text-xs font-semibold rounded-full uppercase">
+                        <span className="px-3 py-1 bg-[#34D399] text-white text-xs font-semibold rounded-full uppercase">
                           {scan.type}
                         </span>
                         <span className="font-semibold text-white">
@@ -306,7 +306,7 @@ function DashboardInner({
                     </div>
                     <Link
                       href={`/app/pentests#${scan.scanId}`}
-                      className="px-4 py-2 bg-[#4590e2]/20 hover:bg-[#4590e2]/30 text-[#4590e2] font-semibold rounded-lg border border-[#4590e2]/30 transition-colors text-sm"
+                      className="px-4 py-2 bg-[#34D399]/20 hover:bg-[#34D399]/30 text-[#34D399] font-semibold rounded-lg border border-[#34D399]/30 transition-colors text-sm"
                     >
                       View
                     </Link>
@@ -330,7 +330,7 @@ function DashboardInner({
               </p>
               <Link
                 href="/app/new-pentest"
-                className="inline-block px-8 py-3 bg-[#4590e2] hover:bg-[#3a7bc8] text-white font-semibold rounded-lg transition-colors"
+                className="inline-block px-8 py-3 bg-[#34D399] hover:bg-[#10b981] text-white font-semibold rounded-lg transition-colors"
               >
                 Launch First Pentest
               </Link>
@@ -342,7 +342,7 @@ function DashboardInner({
       {/* Purchase Modal */}
       {showPurchaseModal && selectedPentestType && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0a141f] border border-[#4590e2]/30 rounded-xl p-8 max-w-lg w-full shadow-2xl">
+          <div className="bg-[#0a141f] border border-[#34D399]/30 rounded-xl p-8 max-w-lg w-full shadow-2xl">
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h2 className="text-3xl font-bold text-white mb-2">Purchase Credits</h2>
@@ -359,12 +359,12 @@ function DashboardInner({
             </div>
 
             {/* Pentest Type Info */}
-            <div className="bg-white/5 border border-[#4590e2]/20 rounded-lg p-6 mb-6">
+            <div className="bg-white/5 border border-[#34D399]/20 rounded-lg p-6 mb-6">
               <div className="flex items-center gap-4 mb-4">
-                <div className="p-3 rounded-lg bg-[#4590e2]/20 border border-[#4590e2]/40">
+                <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
                   <FontAwesomeIcon 
                     icon={selectedPentestType === 'web_app' ? faGlobe : faServer} 
-                    className="text-2xl text-[#4590e2]" 
+                    className="text-2xl text-[#34D399]" 
                   />
                 </div>
                 <div>
@@ -384,19 +384,19 @@ function DashboardInner({
                 <p className="text-xs text-gray-400 font-semibold uppercase mb-2">Includes:</p>
                 <ul className="space-y-2 text-sm text-gray-300">
                   <li className="flex items-start gap-2">
-                    <span className="text-[#4590e2] mt-0.5">✓</span>
+                    <span className="text-[#34D399] mt-0.5">✓</span>
                     <span>Autonomous AI penetration testing</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-[#4590e2] mt-0.5">✓</span>
+                    <span className="text-[#34D399] mt-0.5">✓</span>
                     <span>Powered by Anthropic Claude</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-[#4590e2] mt-0.5">✓</span>
+                    <span className="text-[#34D399] mt-0.5">✓</span>
                     <span>Results within 24-48 hours</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-[#4590e2] mt-0.5">✓</span>
+                    <span className="text-[#34D399] mt-0.5">✓</span>
                     <span>Detailed vulnerability report</span>
                   </li>
                 </ul>
@@ -404,7 +404,7 @@ function DashboardInner({
             </div>
 
             {/* Quantity Selector */}
-            <div className="bg-white/5 border border-[#4590e2]/20 rounded-lg p-6 mb-6">
+            <div className="bg-white/5 border border-[#34D399]/20 rounded-lg p-6 mb-6">
               <label className="block text-center mb-4">
                 <span className="text-lg font-semibold text-white">Number of Credits</span>
               </label>
@@ -421,7 +421,7 @@ function DashboardInner({
                   max="50"
                   value={purchaseQuantity}
                   onChange={(e) => setPurchaseQuantity(Math.max(1, Math.min(50, parseInt(e.target.value) || 1)))}
-                  className="w-28 px-4 py-3 bg-white/10 border border-[#4590e2]/40 rounded-lg text-center text-3xl font-bold focus:outline-none focus:border-[#4590e2] text-white"
+                  className="w-28 px-4 py-3 bg-white/10 border border-[#34D399]/40 rounded-lg text-center text-3xl font-bold focus:outline-none focus:border-[#34D399] text-white"
                 />
                 <button
                   onClick={() => setPurchaseQuantity(Math.min(50, purchaseQuantity + 1))}
@@ -431,7 +431,7 @@ function DashboardInner({
                 </button>
               </div>
               <p className="text-center mt-6 text-xl text-gray-300">
-                Total: <span className="text-[#4590e2] font-bold text-4xl">
+                Total: <span className="text-[#34D399] font-bold text-4xl">
                   ${((selectedPentestType === 'web_app' ? 500 : 199) * purchaseQuantity).toLocaleString()}
                 </span>
               </p>
@@ -441,7 +441,7 @@ function DashboardInner({
             <button
               onClick={() => handlePurchaseCredits(selectedPentestType, purchaseQuantity)}
               disabled={loadingCheckout}
-              className="w-full py-4 bg-[#4590e2] hover:bg-[#3a7bc8] text-white font-bold rounded-lg text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+              className="w-full py-4 bg-[#34D399] hover:bg-[#10b981] text-white font-bold rounded-lg text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
             >
               {loadingCheckout ? 'Processing...' : `Proceed to Checkout`}
             </button>

@@ -153,7 +153,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               onClick={() => setAccountMenuOpen(!accountMenuOpen)}
               className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
             >
-              <div className="w-8 h-8 rounded-full bg-[#4590e2] text-white font-bold flex items-center justify-center text-sm">
+              <div className="w-8 h-8 rounded-full bg-[#34D399] text-white font-bold flex items-center justify-center text-sm">
                 {getInitials(currentUser?.email)}
               </div>
               <div className="flex-1 overflow-hidden text-left">
@@ -200,7 +200,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {/* Buy Credits button */}
           <Link
             href="/app/dashboard?purchase=web_app"
-            className="block w-full px-4 py-3 bg-[#4590e2] text-white font-semibold rounded-lg text-center hover:bg-[#3a7bc8] transition-colors"
+            className="block w-full px-4 py-3 bg-[#34D399] text-white font-semibold rounded-lg text-center hover:bg-[#10b981] transition-colors"
           >
             Buy Credits
             <FontAwesomeIcon icon={faPlus} className="ml-2" />

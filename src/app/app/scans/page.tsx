@@ -316,7 +316,7 @@ export default function ScansPage() {
           <button
             className={`px-4 py-2 rounded-lg border-2 flex items-center gap-2 font-semibold transition-all ${
               activeTab === "new"
-                ? "border-[#0A1128] bg-blue-50 text-[#0A1128]"
+                ? "border-[#0A1128] bg-emerald-50 text-[#0A1128]"
                 : "border-gray-200 text-gray-600 hover:border-gray-300"
             }`}
             onClick={() => setActiveTab("new")}
@@ -327,7 +327,7 @@ export default function ScansPage() {
           <button
             className={`px-4 py-2 rounded-lg border-2 flex items-center gap-2 font-semibold transition-all ${
               activeTab === "history"
-                ? "border-[#0A1128] bg-blue-50 text-[#0A1128]"
+                ? "border-[#0A1128] bg-emerald-50 text-[#0A1128]"
                 : "border-gray-200 text-gray-600 hover:border-gray-300"
             }`}
             onClick={() => setActiveTab("history")}
@@ -642,7 +642,7 @@ export default function ScansPage() {
                   )}
 
                   {/* Remaining Scans */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
                     <p className="text-sm text-gray-700 mb-2">
                       <strong>Scans Remaining:</strong>
                     </p>
@@ -763,7 +763,7 @@ export default function ScansPage() {
                               scan.status === "completed"
                                 ? "bg-green-100 text-green-700"
                                 : scan.status === "in_progress"
-                                  ? "bg-blue-100 text-blue-700"
+                                  ? "bg-emerald-100 text-emerald-700"
                                   : "bg-gray-100 text-gray-700"
                             }`}
                           >

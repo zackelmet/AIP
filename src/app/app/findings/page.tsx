@@ -38,8 +38,8 @@ const severityConfig: Record<Severity, { icon: any; color: string; bg: string }>
   },
   low: {
     icon: faInfoCircle,
-    color: "text-blue-700",
-    bg: "bg-blue-100",
+    color: "text-emerald-700",
+    bg: "bg-emerald-100",
   },
   info: {
     icon: faInfoCircle,
@@ -192,7 +192,7 @@ export default function FindingsPage() {
             <div className="text-sm text-gray-500">Medium</div>
           </div>
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="text-2xl font-bold text-blue-600">{stats.low}</div>
+            <div className="text-2xl font-bold text-emerald-600">{stats.low}</div>
             <div className="text-sm text-gray-500">Low</div>
           </div>
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">

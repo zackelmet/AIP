@@ -25,7 +25,7 @@ export default function PricingCard({
     <div
       className={`rounded-lg border ${
         highlight || popular
-          ? 'border-blue-500 shadow-xl scale-105'
+          ? 'border-emerald-500 shadow-xl scale-105'
           : 'border-gray-200 shadow-lg'
       } bg-white p-8 flex flex-col`}
     >
@@ -60,7 +60,7 @@ export default function PricingCard({
         href="/pricing"
         className={`w-full py-3 px-6 rounded-lg font-semibold text-center transition-colors ${
           highlight
-            ? 'bg-blue-600 hover:bg-blue-700 text-white'
+            ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
             : 'bg-gray-800 hover:bg-gray-900 text-white'
         }`}
       >
