@@ -226,9 +226,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Affordable Pentesting.com Plug Section */}
+      {/* Affordable Pentesting.com Section */}
       <section className="py-24 bg-[#060e16] border-t border-[#34D399]/20">
         <div className="max-w-6xl mx-auto px-6">
+          {/* Header */}
           <div className="text-center mb-14">
             <p className="text-[#34D399] text-sm font-semibold uppercase tracking-widest mb-3">Powered by</p>
             <a
@@ -252,17 +253,19 @@ export default function Home() {
               </span>
             </a>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              The quickest and most affordable pentesting solution on the market — manual, AI-powered, OSCP-certified penetration testing.
+              Human-led penetration testing for SOC 2, HIPAA, PCI DSS, ISO 27001, and NIST — at prices built for startups, SMBs, and growing companies.
             </p>
           </div>
 
-          {/* 4 pillars */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-14">
+          {/* Service pillars */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-14">
             {[
-              { label: "Manual White Labeled Pentesting", desc: "Rebrand our reports as your own. Fully white-labeled for MSPs and vCISOs." },
-              { label: "Attested 3rd Party Pentesting", desc: "Use Affordable Pentesting as an independent, credentialed third-party assessor." },
-              { label: "Automated & AI Pentesting", desc: "Fast, cost-effective AI-driven assessments for ongoing security coverage." },
-              { label: "Risk Assessments", desc: "Compliance-ready reports for SOC 2, HIPAA, PCI DSS, ISO 27001, and NIST." },
+              { label: "Manual External Pentesting", desc: "Simulate real-world attacks on your public systems to uncover risks before hackers exploit them." },
+              { label: "Manual Web App Pentesting", desc: "Find and fix critical flaws — XSS, SQLi, authentication gaps — in your websites and portals." },
+              { label: "Manual Internal Pentesting", desc: "Detect insider threats and hidden vulnerabilities across your internal network." },
+              { label: "Manual Cloud Pentesting", desc: "Identify misconfigurations in AWS, Azure, or GCP to maintain data security and compliance." },
+              { label: "Automated / AI Pentesting", desc: "Fast, AI-driven assessments that go beyond a vulnerability scan — results delivered within a day." },
+              { label: "Compliance Pentesting", desc: "Audit-ready reports for SOC 2, HIPAA, PCI DSS, ISO 27001, NIST, and GDPR." },
             ].map((item) => (
               <div
                 key={item.label}
@@ -274,15 +277,16 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Why MSPs use Affordable Pentesting */}
-          <div className="grid sm:grid-cols-3 gap-5 mb-14">
+          {/* Why AP */}
+          <div className="grid sm:grid-cols-4 gap-5 mb-14">
             {[
-              { num: "01", title: "White Labeled Reports", desc: "Partners can rebrand our pentests as their own, or use us as an attested 3rd party provider." },
-              { num: "02", title: "Reseller Pricing", desc: "The most affordable pentests on the market, priced for the channel — not for maximum profit." },
-              { num: "03", title: "Fast Turnaround", desc: "Pentests scheduled and performed within days. No long lead times, no hidden fees." },
+              { title: "Certified Ethical Hackers", desc: "OSCP, CEH, and CISSP certified experts — not automated scanners." },
+              { title: "Enterprise Quality, SMB Pricing", desc: "The most affordable pentests on the market, with zero sacrifice on quality." },
+              { title: "Fast Turnaround", desc: "Pentests start within days. No long lead times, no hidden fees." },
+              { title: "Clear, Actionable Reports", desc: "Jargon-free findings with step-by-step remediation guidance." },
             ].map((item) => (
-              <div key={item.num} className="flex gap-4">
-                <span className="text-[#34D399] font-bold text-2xl leading-none mt-1">{item.num}</span>
+              <div key={item.title} className="flex gap-4">
+                <span className="text-[#34D399] font-bold text-2xl leading-none mt-0.5">✓</span>
                 <div>
                   <h3 className="text-white font-bold mb-1">{item.title}</h3>
                   <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
@@ -302,12 +306,12 @@ export default function Home() {
               Get a Pentest Quote
             </a>
             <a
-              href="https://affordablepentesting.com/become-a-msp-partner"
+              href="https://affordablepentesting.com"
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-lg border border-white/20 transition-colors"
             >
-              Become an MSP Partner
+              Learn More
             </a>
           </div>
         </div>
