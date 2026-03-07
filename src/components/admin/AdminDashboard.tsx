@@ -10,6 +10,9 @@ import {
   faUserPlus,
   faFileInvoiceDollar,
   faChartPie,
+  faUpload,
+  faFilePdf,
+  faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Section from "../shared/Section";
@@ -47,6 +50,39 @@ export default function AdminDashboard() {
   const [newCustomerEmail, setNewCustomerEmail] = useState("");
   const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
   const [isAddingCustomer, setIsAddingCustomer] = useState(false);
+
+  // Report upload state
+  const [reportPentestId, setReportPentestId] = useState("");
+  const [reportFile, setReportFile] = useState<File | null>(null);
+  const [isUploadingReport, setIsUploadingReport] = useState(false);
+  const [reportUploadSuccess, setReportUploadSuccess] = useState(false);
+
+  const uploadReport = async () => {
+    if (!reportPentestId.trim() || !reportFile) {
+      showToast("error", "Enter a pentest ID and select a PDF");
+      return;
+    }
+    setIsUploadingReport(true);
+    setReportUploadSuccess(false);
+    try {
+      const form = new FormData();
+      form.append("pentestId", reportPentestId.trim());
+      form.append("file", reportFile);
+      const res = await fetch("/api/admin/upload-report", { method: "POST", body: form });
+      if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(error || "Upload failed");
+      }
+      showToast("success", "Report uploaded — pentest marked completed");
+      setReportUploadSuccess(true);
+      setReportPentestId("");
+      setReportFile(null);
+    } catch (err: any) {
+      showToast("error", err.message || "Upload failed");
+    } finally {
+      setIsUploadingReport(false);
+    }
+  };
 
   // Fetch stripe dashboard data
   const {
@@ -250,6 +286,47 @@ export default function AdminDashboard() {
                   Generate Invoice
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Upload Pentest Report */}
+        <div className="card bg-base-100 shadow-xl w-full">
+          <div className="card-body">
+            <h2 className="card-title">
+              <FontAwesomeIcon icon={faFilePdf} className="text-error" />
+              Upload Pentest Report
+            </h2>
+            <p className="text-sm text-base-content/60 mb-4">
+              Upload a completed PDF report to a pentest. The pentest status will be set to <strong>completed</strong> and the user will see a Download button.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                placeholder="Pentest ID"
+                value={reportPentestId}
+                onChange={(e) => { setReportPentestId(e.target.value); setReportUploadSuccess(false); }}
+                className="input input-bordered flex-1"
+              />
+              <label className="btn btn-outline flex-1 cursor-pointer">
+                <FontAwesomeIcon icon={faUpload} className="mr-2" />
+                {reportFile ? reportFile.name : "Choose PDF"}
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  className="hidden"
+                  onChange={(e) => { setReportFile(e.target.files?.[0] || null); setReportUploadSuccess(false); }}
+                />
+              </label>
+              <button
+                className="btn btn-primary"
+                onClick={uploadReport}
+                disabled={isUploadingReport || !reportPentestId || !reportFile}
+              >
+                {isUploadingReport ? "Uploading..." : reportUploadSuccess ? (
+                  <><FontAwesomeIcon icon={faCheckCircle} className="mr-2" />Uploaded!</>
+                ) : "Upload Report"}
+              </button>
             </div>
           </div>
         </div>

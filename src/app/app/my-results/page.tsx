@@ -13,6 +13,17 @@ interface PentestRequest {
   createdAt: string;
   updatedAt: string;
   engagementId?: string;
+  reportUrl?: string;
+}
+
+interface Pentest {
+  id: string;
+  type: string;
+  targetUrl: string;
+  status: string;
+  createdAt: any;
+  batchName?: string;
+  reportUrl?: string;
 }
 
 interface Engagement {
@@ -60,8 +71,10 @@ export default function MyResultsPage() {
   const [requests, setRequests] = useState<PentestRequest[]>([]);
   const [engagements, setEngagements] = useState<Engagement[]>([]);
   const [findings, setFindings] = useState<Finding[]>([]);
+  const [pentests, setPentests] = useState<Pentest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'requests' | 'engagements' | 'findings'>('requests');
+  const [activeTab, setActiveTab] = useState<'requests' | 'engagements' | 'findings' | 'reports'>('requests');
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -96,10 +109,35 @@ export default function MyResultsPage() {
         const findingsData = await findingsRes.json();
         setFindings(findingsData.findings || []);
       }
+
+      // Fetch AI/automated pentests (for reports tab)
+      const pentestsRes = await fetch(`/api/pentests?userId=${user.uid}`);
+      if (pentestsRes.ok) {
+        const pentestsData = await pentestsRes.json();
+        setPentests(pentestsData.pentests || []);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const downloadReport = async (pentestId: string) => {
+    setDownloadingId(pentestId);
+    try {
+      const res = await fetch(`/api/reports/download?pentestId=${pentestId}`);
+      if (!res.ok) {
+        const { error } = await res.json();
+        alert(error || 'Failed to get download link');
+        return;
+      }
+      const { url } = await res.json();
+      window.open(url, '_blank');
+    } catch {
+      alert('Download failed. Please try again.');
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -153,6 +191,12 @@ export default function MyResultsPage() {
             <div className="text-sm text-gray-600">Total Findings</div>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
+            <div className="text-3xl font-bold text-emerald-600">
+              {pentests.filter(p => p.reportUrl).length}
+            </div>
+            <div className="text-sm text-gray-600">Reports Ready</div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6">
             <div className="text-3xl font-bold text-red-600">
               {severityStats.critical + severityStats.high}
             </div>
@@ -168,6 +212,7 @@ export default function MyResultsPage() {
                 { id: 'requests', label: 'Requests', count: requests.length },
                 { id: 'engagements', label: 'Engagements', count: engagements.length },
                 { id: 'findings', label: 'Findings', count: findings.length },
+                { id: 'reports', label: 'Reports', count: pentests.filter(p => p.reportUrl).length },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -359,6 +404,53 @@ export default function MyResultsPage() {
                           </div>
                         ))}
                     </div>
+                  </div>
+                )}
+              </div>
+            )}
+            {/* Reports Tab */}
+            {activeTab === 'reports' && (
+              <div>
+                {pentests.filter(p => p.reportUrl).length === 0 && pentests.length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500">No pentests found</p>
+                  </div>
+                ) : pentests.filter(p => p.reportUrl).length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500">No completed reports yet.</p>
+                    <p className="text-gray-400 text-sm mt-1">Reports will appear here once your pentest is completed.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {pentests
+                      .filter(p => p.reportUrl)
+                      .map((pentest) => (
+                        <div
+                          key={pentest.id}
+                          className="border border-gray-200 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition-shadow"
+                        >
+                          <div>
+                            <h3 className="font-semibold text-gray-900">
+                              {pentest.batchName || pentest.targetUrl || 'Pentest'}
+                            </h3>
+                            <p className="text-sm text-gray-600 mt-1 capitalize">
+                              {pentest.type?.replace('_', ' ')} &mdash; {pentest.status}
+                            </p>
+                            {pentest.createdAt?.seconds && (
+                              <p className="text-xs text-gray-400 mt-1">
+                                {new Date(pentest.createdAt.seconds * 1000).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => downloadReport(pentest.id)}
+                            disabled={downloadingId === pentest.id}
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white text-sm font-semibold rounded-lg transition-colors"
+                          >
+                            {downloadingId === pentest.id ? 'Getting link...' : '⬇ Download Report'}
+                          </button>
+                        </div>
+                      ))}
                   </div>
                 )}
               </div>
