@@ -1,13 +1,12 @@
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 import { NextRequest, NextResponse } from "next/server";
 import { getStripeServerSide } from "@/lib/stripe/getStripeServerSide";
-import { UserDocument, PLAN_LIMITS } from "@/lib/types/user";
 
 const admin = initializeAdmin();
 
 export async function POST(req: NextRequest) {
   try {
-    const { uid, secretCode, name, email } = await req.json();
+    const { uid, name, email } = await req.json();
 
     if (!uid) {
       return NextResponse.json({ error: "UID is required" }, { status: 400 });
@@ -36,12 +35,8 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Create a new user document with full structure
-      const freePlan = PLAN_LIMITS.free;
-      const aggregatedMonthlyLimit = (
-        Object.values(freePlan.scanners) as number[]
-      ).reduce((acc, v) => acc + v, 0);
-      const newUser: Partial<UserDocument> = {
+      // Create a new user document
+      const newUser = {
         uid,
         name: name || "",
         email: email || "",
@@ -49,18 +44,10 @@ export async function POST(req: NextRequest) {
         stripeSubscriptionId: null,
         subscriptionStatus: "none",
         currentPlan: "free",
-        monthlyScansLimit: aggregatedMonthlyLimit,
-        // Initialize per-scanner limits and counters - give 1 free credit to start
-        scannerLimits: { nmap: 1, openvas: 1, zap: 1 },
-        scannersUsedThisMonth: { nmap: 0, openvas: 0, zap: 0 },
-        // Initialize pentest credits at 0
+        // Pentest credits
         credits: { web_app: 0, external_ip: 0 },
-        scansThisMonth: 0,
-        totalScansAllTime: 0,
-        lastMonthlyReset: admin.firestore.FieldValue.serverTimestamp() as any,
-        features: freePlan.features,
-        createdAt: admin.firestore.FieldValue.serverTimestamp() as any,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp() as any,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       };
 
       await admin
@@ -68,16 +55,6 @@ export async function POST(req: NextRequest) {
         .collection("users")
         .doc(uid)
         .set(newUser, { merge: true });
-
-      // Set custom claims for the user
-      await admin.auth().setCustomUserClaims(uid, {
-        stripeRole: "Free",
-      });
-
-      // If a secret code is provided, you can handle it here
-      if (secretCode) {
-        // Implement secret code logic here if needed
-      }
 
       return NextResponse.json({
         message: "User document created successfully",
