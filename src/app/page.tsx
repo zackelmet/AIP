@@ -8,7 +8,6 @@ import { loadStripe } from '@stripe/stripe-js';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faRobot,
   faBolt,
   faChartLine,
   faLock,
@@ -168,7 +167,11 @@ export default function Home() {
                 className="bg-white/5 border border-[#34D399]/20 rounded-lg p-8 hover:border-[#34D399]/40 transition-colors"
               >
                 <div className="text-[#34D399] mb-4">
-                  <FontAwesomeIcon icon={feature.icon} className="text-4xl" />
+                  {feature.icon ? (
+                    <FontAwesomeIcon icon={feature.icon} className="text-4xl" />
+                  ) : (
+                    <Image src="/brain.png" alt="AI" width={40} height={40} className="w-10 h-10" />
+                  )}
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-white">
                   {feature.title}
@@ -322,7 +325,7 @@ export default function Home() {
 
 const features = [
   {
-    icon: faRobot,
+    icon: null,
     title: "AI-Powered Pentests",
     description:
       "Advanced Anthropic Claude agentic systems autonomously conduct penetration tests, identifying vulnerabilities and security weaknesses across your infrastructure.",

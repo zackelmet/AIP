@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faClipboardList,
   faFilter,
   faSearch,
-  faRobot,
   faUser,
   faSatelliteDish,
   faBug,
@@ -21,7 +21,7 @@ import { ActivityType } from "@/lib/types/pentest";
 
 const activityIcons: Record<ActivityType, any> = {
   manual_test: faUser,
-  ai_scan: faRobot,
+  ai_scan: null,
   nmap_scan: faSatelliteDish,
   openvas_scan: faSatelliteDish,
   zap_scan: faSatelliteDish,
@@ -164,10 +164,14 @@ export default function ActivityPage() {
                     <div
                       className={`p-2 rounded-lg ${activityColors[activity.type] || "bg-gray-100 text-gray-600"}`}
                     >
-                      <FontAwesomeIcon
-                        icon={activityIcons[activity.type] || faClipboardList}
-                        className="w-4 h-4"
-                      />
+                      {activityIcons[activity.type] ? (
+                        <FontAwesomeIcon
+                          icon={activityIcons[activity.type]}
+                          className="w-4 h-4"
+                        />
+                      ) : (
+                        <Image src="/brain.png" alt="AI" width={16} height={16} className="w-4 h-4" />
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
