@@ -16,6 +16,9 @@ export interface UserDocument {
   createdAt: Timestamp;
   updatedAt?: Timestamp;
 
+  // Role
+  isAdmin?: boolean;
+
   // Stripe Integration
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;

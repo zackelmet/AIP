@@ -17,8 +17,10 @@ import {
   faShieldHalved,
   faPlus,
   faList,
+  faUserShield,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/lib/context/AuthContext";
+import { useUserData } from "@/lib/hooks/useUserData";
 import signout from "@/lib/firebase/signout";
 import Image from "next/image";
 
@@ -32,6 +34,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { currentUser } = useAuth();
+  const { userData } = useUserData();
   const accountMenuRef = useRef<HTMLDivElement>(null);
 
   const getInitials = (email: string | null | undefined) => {
@@ -64,6 +67,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { href: "/app/pentests", label: "Recent Tests", icon: faList },
     { href: "/app/new-pentest", label: "Launch an AI Pentest", icon: faRocket },
     { href: "/app/manual-pentest", label: "Request a Manual Pentest", icon: faUser },
+    ...(userData?.isAdmin ? [{ href: "/admin", label: "Admin", icon: faUserShield }] : []),
   ];
 
   const bottomItems = [
