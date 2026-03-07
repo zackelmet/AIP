@@ -39,11 +39,12 @@ export async function GET(request: NextRequest) {
     // Generate a signed URL valid for 15 minutes
     const bucket = admin.storage().bucket();
     const file = bucket.file(data.reportUrl);
+    const ext = data.reportUrl.endsWith('.docx') ? 'docx' : 'pdf';
 
     const [signedUrl] = await file.getSignedUrl({
       action: 'read',
       expires: Date.now() + 15 * 60 * 1000,
-      responseDisposition: `attachment; filename="pentest-report-${pentestId}.pdf"`,
+      responseDisposition: `attachment; filename="pentest-report-${pentestId}.${ext}"`,
     });
 
     return NextResponse.json({ url: signedUrl });

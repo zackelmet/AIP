@@ -25,9 +25,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'pentestId and file are required' }, { status: 400 });
     }
 
-    if (file.type !== 'application/pdf') {
-      return NextResponse.json({ error: 'Only PDF files are accepted' }, { status: 400 });
+    if (file.type !== 'application/pdf' && file.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      return NextResponse.json({ error: 'Only PDF and DOCX files are accepted' }, { status: 400 });
     }
+
+    // Determine extension
+    const ext = file.type === 'application/pdf' ? 'pdf' : 'docx';
 
     // Verify pentest doc exists
     const pentestRef = admin.firestore().collection('pentests').doc(pentestId);
@@ -38,7 +41,7 @@ export async function POST(request: NextRequest) {
 
     // Upload to Firebase Storage
     const bucket = admin.storage().bucket();
-    const storagePath = `reports/${pentestId}.pdf`;
+    const storagePath = `reports/${pentestId}.${ext}`;
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
     const storageFile = bucket.file(storagePath);

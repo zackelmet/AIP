@@ -310,10 +310,10 @@ export default function AdminDashboard() {
               />
               <label className="btn btn-outline flex-1 cursor-pointer">
                 <FontAwesomeIcon icon={faUpload} className="mr-2" />
-                {reportFile ? reportFile.name : "Choose PDF"}
+                {reportFile ? reportFile.name : "Choose PDF or DOCX"}
                 <input
                   type="file"
-                  accept="application/pdf"
+                  accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   className="hidden"
                   onChange={(e) => { setReportFile(e.target.files?.[0] || null); setReportUploadSuccess(false); }}
                 />
