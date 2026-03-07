@@ -261,14 +261,11 @@ export default function Home() {
           </div>
 
           {/* Service pillars */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-14">
+          <div className="grid sm:grid-cols-3 gap-5 mb-14">
             {[
-              { label: "Manual External Pentesting", desc: "Simulate real-world attacks on your public systems to uncover risks before hackers exploit them." },
-              { label: "Manual Web App Pentesting", desc: "Find and fix critical flaws — XSS, SQLi, authentication gaps — in your websites and portals." },
-              { label: "Manual Internal Pentesting", desc: "Detect insider threats and hidden vulnerabilities across your internal network." },
-              { label: "Manual Cloud Pentesting", desc: "Identify misconfigurations in AWS, Azure, or GCP to maintain data security and compliance." },
-              { label: "Automated / AI Pentesting", desc: "Fast, AI-driven assessments that go beyond a vulnerability scan — results delivered within a day." },
-              { label: "Compliance Pentesting", desc: "Audit-ready reports for SOC 2, HIPAA, PCI DSS, ISO 27001, NIST, and GDPR." },
+              { label: "Manual Pentesting", desc: "OSCP-certified hackers simulate real-world attacks — external, internal, web app, and cloud. Audit-ready reports for SOC 2, HIPAA, PCI DSS, and more." },
+              { label: "AI-Powered Pentesting", desc: "Fast, automated assessments that go beyond a vulnerability scan. Results delivered within a day, no scheduling required." },
+              { label: "Compliance & Risk Coverage", desc: "Every engagement maps findings to SOC 2, HIPAA, PCI DSS, ISO 27001, NIST, and GDPR controls — ready for your auditor." },
             ].map((item) => (
               <div
                 key={item.label}
@@ -300,14 +297,12 @@ export default function Home() {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="https://affordablepentesting.com/get-a-pentest-quote"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/app/request-pentest"
               className="px-8 py-4 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-bold rounded-lg transition-colors"
             >
               Get a Pentest Quote
-            </a>
+            </Link>
             <a
               href="https://affordablepentesting.com"
               target="_blank"
