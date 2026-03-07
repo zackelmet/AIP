@@ -5,12 +5,10 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeadset,
-  faEnvelope,
   faCircleCheck,
   faTriangleExclamation,
   faArrowLeft,
   faShieldHalved,
-  faBook,
 } from "@fortawesome/free-solid-svg-icons";
 
 const TOPICS = [
@@ -97,24 +95,9 @@ export default function SupportPage() {
             </div>
           </Link>
 
-          <Link
-            href="mailto:support@affordablepentesting.com"
-            className="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#34D399]/40 rounded-xl transition-all group"
-          >
-            <div className="p-2 rounded-lg bg-[#34D399]/15 border border-[#34D399]/30">
-              <FontAwesomeIcon icon={faEnvelope} className="text-[#34D399]" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-white group-hover:text-[#34D399] transition-colors">
-                Email Us
-              </p>
-              <p className="text-xs text-gray-500">support@affordablepentesting.com</p>
-            </div>
-          </Link>
-
           <div className="mt-6 pt-6 border-t border-white/10">
             <p className="text-xs text-gray-500 leading-relaxed">
-              Response time is typically within <span className="text-gray-300">1 business day</span>. For urgent billing issues please email directly.
+              Response time is typically within <span className="text-gray-300">1 business day</span>.
             </p>
           </div>
         </aside>
@@ -156,7 +139,7 @@ export default function SupportPage() {
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-sm font-semibold text-gray-300 mb-1.5">
-                    Name <span className="text-[#4590e2]">*</span>
+                    Name <span className="text-[#34D399]">*</span>
                   </label>
                   <input
                     type="text"
@@ -164,12 +147,12 @@ export default function SupportPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Jane Smith"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/15 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-[#4590e2] transition-colors text-sm"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/15 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-[#34D399] transition-colors text-sm"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-300 mb-1.5">
-                    Email <span className="text-[#4590e2]">*</span>
+                    Email <span className="text-[#34D399]">*</span>
                   </label>
                   <input
                     type="email"
@@ -177,20 +160,20 @@ export default function SupportPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="jane@example.com"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/15 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-[#4590e2] transition-colors text-sm"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/15 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-[#34D399] transition-colors text-sm"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-gray-300 mb-1.5">
-                  Topic <span className="text-[#4590e2]">*</span>
+                  Topic <span className="text-[#34D399]">*</span>
                 </label>
                 <select
                   required
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#0a141f] border border-white/15 rounded-lg text-white focus:outline-none focus:border-[#4590e2] transition-colors text-sm appearance-none"
+                  className="w-full px-4 py-3 bg-[#0a141f] border border-white/15 rounded-lg text-white focus:outline-none focus:border-[#34D399] transition-colors text-sm appearance-none"
                 >
                   <option value="" disabled>
                     Select a topic…
@@ -205,7 +188,7 @@ export default function SupportPage() {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-300 mb-1.5">
-                  Message <span className="text-[#4590e2]">*</span>
+                  Message <span className="text-[#34D399]">*</span>
                 </label>
                 <textarea
                   required
@@ -213,14 +196,14 @@ export default function SupportPage() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Describe your issue or question in as much detail as possible…"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/15 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-[#4590e2] transition-colors text-sm resize-none"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/15 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-[#34D399] transition-colors text-sm resize-none"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 bg-[#4590e2] hover:bg-[#3a7bc8] text-white font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-3.5 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {submitting ? "Sending…" : "Send Message"}
               </button>

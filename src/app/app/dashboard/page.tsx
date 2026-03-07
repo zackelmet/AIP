@@ -186,7 +186,7 @@ function DashboardInner({
                 className="buy-credits-btn flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#34D399]/10 hover:bg-[#34D399]/25 border border-[#34D399]/50 hover:border-[#34D399] transition-colors cursor-pointer"
                 title="Purchase Web App credits"
               >
-                <span className="text-sm font-semibold text-[#34D399]">Buy Credits</span>
+                <span className="text-sm font-semibold text-[#34D399]">Buy Pentest</span>
                 <FontAwesomeIcon icon={faPlus} className="text-[#34D399] text-xs" />
               </button>
             </div>
@@ -208,7 +208,7 @@ function DashboardInner({
                 className="buy-credits-btn flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#34D399]/10 hover:bg-[#34D399]/25 border border-[#34D399]/50 hover:border-[#34D399] transition-colors cursor-pointer"
                 title="Purchase External IP credits"
               >
-                <span className="text-sm font-semibold text-[#34D399]">Buy Credits</span>
+                <span className="text-sm font-semibold text-[#34D399]">Buy Pentest</span>
                 <FontAwesomeIcon icon={faPlus} className="text-[#34D399] text-xs" />
               </button>
             </div>
