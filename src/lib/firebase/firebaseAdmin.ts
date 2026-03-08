@@ -23,6 +23,10 @@ export const initializeAdmin = () => {
         process.env.FIREBASE_PRIVATE_KEY
       )?.replace(/\\n/g, "\n");
 
+      const cleanBucket = (process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '')
+        .trim()
+        .replace(/^["']|["']$/g, '');
+
       if (projectId && clientEmail && privateKey) {
         admin.initializeApp({
           credential: admin.credential.cert({
@@ -30,7 +34,7 @@ export const initializeAdmin = () => {
             clientEmail,
             privateKey,
           }),
-          storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+          storageBucket: cleanBucket || undefined,
         });
         console.log(
           "Firebase Admin initialized using explicit service account",
@@ -40,7 +44,7 @@ export const initializeAdmin = () => {
         try {
           admin.initializeApp({
             credential: admin.credential.applicationDefault(),
-            storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+            storageBucket: cleanBucket || undefined,
           });
           console.log(
             "Firebase Admin initialized using application default credentials",

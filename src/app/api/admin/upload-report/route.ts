@@ -48,12 +48,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Pentest not found' }, { status: 404 });
     }
 
-    // Resolve bucket — trim to guard against stray whitespace in env var
-    const bucketName = (process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '').trim();
+    // Resolve bucket — trim whitespace and strip any surrounding quotes from env var
+    const bucketName = (process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '')
+      .trim()
+      .replace(/^["']|["']$/g, '');
     if (!bucketName) {
       console.error('NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET is not set');
       return NextResponse.json({ error: 'Storage not configured' }, { status: 500 });
     }
+    console.log('Using storage bucket:', bucketName);
 
     const bucket = admin.storage().bucket(bucketName);
     const storagePath = `reports/${pentestId}.${ext}`;
