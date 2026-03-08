@@ -37,7 +37,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Generate a signed URL valid for 15 minutes
-    const bucket = admin.storage().bucket();
+    const bucketName = (process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '')
+      .trim()
+      .replace(/^["']|["']$/g, '');
+    const bucket = admin.storage().bucket(bucketName);
     const file = bucket.file(data.reportUrl);
     const ext = data.reportUrl.endsWith('.docx') ? 'docx' : 'pdf';
 
