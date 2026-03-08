@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { faGoogle, faWindows } from "@fortawesome/free-brands-svg-icons";
 // Lazy-load react-hot-toast and Firebase auth at runtime to avoid DOM access during server prerender
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -53,6 +53,36 @@ export default function AuthForm() {
       console.error("Google sign-in error:", err);
       const { toast } = await import("react-hot-toast");
       toast.error("An unexpected error occurred during Google sign-in");
+    }
+  };
+
+  const handleMicrosoftAuth = async () => {
+    try {
+      const signInModule = await import("@/lib/firebase/signin");
+      const { signIn, SignInMethod } = signInModule as any;
+      const { user, error } = await signIn(SignInMethod.Microsoft, {
+        signupCallback: async (userCredential: any) => {
+          await fetch("/api/users/signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              uid: userCredential.user.uid,
+              email: userCredential.user.email,
+              name: userCredential.user.displayName,
+            }),
+          });
+        },
+      });
+      if (user) {
+        router.push(returnUrl);
+      } else if (error) {
+        const { toast } = await import("react-hot-toast");
+        toast.error(error);
+      }
+    } catch (err) {
+      console.error("Microsoft sign-in error:", err);
+      const { toast } = await import("react-hot-toast");
+      toast.error("An unexpected error occurred during Microsoft sign-in");
     }
   };
 
@@ -287,6 +317,14 @@ export default function AuthForm() {
                 >
                   <FontAwesomeIcon icon={faGoogle} className="text-lg" />{" "}
                   Continue with Google
+                </button>
+
+                <button
+                  className="neon-outline-btn w-full py-3 font-semibold flex items-center justify-center gap-2"
+                  onClick={handleMicrosoftAuth}
+                >
+                  <FontAwesomeIcon icon={faWindows} className="text-lg" />{" "}
+                  Continue with Microsoft
                 </button>
               </div>
 
