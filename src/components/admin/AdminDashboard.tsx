@@ -104,7 +104,7 @@ export default function AdminDashboard() {
       <div className="flex items-center gap-3">
         <FontAwesomeIcon icon={faShieldHalved} className="text-[#34D399] text-2xl" />
         <div>
-          <h1 className="text-2xl font-black">Admin Dashboard</h1>
+          <h1 className="text-2xl font-black text-[var(--text)]">Admin Dashboard</h1>
           <p className="text-sm text-[var(--text-muted)]">Affordable Pentesting — internal tools</p>
         </div>
       </div>
@@ -116,7 +116,7 @@ export default function AdminDashboard() {
         </div>
         <div>
           <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">Total Users</p>
-          <p className="text-3xl font-black">
+          <p className="text-3xl font-black text-[var(--text)]">
             {loadingUsers ? <span className="opacity-40">—</span> : totalUsers}
           </p>
         </div>
@@ -126,7 +126,7 @@ export default function AdminDashboard() {
       <div className="neon-card p-6 space-y-6 max-w-2xl">
         <div className="flex items-center gap-2">
           <FontAwesomeIcon icon={faFilePdf} className="text-[#34D399] text-lg" />
-          <h2 className="text-lg font-bold">Upload Pentest Report</h2>
+          <h2 className="text-lg font-bold text-[var(--text)]">Upload Pentest Report</h2>
         </div>
 
         {/* Step indicator */}
