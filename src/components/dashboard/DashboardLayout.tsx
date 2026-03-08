@@ -214,31 +214,33 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
-        {/* Mobile header with hamburger */}
-        <header className="lg:hidden bg-[#0a141f] border-b border-[#34D399] px-4 py-3 flex items-center justify-between sticky top-0 z-30">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 text-gray-400 hover:text-white"
-          >
-            <FontAwesomeIcon icon={faBars} className="w-6 h-6" />
-          </button>
-          <Link href="https://affordable-pentesting.vercel.app/" className="flex items-center gap-2">
-            <Image
-              src="/affordablepentestinglogo.svg"
-              alt="Affordable Pentesting"
-              width={32}
-              height={32}
-              className="w-8 h-8"
-            />
-            <span
-              className="font-semibold text-white text-sm"
-              style={{ fontFamily: "var(--font-chakra-petch)" }}
+        {/* Mobile header with hamburger - hidden on admin page */}
+        {pathname !== "/admin" && (
+          <header className="lg:hidden bg-[#0a141f] border-b border-[#34D399] px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 text-gray-400 hover:text-white"
             >
-              Affordable Pentesting
-            </span>
-          </Link>
-          <div className="w-10" /> {/* Spacer for centering */}
-        </header>
+              <FontAwesomeIcon icon={faBars} className="w-6 h-6" />
+            </button>
+            <Link href="https://affordable-pentesting.vercel.app/" className="flex items-center gap-2">
+              <Image
+                src="/affordablepentestinglogo.svg"
+                alt="Affordable Pentesting"
+                width={32}
+                height={32}
+                className="w-8 h-8"
+              />
+              <span
+                className="font-semibold text-white text-sm"
+                style={{ fontFamily: "var(--font-chakra-petch)" }}
+              >
+                Affordable Pentesting
+              </span>
+            </Link>
+            <div className="w-10" /> {/* Spacer for centering */}
+          </header>
+        )}
 
         {/* Page content */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto">{children}</main>
