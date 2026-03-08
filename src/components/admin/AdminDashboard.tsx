@@ -99,7 +99,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] p-6 space-y-8">
+    <div className="p-6 space-y-8">
       {/* Header */}
       <div className="flex items-center gap-3">
         <FontAwesomeIcon icon={faShieldHalved} className="text-[#34D399] text-2xl" />

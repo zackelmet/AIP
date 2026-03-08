@@ -1,5 +1,5 @@
 import AdminDashboard from "@/components/admin/AdminDashboard";
-import Page from "@/components/shared/Page";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -8,7 +8,7 @@ export default async function AdminDashboardPage() {
   const uid = cookieStore.get("uid")?.value;
 
   const isAdminResponse = await fetch(
-    process.env.NEXT_PUBLIC_SITE_URL! + "/api/auth/isAdmin?uid=" + uid
+    (process.env.NEXT_PUBLIC_SITE_URL || '').trim() + "/api/auth/isAdmin?uid=" + uid
   );
 
   const { isAdmin } = await isAdminResponse.json();
@@ -18,8 +18,8 @@ export default async function AdminDashboardPage() {
   }
 
   return (
-    <Page>
+    <DashboardLayout>
       <AdminDashboard />
-    </Page>
+    </DashboardLayout>
   );
 }
