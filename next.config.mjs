@@ -15,6 +15,12 @@ const nextConfig = {
   },
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
   skipTrailingSlashRedirect: true,
+  experimental: {
+    // Allow up to 20 MB request bodies (needed for PDF/DOCX report uploads)
+    serverActions: {
+      bodySizeLimit: "20mb",
+    },
+  },
 };
 
 export default withMDX(nextConfig);

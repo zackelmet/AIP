@@ -3,6 +3,11 @@ import { initializeAdmin } from '@/lib/firebase/firebaseAdmin';
 
 const admin = initializeAdmin();
 
+export const dynamic = 'force-dynamic';
+
+// Allow up to 20 MB file uploads (Next.js App Router default is 4 MB)
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   try {
     // Verify caller is admin via uid cookie
@@ -25,7 +30,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'pentestId and file are required' }, { status: 400 });
     }
 
-    if (file.type !== 'application/pdf' && file.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    const allowedTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+    if (!allowedTypes.includes(file.type)) {
       return NextResponse.json({ error: 'Only PDF and DOCX files are accepted' }, { status: 400 });
     }
 
@@ -39,8 +48,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Pentest not found' }, { status: 404 });
     }
 
-    // Upload to Firebase Storage
-    const bucket = admin.storage().bucket();
+    // Resolve bucket — trim to guard against stray whitespace in env var
+    const bucketName = (process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '').trim();
+    if (!bucketName) {
+      console.error('NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET is not set');
+      return NextResponse.json({ error: 'Storage not configured' }, { status: 500 });
+    }
+
+    const bucket = admin.storage().bucket(bucketName);
     const storagePath = `reports/${pentestId}.${ext}`;
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
@@ -65,8 +80,11 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true, storagePath });
-  } catch (error) {
-    console.error('Error uploading report:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Error uploading report:', error?.message ?? error);
+    return NextResponse.json(
+      { error: error?.message ?? 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

@@ -6,7 +6,9 @@ import Footer from "./Footer";
 
 export default function ConditionalNav({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isDashboard = pathname?.startsWith("/app/") || pathname?.startsWith("/admin");
+  // Hide public navbar/footer on dashboard and admin routes.
+  // Default to true (hidden) so SSR never flashes the nav on protected pages.
+  const isDashboard = !pathname || pathname.startsWith("/app/") || pathname.startsWith("/admin");
 
   return (
     <>
