@@ -133,8 +133,8 @@ export default function Home() {
               <span className="block text-[#34D399] mt-2">Made Simple</span>
             </h1>
             <p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              AI-powered penetration testing driven by Anthropic Claude agentic systems. 
-              Choose between Web Application ($500) or External IP ($199) pentests.
+              AI-powered penetration testing driven by Anthropic Claude agentic systems.
+              Flexible, transparent pricing &mdash; no subscriptions, no surprises.
             </p>
             <div className="flex justify-center pt-4">
               <button

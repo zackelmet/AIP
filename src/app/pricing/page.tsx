@@ -6,9 +6,6 @@ import { useAuth } from '@/lib/context/AuthContext';
 import { loadStripe } from '@stripe/stripe-js';
 import toast from 'react-hot-toast';
 
-// Tell Next.js this page should be dynamically rendered
-export const runtime = 'edge'; // This prevents static generation
-
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface PricingTier {
@@ -250,10 +247,10 @@ export default function PricingPage() {
         {/* AI Pentests Section */}
         <div className="mb-20">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            <h2 className="text-3xl font-bold text-white mb-2">
               AI-Driven Automated Pentests
             </h2>
-            <p className="text-gray-600">
+            <p className="text-gray-400">
               Lightning-fast vulnerability scanning powered by AI
             </p>
           </div>
@@ -265,10 +262,10 @@ export default function PricingPage() {
         {/* Manual Pentests Section */}
         <div className="mb-20">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            <h2 className="text-3xl font-bold text-white mb-2">
               Manual Penetration Testing
             </h2>
-            <p className="text-gray-600">
+            <p className="text-gray-400">
               Expert-led security assessments by certified professionals
             </p>
           </div>
@@ -278,37 +275,54 @@ export default function PricingPage() {
         </div>
 
         {/* FAQ Section */}
-        <div className="max-w-3xl mx-auto mt-20">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-10">
+        <div id="faq" className="max-w-3xl mx-auto mt-20 scroll-mt-20">
+          <h2 className="text-3xl font-bold text-white text-center mb-10">
             Frequently Asked Questions
           </h2>
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <div className="space-y-4">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-2">
                 What&apos;s the difference between AI and manual pentests?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-400 text-sm leading-relaxed">
                 AI pentests use automated scanning tools to quickly identify common vulnerabilities.
                 Manual pentests involve human experts who perform deep analysis, test business logic,
                 and find complex security issues that automated tools might miss.
               </p>
             </div>
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-2">
                 How long does a manual pentest take?
               </h3>
-              <p className="text-gray-600">
-                Basic engagements typically take 2 weeks, while advanced pentests require 4-6 weeks
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Basic engagements typically take 2 weeks, while advanced pentests require 4&ndash;6 weeks
                 depending on scope and complexity. We&apos;ll provide a detailed timeline during consultation.
               </p>
             </div>
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Can I cancel my AI pentest subscription?
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Do pentest credits expire?
               </h3>
-              <p className="text-gray-600">
-                Yes, you can cancel your subscription anytime from your account dashboard.
-                You&apos;ll retain access until the end of your current billing period.
+              <p className="text-gray-400 text-sm leading-relaxed">
+                No &mdash; purchased credits never expire. Use them whenever you&apos;re ready.
+              </p>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Can I get a refund?
+              </h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Unused credits may be refunded within 14 days of purchase. Once a pentest has been
+                dispatched to our systems, credits are non-refundable. Submit a support ticket if you
+                have a billing question.
+              </p>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Do I need to install anything?
+              </h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                No &mdash; everything runs in the cloud. Just submit your target and we handle the rest.
               </p>
             </div>
           </div>

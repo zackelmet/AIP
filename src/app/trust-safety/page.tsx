@@ -33,7 +33,7 @@ const sections = [
       "Affordable Pentesting provides automated and AI-assisted penetration testing services. All testing is performed exclusively on targets for which you have provided explicit written authorisation.",
       "Credits are non-refundable once a pentest job has been dispatched to our backend systems. Unused credits may be refunded within 14 days of purchase — contact support.",
       "We reserve the right to suspend or terminate accounts that violate these terms without notice or refund.",
-      "These terms are governed by the laws of the United States. Full terms document coming soon.",
+      "These terms are governed by the laws of the United States.",
     ],
   },
   {
@@ -44,8 +44,7 @@ const sections = [
       "We collect only the data necessary to provide our services: your email address, payment information (processed by Stripe — we never see card details), and scan targets you submit.",
       "Scan results and reports are stored in Google Cloud Storage, accessible only to you and our backend systems. We do not sell or share your data with third parties.",
       "We use Firebase Authentication for identity management. Firestore is used to store account and pentest metadata.",
-      "You may request deletion of your account and associated data at any time by contacting support@affordablepentesting.com.",
-      "Full privacy policy document coming soon.",
+      "You may request deletion of your account and associated data at any time by submitting a support ticket via our Support page.",
     ],
   },
   {
@@ -74,7 +73,7 @@ const sections = [
     title: "Responsible Disclosure",
     anchor: "disclosure",
     content: [
-      "If you discover a security vulnerability in the Affordable Pentesting platform itself, please disclose it responsibly to security@affordablepentesting.com.",
+      "If you discover a security vulnerability in the Affordable Pentesting platform itself, please disclose it responsibly by submitting a support ticket via our Support page — select the \"Other\" topic and include as much detail as possible.",
       "We commit to acknowledging your report within 48 hours, working to remediate confirmed issues within 30 days, and not pursuing legal action against good-faith security researchers.",
       "We do not currently operate a bug bounty programme, but we will credit researchers who assist us in improving our security.",
     ],
