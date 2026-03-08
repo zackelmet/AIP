@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     const storageFile = bucket.file(storagePath);
     await storageFile.save(fileBuffer, {
       metadata: {
-        contentType: 'application/pdf',
+        contentType: file.type,
         metadata: {
           uploadedBy: uid,
           pentestId,

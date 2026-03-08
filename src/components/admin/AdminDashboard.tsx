@@ -1,19 +1,197 @@
 "use client";
 
-import {
-  faRocket,
-  faUsers,
-  faChartLine,
-  faCreditCard,
-  faChartBar,
-  faCog,
-  faUserPlus,
-  faFileInvoiceDollar,
-  faChartPie,
-  faUpload,
-  faFilePdf,
-  faCheckCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUsers, faUpload, faFilePdf, faCheckCircle, faShieldHalved, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useState } from "react";
+
+const showToast = (type: "error" | "success", message: string) => {
+  import("react-hot-toast")
+    .then((mod) => {
+      const { toast } = mod as any;
+      if (type === "error") toast.error(message);
+      else toast.success(message);
+    })
+    .catch(() => {});
+};
+
+export default function AdminDashboard() {
+  const [totalUsers, setTotalUsers] = useState<number | null>(null);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+
+  // Upload state
+  const [userEmail, setUserEmail] = useState("");
+  const [launchDate, setLaunchDate] = useState("");
+  const [reportFile, setReportFile] = useState<File | null>(null);
+  const [isUploadingReport, setIsUploadingReport] = useState(false);
+  const [reportUploadSuccess, setReportUploadSuccess] = useState(false);
+  const [lookupResult, setLookupResult] = useState<{ pentestId: string; target?: string } | null>(null);
+  const [isLookingUp, setIsLookingUp] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/admin/stats")
+      .then((r) => r.json())
+      .then((d) => { setTotalUsers(d.totalUsers ?? 0); })
+      .catch(() => setTotalUsers(0))
+      .finally(() => setLoadingUsers(false));
+  }, []);
+
+  const lookupPentest = async () => {
+    if (!userEmail.trim() || !launchDate) {
+      showToast("error", "Enter user email and launch date");
+      return;
+    }
+    setIsLookingUp(true);
+    setLookupResult(null);
+    try {
+      const params = new URLSearchParams({ userEmail: userEmail.trim(), launchDate });
+      const res = await fetch(`/api/admin/lookup-pentest?${params}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Not found");
+      setLookupResult(data);
+    } catch (err: any) {
+      showToast("error", err.message);
+    } finally {
+      setIsLookingUp(false);
+    }
+  };
+
+  const uploadReport = async () => {
+    if (!lookupResult?.pentestId || !reportFile) {
+      showToast("error", "Look up a pentest and select a file first");
+      return;
+    }
+    setIsUploadingReport(true);
+    setReportUploadSuccess(false);
+    try {
+      const form = new FormData();
+      form.append("pentestId", lookupResult.pentestId);
+      form.append("file", reportFile);
+      const res = await fetch("/api/admin/upload-report", { method: "POST", body: form });
+      if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(error || "Upload failed");
+      }
+      showToast("success", "Report uploaded — pentest marked completed ✓");
+      setReportUploadSuccess(true);
+      setLookupResult(null);
+      setUserEmail("");
+      setLaunchDate("");
+      setReportFile(null);
+    } catch (err: any) {
+      showToast("error", err.message || "Upload failed");
+    } finally {
+      setIsUploadingReport(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] p-6 space-y-8">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-2">
+        <FontAwesomeIcon icon={faShieldHalved} className="text-[#34D399] text-2xl" />
+        <div>
+          <h1 className="text-2xl font-black">Admin Dashboard</h1>
+          <p className="text-sm text-[var(--text-muted)]">Affordable Pentesting — internal tools</p>
+        </div>
+      </div>
+
+      {/* Stats row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="neon-card p-5 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-[#34D399]/10 flex items-center justify-center">
+            <FontAwesomeIcon icon={faUsers} className="text-[#34D399] text-xl" />
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">Total Users</p>
+            <p className="text-3xl font-black">
+              {loadingUsers ? <span className="opacity-40">—</span> : totalUsers}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Upload Pentest Report */}
+      <div className="neon-card p-6 space-y-5">
+        <div className="flex items-center gap-2">
+          <FontAwesomeIcon icon={faFilePdf} className="text-[#34D399] text-lg" />
+          <h2 className="text-lg font-bold">Upload Pentest Report</h2>
+        </div>
+        <p className="text-sm text-[var(--text-muted)]">
+          Look up the engagement by the client&apos;s email and pentest launch date, then attach and upload the report. The pentest will be marked <span className="text-[#34D399] font-semibold">completed</span> and the client will see a download button.
+        </p>
+
+        {/* Step 1: Lookup */}
+        <div>
+          <p className="text-xs uppercase tracking-widest text-[var(--text-muted)] mb-3">Step 1 — Identify Engagement</p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <input
+              type="email"
+              placeholder="Client email (e.g. client@company.com)"
+              value={userEmail}
+              onChange={(e) => { setUserEmail(e.target.value); setLookupResult(null); setReportUploadSuccess(false); }}
+              className="neon-input flex-1 py-3"
+            />
+            <input
+              type="date"
+              value={launchDate}
+              onChange={(e) => { setLaunchDate(e.target.value); setLookupResult(null); setReportUploadSuccess(false); }}
+              className="neon-input py-3 w-full sm:w-auto"
+            />
+            <button
+              onClick={lookupPentest}
+              disabled={isLookingUp || !userEmail || !launchDate}
+              className="neon-outline-btn px-5 py-3 font-semibold flex items-center gap-2 disabled:opacity-50"
+            >
+              <FontAwesomeIcon icon={faSearch} />
+              {isLookingUp ? "Searching..." : "Look Up"}
+            </button>
+          </div>
+
+          {lookupResult && (
+            <div className="mt-3 flex items-center gap-2 text-sm text-[#34D399] bg-[#34D399]/10 border border-[#34D399]/30 rounded-lg px-4 py-2">
+              <FontAwesomeIcon icon={faCheckCircle} />
+              <span>
+                Found: <strong>{lookupResult.target || "Pentest"}</strong>
+                <span className="text-[var(--text-muted)] ml-2">ID: {lookupResult.pentestId}</span>
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Step 2: Upload */}
+        <div className={lookupResult ? "" : "opacity-40 pointer-events-none"}>
+          <p className="text-xs uppercase tracking-widest text-[var(--text-muted)] mb-3">Step 2 — Attach &amp; Upload Report</p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <label className="neon-outline-btn flex-1 py-3 font-semibold flex items-center justify-center gap-2 cursor-pointer">
+              <FontAwesomeIcon icon={faUpload} />
+              {reportFile ? reportFile.name : "Choose PDF or DOCX"}
+              <input
+                type="file"
+                accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                className="hidden"
+                onChange={(e) => { setReportFile(e.target.files?.[0] || null); setReportUploadSuccess(false); }}
+              />
+            </label>
+            <button
+              onClick={uploadReport}
+              disabled={isUploadingReport || !reportFile || !lookupResult}
+              className="neon-primary-btn px-6 py-3 font-semibold disabled:opacity-50 flex items-center gap-2"
+            >
+              {isUploadingReport ? (
+                "Uploading..."
+              ) : reportUploadSuccess ? (
+                <><FontAwesomeIcon icon={faCheckCircle} />Uploaded!</>
+              ) : (
+                "Upload Report"
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Section from "../shared/Section";
 import { useEffect, useState } from "react";
