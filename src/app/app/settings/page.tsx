@@ -1,180 +1,413 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
-  faCreditCard,
-  faBell,
+  faChartBar,
+  faShield,
+  faLock,
+  faCheckCircle,
+  faSpinner,
+  faClock,
+  faCoins,
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  updateProfile,
+  updatePassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+} from "firebase/auth";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useUserData } from "@/lib/hooks/useUserData";
+import { useUserScans } from "@/lib/hooks/useUserScans";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import toast from "react-hot-toast";
 
 export default function SettingsPage() {
   const { currentUser } = useAuth();
   const { userData, loading } = useUserData();
+  const { scans } = useUserScans(currentUser?.uid ?? null);
+
+  // Profile form state
+  const [displayName, setDisplayName] = useState(
+    currentUser?.displayName || ""
+  );
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  // Password form state
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [savingPassword, setSavingPassword] = useState(false);
+
+  // Derive activity stats from scans
+  const stats = useMemo(() => {
+    const completed = scans.filter((s) => s.status === "completed").length;
+    const running = scans.filter(
+      (s) => s.status === "running" || s.status === "in_progress"
+    ).length;
+    const pending = scans.filter(
+      (s) => s.status === "pending" || s.status === "queued"
+    ).length;
+    const creditsLeft =
+      (userData?.credits?.web_app ?? 0) +
+      (userData?.credits?.external_ip ?? 0);
+    return { total: scans.length, completed, running, pending, creditsLeft };
+  }, [scans, userData]);
+
+  const isOAuthUser =
+    currentUser?.providerData?.some((p) => p.providerId !== "password") &&
+    !currentUser?.providerData?.some((p) => p.providerId === "password");
+
+  const handleSaveProfile = async () => {
+    if (!currentUser) return;
+    setSavingProfile(true);
+    try {
+      await updateProfile(currentUser, { displayName: displayName.trim() });
+      toast.success("Profile updated");
+    } catch {
+      toast.error("Failed to update profile");
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (!currentUser || !currentUser.email) return;
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+    setSavingPassword(true);
+    try {
+      const cred = EmailAuthProvider.credential(
+        currentUser.email,
+        currentPassword
+      );
+      await reauthenticateWithCredential(currentUser, cred);
+      await updatePassword(currentUser, newPassword);
+      toast.success("Password changed");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: unknown) {
+      const code = (err as { code?: string })?.code;
+      if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
+        toast.error("Current password is incorrect");
+      } else {
+        toast.error("Failed to change password");
+      }
+    } finally {
+      setSavingPassword(false);
+    }
+  };
+
+  const statCards = [
+    {
+      icon: faChartBar,
+      label: "Total Pentests",
+      value: loading ? "—" : stats.total,
+      color: "text-[var(--neon)]",
+    },
+    {
+      icon: faCheckCircle,
+      label: "Completed",
+      value: loading ? "—" : stats.completed,
+      color: "text-emerald-400",
+    },
+    {
+      icon: faSpinner,
+      label: "In Progress",
+      value: loading ? "—" : stats.running,
+      color: "text-sky-400",
+    },
+    {
+      icon: faCoins,
+      label: "Credits Left",
+      value: loading ? "—" : stats.creditsLeft,
+      color: "text-amber-400",
+    },
+  ];
 
   return (
     <DashboardLayout>
-      <div className="p-6 lg:p-8 space-y-6 max-w-full">
+      <div className="p-6 lg:p-8 space-y-6 max-w-3xl">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-[#0A1128]">Settings</h1>
-          <p className="text-gray-600 mt-1">
-            Manage your account preferences and subscription
+          <h1 className="text-3xl font-bold" style={{ color: "var(--text)" }}>
+            Settings
+          </h1>
+          <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
+            Manage your account, view activity, and update security settings
           </p>
         </div>
 
-        {/* Account Info */}
-        <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 rounded-xl bg-cyan-50 border border-cyan-200 text-[#00FED9]">
-              <FontAwesomeIcon icon={faUser} className="text-2xl" />
-            </div>
+        {/* Activity Stats */}
+        <div className="neon-card p-6">
+          <div className="flex items-center gap-3 mb-5">
+            <FontAwesomeIcon
+              icon={faChartBar}
+              className="text-xl text-[var(--neon)]"
+            />
             <div>
-              <h2 className="text-xl font-bold text-[#0A1128]">Account</h2>
-              <p className="text-gray-600 text-sm">
-                Your account information and preferences
+              <h2 className="text-lg font-semibold" style={{ color: "var(--text)" }}>
+                Activity
+              </h2>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                Your pentest activity at a glance
               </p>
             </div>
           </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {statCards.map((card) => (
+              <div
+                key={card.label}
+                className="rounded-xl p-4 text-center"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+              >
+                <FontAwesomeIcon
+                  icon={card.icon}
+                  className={`text-2xl mb-2 ${card.color}`}
+                />
+                <div
+                  className="text-2xl font-bold"
+                  style={{ color: "var(--text)" }}
+                >
+                  {card.value}
+                </div>
+                <div className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+                  {card.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
+        {/* Profile */}
+        <div className="neon-card p-6">
+          <div className="flex items-center gap-3 mb-5">
+            <FontAwesomeIcon
+              icon={faUser}
+              className="text-xl text-[var(--neon)]"
+            />
+            <div>
+              <h2 className="text-lg font-semibold" style={{ color: "var(--text)" }}>
+                Profile
+              </h2>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                Update your display name
+              </p>
+            </div>
+          </div>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
+              <label
+                className="block text-sm font-medium mb-1"
+                style={{ color: "var(--text-muted)" }}
+              >
+                Display Name
+              </label>
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="Your name"
+                className="neon-input w-full"
+              />
+            </div>
+            <div>
+              <label
+                className="block text-sm font-medium mb-1"
+                style={{ color: "var(--text-muted)" }}
+              >
                 Email
               </label>
               <input
                 type="email"
                 value={currentUser?.email || ""}
                 disabled
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed"
+                className="neon-input w-full opacity-50 cursor-not-allowed"
               />
             </div>
-
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
+              <label
+                className="block text-sm font-medium mb-1"
+                style={{ color: "var(--text-muted)" }}
+              >
                 Account ID
               </label>
               <input
                 type="text"
                 value={currentUser?.uid || ""}
                 disabled
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed font-mono text-xs"
+                className="neon-input w-full opacity-50 cursor-not-allowed font-mono text-xs"
               />
             </div>
+            <button
+              onClick={handleSaveProfile}
+              disabled={savingProfile}
+              className="neon-primary-btn px-5 py-2 text-sm disabled:opacity-50"
+            >
+              {savingProfile ? "Saving…" : "Save Profile"}
+            </button>
           </div>
         </div>
 
-        {/* Subscription Info */}
-        <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 rounded-xl bg-cyan-50 border border-cyan-200 text-[#00FED9]">
-              <FontAwesomeIcon icon={faCreditCard} className="text-2xl" />
+        {/* Change Password — hidden for pure OAuth users */}
+        {!isOAuthUser && (
+          <div className="neon-card p-6">
+            <div className="flex items-center gap-3 mb-5">
+              <FontAwesomeIcon
+                icon={faLock}
+                className="text-xl text-[var(--neon)]"
+              />
+              <div>
+                <h2 className="text-lg font-semibold" style={{ color: "var(--text)" }}>
+                  Change Password
+                </h2>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  Update your password
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-[#0A1128]">Subscription</h2>
-              <p className="text-gray-600 text-sm">
-                Manage your plan and billing
-              </p>
-            </div>
-          </div>
-
-          {loading ? (
-            <div className="text-gray-500">Loading subscription...</div>
-          ) : (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-semibold text-gray-700">
-                    Current Plan
-                  </div>
-                  <div className="text-2xl font-bold text-[#0A1128] mt-1">
-                    {userData?.currentPlan
-                      ? userData.currentPlan.charAt(0).toUpperCase() +
-                        userData.currentPlan.slice(1)
-                      : "Free"}
-                  </div>
-                </div>
-                <a
-                  href="/#pricing"
-                  className="px-4 py-2 bg-[#00FED9] text-[#0A1128] font-semibold rounded-lg hover:bg-[#00D4B8] transition-colors"
+              <div>
+                <label
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: "var(--text-muted)" }}
                 >
-                  Change Plan
-                </a>
+                  Current Password
+                </label>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="neon-input w-full"
+                />
               </div>
-
-              <div className="pt-4 border-t border-gray-200">
-                <div className="text-sm font-semibold text-gray-700 mb-2">
-                  Status
-                </div>
-                <span
-                  className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
-                    userData?.subscriptionStatus === "active"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-gray-100 text-gray-700"
-                  }`}
+              <div>
+                <label
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: "var(--text-muted)" }}
                 >
-                  {userData?.subscriptionStatus || "inactive"}
-                </span>
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="neon-input w-full"
+                />
               </div>
+              <div>
+                <label
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Confirm New Password
+                </label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="neon-input w-full"
+                />
+              </div>
+              <button
+                onClick={handleChangePassword}
+                disabled={
+                  savingPassword ||
+                  !currentPassword ||
+                  !newPassword ||
+                  !confirmPassword
+                }
+                className="neon-primary-btn px-5 py-2 text-sm disabled:opacity-50"
+              >
+                {savingPassword ? "Updating…" : "Change Password"}
+              </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Notifications */}
-        <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 rounded-xl bg-cyan-50 border border-cyan-200 text-[#00FED9]">
-              <FontAwesomeIcon icon={faBell} className="text-2xl" />
-            </div>
+        {/* Security Info */}
+        <div className="neon-card p-6">
+          <div className="flex items-center gap-3 mb-5">
+            <FontAwesomeIcon
+              icon={faShield}
+              className="text-xl text-[var(--neon)]"
+            />
             <div>
-              <h2 className="text-xl font-bold text-[#0A1128]">
-                Notifications
+              <h2 className="text-lg font-semibold" style={{ color: "var(--text)" }}>
+                Security
               </h2>
-              <p className="text-gray-600 text-sm">
-                Manage how you receive updates
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                Sign-in method and account details
               </p>
             </div>
           </div>
-
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <div>
-                <div className="font-semibold text-[#0A1128]">
-                  Scan Completion Emails
-                </div>
-                <div className="text-sm text-gray-600">
-                  Get notified when scans complete
-                </div>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  defaultChecked
-                />
-                <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#00FED9] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00FED9]"></div>
-              </label>
+              <span className="text-sm" style={{ color: "var(--text-muted)" }}>
+                Sign-in method
+              </span>
+              <span
+                className="text-sm font-medium capitalize"
+                style={{ color: "var(--text)" }}
+              >
+                {currentUser?.providerData?.[0]?.providerId === "google.com"
+                  ? "Google"
+                  : currentUser?.providerData?.[0]?.providerId === "github.com"
+                  ? "GitHub"
+                  : "Email / Password"}
+              </span>
             </div>
-
+            <div
+              className="border-t"
+              style={{ borderColor: "rgba(255,255,255,0.08)" }}
+            />
             <div className="flex items-center justify-between">
-              <div>
-                <div className="font-semibold text-[#0A1128]">
-                  Security Alerts
-                </div>
-                <div className="text-sm text-gray-600">
-                  Important security notifications
-                </div>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  defaultChecked
-                />
-                <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#00FED9] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00FED9]"></div>
-              </label>
+              <span className="text-sm" style={{ color: "var(--text-muted)" }}>
+                Account created
+              </span>
+              <span className="text-sm font-medium" style={{ color: "var(--text)" }}>
+                {currentUser?.metadata?.creationTime
+                  ? new Date(
+                      currentUser.metadata.creationTime
+                    ).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
+                  : "—"}
+              </span>
+            </div>
+            <div
+              className="border-t"
+              style={{ borderColor: "rgba(255,255,255,0.08)" }}
+            />
+            <div className="flex items-center justify-between">
+              <span className="text-sm" style={{ color: "var(--text-muted)" }}>
+                Last sign-in
+              </span>
+              <span className="text-sm font-medium" style={{ color: "var(--text)" }}>
+                {currentUser?.metadata?.lastSignInTime
+                  ? new Date(
+                      currentUser.metadata.lastSignInTime
+                    ).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })
+                  : "—"}
+              </span>
             </div>
           </div>
         </div>
