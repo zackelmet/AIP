@@ -71,7 +71,10 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   }
 
   // If this is a pentest credit purchase
-  if (pentestType) {
+  // Only 'web_app' and 'external_ip' are valid credit types — guard against
+  // stale/invalid values (e.g. 'subscription') writing junk fields to Firestore.
+  const validCreditTypes = ['web_app', 'external_ip'];
+  if (pentestType && validCreditTypes.includes(pentestType)) {
     // line_items are NOT included in webhook events by default - retrieve them
     let quantity = 1;
     try {

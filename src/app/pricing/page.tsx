@@ -110,6 +110,7 @@ function PricingPageInner() {
   const searchParams = useSearchParams();
   const { currentUser: user } = useAuth();
   const [loading, setLoading] = useState<string | null>(null);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   useEffect(() => {
     // Check for canceled checkout
@@ -133,12 +134,14 @@ function PricingPageInner() {
     setLoading(tier.id);
 
     try {
-      // Map tier IDs to pentest credit types for the webhook
-      const pentestTypeMap: Record<string, string> = {
+      // Only one-time credit purchases carry a pentestType — subscriptions are
+      // handled separately by the webhook's subscription path.
+      const creditTypeMap: Record<string, string> = {
         'ai_single': 'external_ip',
-        'ai_monthly': 'subscription',
+        'web_app':   'web_app',
       };
-      const pentestType = pentestTypeMap[tier.id] || null;
+      const pentestType = tier.type === 'one-time' ? (creditTypeMap[tier.id] || null) : null;
+      const qty = quantities[tier.id] || 1;
 
       const response = await fetch('/api/checkout', {
         method: 'POST',
@@ -148,6 +151,7 @@ function PricingPageInner() {
           userId: user.uid,
           email: user.email,
           productType: tier.type,
+          quantity: qty,
           metadata: pentestType ? { pentestType } : {},
         }),
       });
