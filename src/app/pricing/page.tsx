@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/context/AuthContext';
 import { loadStripe } from '@stripe/stripe-js';
@@ -105,7 +105,7 @@ const MANUAL_PENTEST_TIERS: PricingTier[] = [
   },
 ];
 
-export default function PricingPage() {
+function PricingPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { currentUser: user } = useAuth();
@@ -329,5 +329,13 @@ export default function PricingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0a141f]" />}>
+      <PricingPageInner />
+    </Suspense>
   );
 }
