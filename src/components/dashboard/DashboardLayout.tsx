@@ -93,7 +93,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       >
         {/* Logo */}
         <div className="p-6 border-b border-[#34D399]">
-          <Link href="https://affordable-pentesting.vercel.app/" className="flex items-center gap-3">
+          <Link href="https://ai.affordablepentesting.com/" className="flex items-center gap-3">
             <Image
               src="/affordablepentestinglogo.svg"
               alt="Affordable Pentesting"
@@ -103,7 +103,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             />
             <span
               className="text-white font-semibold text-base tracking-wide leading-tight"
-              style={{ fontFamily: "var(--font-chakra-petch)" }}
+              style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
             >
               Affordable Pentesting
             </span>
@@ -223,7 +223,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             >
               <FontAwesomeIcon icon={faBars} className="w-6 h-6" />
             </button>
-            <Link href="https://affordable-pentesting.vercel.app/" className="flex items-center gap-2">
+            <Link href="https://ai.affordablepentesting.com/" className="flex items-center gap-2">
               <Image
                 src="/affordablepentestinglogo.svg"
                 alt="Affordable Pentesting"
@@ -233,7 +233,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               />
               <span
                 className="font-semibold text-white text-sm"
-                style={{ fontFamily: "var(--font-chakra-petch)" }}
+                style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
               >
                 Affordable Pentesting
               </span>

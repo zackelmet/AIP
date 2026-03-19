@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Chakra_Petch } from "next/font/google";
+import { IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 // ClientProviders and Navbar were temporarily disabled during prerender
 // diagnostics; restore them now.
@@ -9,10 +9,10 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 config.autoAddCss = false;
 
-const chakraPetch = Chakra_Petch({
+const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
-  variable: "--font-chakra-petch",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-ibm-plex-sans",
   display: "swap",
 });
 
@@ -20,12 +20,12 @@ export const metadata: Metadata = {
   title: "Affordable Pentesting - Penetration Testing as a Service",
   description:
     "AI-powered automated pentests and expert-led manual penetration testing. Get comprehensive security assessments from certified professionals.",
-  metadataBase: new URL("https://affordable-pentesting.vercel.app"),
+  metadataBase: new URL("https://ai.affordablepentesting.com"),
   openGraph: {
     title: "Affordable Pentesting - Penetration Testing as a Service",
     description:
       "AI-powered automated pentests and expert-led manual penetration testing.",
-    url: "https://affordable-pentesting.vercel.app",
+    url: "https://ai.affordablepentesting.com",
     siteName: "Affordable Pentesting",
   },
   twitter: {
@@ -51,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={chakraPetch.variable}>
+    <html lang="en" className={ibmPlexSans.variable}>
       {/* Change your theme HERE */}
       <body data-theme="cupcake">
         <ClientProviders>

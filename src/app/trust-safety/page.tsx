@@ -13,12 +13,12 @@ export const metadata = {
   title: "Trust + Safety Center — Affordable Pentesting",
   description:
     "Our commitment to ethical penetration testing, data security, and responsible disclosure.",
-  metadataBase: new URL("https://affordable-pentesting.vercel.app"),
+  metadataBase: new URL("https://ai.affordablepentesting.com"),
   openGraph: {
     title: "Trust + Safety Center — Affordable Pentesting",
     description:
       "Our commitment to ethical penetration testing, data security, and responsible disclosure.",
-    url: "https://affordable-pentesting.vercel.app/trust-safety",
+    url: "https://ai.affordablepentesting.com/trust-safety",
     siteName: "Affordable Pentesting",
   },
 };
@@ -91,7 +91,7 @@ export default function TrustSafetyPage() {
           </div>
           <h1
             className="text-4xl lg:text-5xl font-bold text-white mb-4"
-            style={{ fontFamily: "var(--font-chakra-petch)" }}
+            style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
           >
             Trust + Safety Center
           </h1>

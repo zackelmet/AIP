@@ -11,7 +11,7 @@ export default function Navbar() {
     <header className="w-full border-b border-[#34D399] bg-[#0a141f] text-white relative z-40">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-6 px-5 py-4">
         <Link
-          href="https://affordable-pentesting.vercel.app/"
+          href="https://ai.affordablepentesting.com/"
           className="flex items-center gap-3 hover:opacity-90 transition"
         >
           <Image
@@ -24,7 +24,7 @@ export default function Navbar() {
           />
           <span
             className="text-white font-semibold text-lg tracking-wide leading-tight hidden sm:block"
-            style={{ fontFamily: "var(--font-chakra-petch)" }}
+            style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
           >
             Affordable Pentesting
           </span>

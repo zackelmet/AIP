@@ -148,7 +148,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Features Section — hidden
       <section className="py-20 bg-[#0a141f]/50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -184,6 +184,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      */}
 
       {/* Pricing Section */}
       <section id="pricing" className="py-20 scroll-mt-20">
@@ -236,7 +237,7 @@ export default function Home() {
           <div className="text-center mb-14">
             <p className="text-[#34D399] text-sm font-semibold uppercase tracking-widest mb-3">Powered by</p>
             <a
-              href="https://affordablepentesting.com"
+              href="https://www.affordablepentesting.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 hover:opacity-80 transition mb-6"
@@ -250,7 +251,7 @@ export default function Home() {
               />
               <span
                 className="text-white font-bold text-3xl tracking-wide"
-                style={{ fontFamily: "var(--font-chakra-petch)" }}
+                style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
               >
                 Affordable Pentesting
               </span>
@@ -297,14 +298,16 @@ export default function Home() {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/app/request-pentest"
+            <a
+              href="https://www.affordablepentesting.com/get-a-quote"
+              target="_blank"
+              rel="noopener noreferrer"
               className="px-8 py-4 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-bold rounded-lg transition-colors"
             >
               Get a Pentest Quote
-            </Link>
+            </a>
             <a
-              href="https://affordablepentesting.com"
+              href="https://www.affordablepentesting.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-lg border border-white/20 transition-colors"

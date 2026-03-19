@@ -21,7 +21,7 @@ export default function Footer() {
               />
               <span
                 className="text-white font-semibold text-lg tracking-wide"
-                style={{ fontFamily: "var(--font-chakra-petch)" }}
+                style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
               >
                 Affordable Pentesting
               </span>

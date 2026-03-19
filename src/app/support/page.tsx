@@ -63,7 +63,7 @@ export default function SupportPage() {
           </div>
           <h1
             className="text-4xl lg:text-5xl font-bold text-white mb-4"
-            style={{ fontFamily: "var(--font-chakra-petch)" }}
+            style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
           >
             Support
           </h1>

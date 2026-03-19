@@ -5,11 +5,11 @@ import { getAllPosts } from "@/lib/blog/mdx";
 export const metadata = {
   title: "Blog - Affordable Pentesting",
   description: "Security insights, pentesting tips, and vulnerability research from Affordable Pentesting.",
-  metadataBase: new URL("https://affordable-pentesting.vercel.app"),
+  metadataBase: new URL("https://ai.affordablepentesting.com"),
   openGraph: {
     title: "Blog - Affordable Pentesting",
     description: "Security insights, pentesting tips, and vulnerability research from Affordable Pentesting.",
-    url: "https://affordable-pentesting.vercel.app/blog",
+    url: "https://ai.affordablepentesting.com/blog",
     siteName: "Affordable Pentesting",
   },
   twitter: {
@@ -29,7 +29,7 @@ export default function BlogPage() {
         <div className="mb-14 text-center">
           <h1
             className="text-5xl font-bold mb-4 text-white"
-            style={{ fontFamily: "var(--font-chakra-petch)" }}
+            style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
           >
             Blog
           </h1>
