@@ -191,7 +191,7 @@ export default function AuthForm() {
             <div className="inline-flex items-center gap-3 neon-badge-muted px-3 py-2 rounded-xl">
               Secure access
             </div>
-            <h1 className="text-3xl lg:text-5xl font-black leading-tight">
+            <h1 className="text-3xl lg:text-5xl font-semibold leading-tight">
               Start Pentesting in 5 Minutes.
             </h1>
             <p className="text-base lg:text-lg neon-subtle max-w-xl">
@@ -214,7 +214,7 @@ export default function AuthForm() {
                       ? "Welcome back"
                       : "Create account"}
                   </p>
-                  <h2 className="text-2xl font-bold">
+                  <h2 className="text-2xl font-medium">
                     {formMode === FormMode.Login ? "Sign in" : "Sign up"}
                   </h2>
                 </div>
@@ -240,7 +240,7 @@ export default function AuthForm() {
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-[var(--text)]">
+                  <label className="text-sm font-normal text-[var(--text)]">
                     Email
                   </label>
                   <input
@@ -253,7 +253,7 @@ export default function AuthForm() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-[var(--text)]">
+                  <label className="text-sm font-normal text-[var(--text)]">
                     Password
                   </label>
                   <input
@@ -267,7 +267,7 @@ export default function AuthForm() {
 
                 {formMode === FormMode.Register && (
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-[var(--text)]">
+                    <label className="text-sm font-normal text-[var(--text)]">
                       Confirm Password
                     </label>
                     <input
@@ -297,7 +297,7 @@ export default function AuthForm() {
                   <button
                     disabled={!email || !password}
                     onClick={handleLogin}
-                    className="neon-primary-btn w-full py-3 font-semibold disabled:opacity-60"
+                    className="neon-primary-btn w-full py-3 font-normal disabled:opacity-60"
                   >
                     Sign in
                   </button>
@@ -305,14 +305,14 @@ export default function AuthForm() {
                   <button
                     disabled={!email || !password || !confirmPassword}
                     onClick={handleRegister}
-                    className="neon-primary-btn w-full py-3 font-semibold disabled:opacity-60"
+                    className="neon-primary-btn w-full py-3 font-normal disabled:opacity-60"
                   >
                     Create account
                   </button>
                 )}
 
                 <button
-                  className="neon-outline-btn w-full py-3 font-semibold flex items-center justify-center gap-2"
+                  className="neon-outline-btn w-full py-3 font-normal flex items-center justify-center gap-2"
                   onClick={handleGoogleAuth}
                 >
                   <FontAwesomeIcon icon={faGoogle} className="text-lg" />{" "}
@@ -320,7 +320,7 @@ export default function AuthForm() {
                 </button>
 
                 <button
-                  className="neon-outline-btn w-full py-3 font-semibold flex items-center justify-center gap-2"
+                  className="neon-outline-btn w-full py-3 font-normal flex items-center justify-center gap-2"
                   onClick={handleMicrosoftAuth}
                 >
                   <FontAwesomeIcon icon={faWindows} className="text-lg" />{" "}

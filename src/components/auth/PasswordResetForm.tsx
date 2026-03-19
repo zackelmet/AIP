@@ -40,22 +40,27 @@ export default function PasswordResetForm() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <div className="w-full max-w-md p-8 space-y-3 rounded-xl bg-white shadow-lg">
-        <h1 className="text-xl font-bold text-center">Reset your password</h1>
-        <input
-          type="password"
-          className="input input-bordered w-full"
-          placeholder="New Password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-        />
-        <button
-          onClick={handlePasswordReset}
-          className="btn btn-primary w-full"
-        >
-          Reset Password
-        </button>
+    <div className="relative flex flex-col items-center justify-center min-h-screen bg-[var(--bg)] text-[--text] overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none opacity-60">
+        <div className="absolute inset-6 neon-grid" />
+      </div>
+      <div className="relative w-full max-w-md px-6">
+        <div className="neon-card p-8 space-y-5">
+          <h1 className="text-2xl font-medium text-center">Reset your password</h1>
+          <input
+            type="password"
+            className="neon-input w-full py-3"
+            placeholder="New Password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+          <button
+            onClick={handlePasswordReset}
+            className="neon-primary-btn w-full py-3 font-normal"
+          >
+            Reset Password
+          </button>
+        </div>
       </div>
     </div>
   );
