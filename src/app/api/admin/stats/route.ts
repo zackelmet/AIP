@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initializeAdmin } from '@/lib/firebase/firebaseAdmin';
+import { verifyAdmin } from '@/lib/auth/verifyAuth';
 
 const admin = initializeAdmin();
 
@@ -7,15 +8,8 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    const uid = request.cookies.get('uid')?.value;
-    if (!uid) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userDoc = await admin.firestore().collection('users').doc(uid).get();
-    if (!userDoc.exists || userDoc.data()?.isAdmin !== true) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    const token = await verifyAdmin(request);
+    if (!token) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     // Count all users
     const usersSnap = await admin.firestore().collection('users').count().get();

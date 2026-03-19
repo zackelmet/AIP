@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 import { initializeAdmin } from '@/lib/firebase/firebaseAdmin';
+import { verifyAuth } from '@/lib/auth/verifyAuth';
 
 const admin = initializeAdmin();
 
 export async function GET(request: NextRequest) {
   try {
-    const uid = request.cookies.get('uid')?.value;
-    if (!uid) {
+    const token = await verifyAuth(request);
+    if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    const uid = token.uid;
 
     const pentestId = request.nextUrl.searchParams.get('pentestId');
     if (!pentestId) {
@@ -25,8 +27,8 @@ export async function GET(request: NextRequest) {
     const data = pentestDoc.data()!;
 
     // Verify the requesting user owns this pentest (or is admin)
-    const userDoc = await admin.firestore().collection('users').doc(uid).get();
-    const isAdmin = userDoc.data()?.isAdmin === true;
+    const isAdmin = token.isAdmin === true ||
+      (await admin.firestore().collection('users').doc(uid).get()).data()?.isAdmin === true;
 
     if (data.userId !== uid && !isAdmin) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

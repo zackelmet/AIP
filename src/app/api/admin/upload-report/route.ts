@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initializeAdmin } from '@/lib/firebase/firebaseAdmin';
+import { verifyAdmin } from '@/lib/auth/verifyAuth';
 
 const admin = initializeAdmin();
 
@@ -10,16 +11,12 @@ export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify caller is admin via uid cookie
-    const uid = request.cookies.get('uid')?.value;
-    if (!uid) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const userDoc = await admin.firestore().collection('users').doc(uid).get();
-    if (!userDoc.exists || userDoc.data()?.isAdmin !== true) {
+    // Verify caller is admin via cryptographically verified ID token
+    const token = await verifyAdmin(request);
+    if (!token) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
+    const uid = token.uid;
 
     // Parse multipart form
     const formData = await request.formData();

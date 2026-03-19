@@ -48,9 +48,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       if (user) {
         const claims = await authService.getUserClaims(user);
         setUserClaims(claims);
+        // Set httpOnly __session cookie (verified server-side by API routes)
+        try {
+          const idToken = await user.getIdToken();
+          await fetch('/api/auth/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken }),
+          });
+        } catch (e) {
+          console.error('Failed to set session cookie:', e);
+        }
         DefaultCookieManager.addAuthCookie(user.uid);
       } else {
         setUserClaims(null);
+        // Clear httpOnly session cookie
+        fetch('/api/auth/session', { method: 'DELETE' }).catch(() => {});
         DefaultCookieManager.removeAuthCookie();
       }
     });
