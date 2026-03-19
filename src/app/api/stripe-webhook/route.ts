@@ -3,6 +3,9 @@ import Stripe from 'stripe';
 import { adminDb } from '@/lib/firebase/firebaseAdmin';
 import { FieldValue } from 'firebase-admin/firestore';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 30;
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
 });
