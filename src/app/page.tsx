@@ -152,40 +152,40 @@ export default function Home() {
       {/* Compliance Ready Reports Section */}
       <section className="py-14 bg-gradient-to-r from-[#34D399]/20 to-[#34D399]/5">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="flex flex-col lg:flex-row items-center gap-10">
-            <div className="flex-1 space-y-4">
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            <div className="flex-1 space-y-6">
               <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest">Audit-Ready Output</p>
-              <h2 className="text-3xl lg:text-4xl font-light text-white">
+              <h2 className="text-4xl lg:text-5xl font-light text-white">
                 Compliance Ready Reports
               </h2>
-              <p className="text-gray-400 leading-relaxed">
+              <p className="text-gray-300 text-lg leading-relaxed">
                 Every pentest generates a structured report designed to satisfy auditors — not just developers.
                 Findings are mapped to common control frameworks so your evidence package is ready the moment the scan completes.
               </p>
-              <ul className="space-y-2 text-sm text-gray-300">
+              <div className="grid sm:grid-cols-2 gap-3">
                 {[
                   "Supports SOC 2 Type I & II audits as penetration testing evidence",
                   "Maps findings to HIPAA, PCI DSS, ISO 27001, and NIST controls",
-                  "Plugs directly into compliance platforms like Vanta and Drata",
                   "Upload the PDF to your auditor portal or trust centre in one step",
                   "Includes risk ratings, remediation guidance, and retest notes",
                 ].map((item) => (
-                  <li key={item} className="flex items-start gap-2">
-                    <span className="text-[#34D399] mt-0.5">✓</span>
-                    <span>{item}</span>
-                  </li>
+                  <div
+                    key={item}
+                    className="flex items-start gap-3 p-4 rounded-xl border border-[#34D399]/25 bg-[#34D399]/5 hover:border-[#34D399]/50 hover:bg-[#34D399]/10 transition-colors"
+                  >
+                    <span className="text-[#34D399] text-lg font-bold mt-0.5 flex-shrink-0">✓</span>
+                    <span className="text-gray-200 text-base leading-snug">{item}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
             <div className="flex-shrink-0 grid grid-cols-2 lg:grid-cols-1 gap-3 text-sm">
               {[
-                { label: "Vanta", delay: "0ms" },
-                { label: "Drata", delay: "120ms" },
-                { label: "SOC 2", delay: "240ms" },
-                { label: "HIPAA", delay: "360ms" },
-                { label: "PCI DSS", delay: "480ms" },
-                { label: "ISO 27001", delay: "600ms" },
-                { label: "NIST", delay: "720ms" },
+                { label: "SOC 2", delay: "0ms" },
+                { label: "HIPAA", delay: "120ms" },
+                { label: "PCI DSS", delay: "240ms" },
+                { label: "ISO 27001", delay: "360ms" },
+                { label: "NIST", delay: "480ms" },
               ].map(({ label, delay }) => (
                 <div
                   key={label}
