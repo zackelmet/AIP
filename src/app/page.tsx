@@ -55,7 +55,7 @@ const PRICING_TIERS: PricingTier[] = [
     name: 'Web Application Pentest',
     price: 500,
     priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_WEB_APP || '',
-    description: 'Up to 3 user roles and 10 endpoints',
+    description: 'Up to 3 user roles, 20 pages & 10 API endpoints',
     type: 'one-time',
     cta: 'Purchase Credit',
     popular: true,
@@ -64,6 +64,7 @@ const PRICING_TIERS: PricingTier[] = [
       'Autonomous AI penetration testing',
       'Powered by Anthropic Claude agents',
       'Up to 3 user roles tested',
+      'Up to 20 pages covered',
       'Up to 10 API endpoints',
       'Authentication & authorization testing',
       'Detailed findings report',
@@ -370,7 +371,7 @@ interface PricingCardProps {
 function PricingCard({ tier, onSelect, loading, currentUser }: PricingCardProps) {
   return (
     <div
-      className={`relative bg-white/5 rounded-xl p-8 border-2 transition-all hover:scale-105 ${
+      className={`relative bg-white/5 rounded-xl p-8 border-2 transition-all hover:scale-[1.02] ${
         tier.popular
           ? "border-[#34D399] shadow-lg shadow-[#34D399]/20"
           : "border-white/10"

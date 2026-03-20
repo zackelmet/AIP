@@ -195,7 +195,7 @@ export default function AuthForm() {
               Secure access
             </div>
             <h1 className="text-3xl lg:text-5xl font-semibold leading-tight">
-              Start Pentesting in 5 Minutes.
+              Launch a Pentest in 5 Minutes.
             </h1>
             <p className="text-base lg:text-lg neon-subtle max-w-xl">
               Join the teams already trusting Affordable Pentesting to run
