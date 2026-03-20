@@ -7,6 +7,9 @@ import {
   faGavel,
   faBan,
   faCircleInfo,
+  faLock,
+  faReceipt,
+  faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 
 export const metadata = {
@@ -30,10 +33,35 @@ const sections = [
     anchor: "terms",
     content: [
       "By purchasing and using Affordable Pentesting services you agree to these terms in full. If you do not agree, do not use the platform.",
-      "Affordable Pentesting provides automated and AI-assisted penetration testing services. All testing is performed exclusively on targets for which you have provided explicit written authorisation.",
-      "Credits are non-refundable once a pentest job has been dispatched to our backend systems. Unused credits may be refunded within 14 days of purchase — contact support.",
+      "Affordable Pentesting provides automated and AI-assisted penetration testing services. All testing is performed exclusively on targets for which you have provided explicit written authorisation. You must be at least 18 years of age and legally capable of entering into a binding contract to use this platform.",
+      "We reserve the right to modify these terms at any time. Continued use of the platform after changes are posted constitutes acceptance. We will make reasonable efforts to notify users of material changes via the email address on file.",
+      "These terms are governed by the laws of the United States. Any disputes arising from or relating to these terms shall be resolved through binding arbitration in the applicable jurisdiction.",
       "We reserve the right to suspend or terminate accounts that violate these terms without notice or refund.",
-      "These terms are governed by the laws of the United States.",
+    ],
+  },
+  {
+    icon: faReceipt,
+    title: "Refund & Credits Policy",
+    anchor: "refunds",
+    content: [
+      "All purchases of pentest credits are final and non-refundable. We do not issue refunds under any circumstances once payment has been processed, including but not limited to: unused credits, partially completed scans, dissatisfaction with results, or account termination due to policy violations.",
+      "Credits are non-transferable and may only be used by the account holder who purchased them. Credits have no cash value and cannot be exchanged, sold, or gifted to another user.",
+      "In the rare event that a technical failure on our end prevents a scan from completing or delivering a report, we will issue a replacement credit to your account at our sole discretion. This is not a guarantee and is evaluated on a case-by-case basis by our support team.",
+      "If you believe you have experienced a platform-side failure, contact support within 7 days of the affected scan with full details. We will investigate and respond within 3 business days.",
+      "By completing a purchase you explicitly acknowledge and accept this no-refund policy.",
+    ],
+  },
+  {
+    icon: faLock,
+    title: "Report Storage & Data Security",
+    anchor: "data-security",
+    content: [
+      "All pentest reports and scan data are stored in Google Cloud Storage (GCS) with server-side encryption at rest using AES-256. Reports are never stored on local infrastructure or unencrypted media.",
+      "Report files are stored in private GCS buckets. Access is enforced through Google Cloud IAM policies — only your authenticated account and our backend service accounts have permission to read or write your report files. No report is ever publicly accessible via a shareable URL without an expiring signed link generated at your request.",
+      "Signed download links for reports are time-limited (typically 15 minutes) and single-use in intent. They are generated server-side only after verifying your authenticated session via Firebase ID token. This ensures that even if a link were intercepted, it would expire before it could be meaningfully reused.",
+      "Pentest metadata (target, scan status, timestamps, finding summaries) is stored in Google Cloud Firestore. Firestore security rules restrict read and write access strictly to the account that owns the record. Our admin team can access records for support and compliance purposes only.",
+      "We do not share your scan targets, findings, or reports with any third parties, advertisers, or data brokers. Your security data is yours.",
+      "We retain your pentest data for as long as your account is active. Upon account deletion, your Firestore records and GCS report files are permanently deleted within 30 days. Stripe payment records are retained separately per their own data retention policies and applicable financial regulations.",
     ],
   },
   {
@@ -41,10 +69,11 @@ const sections = [
     title: "Privacy Policy",
     anchor: "privacy",
     content: [
-      "We collect only the data necessary to provide our services: your email address, payment information (processed by Stripe — we never see card details), and scan targets you submit.",
-      "Scan results and reports are stored in Google Cloud Storage, accessible only to you and our backend systems. We do not sell or share your data with third parties.",
-      "We use Firebase Authentication for identity management. Firestore is used to store account and pentest metadata.",
-      "You may request deletion of your account and associated data at any time by submitting a support ticket via our Support page.",
+      "We collect only the data necessary to provide our services: your email address, payment information (processed by Stripe — we never see or store card details), and the scan targets you submit.",
+      "We use Firebase Authentication for identity management. Your password is never stored by us — Firebase handles credential hashing and storage according to Google's security standards.",
+      "We use session cookies (httpOnly, Secure, SameSite=Strict) to maintain your authenticated session. These cookies contain a short-lived Firebase ID token and are never accessible to client-side JavaScript, mitigating XSS-based session theft.",
+      "We do not use third-party advertising trackers, analytics pixels, or sell your personal information to any party. We use basic server-side logging for error monitoring and abuse prevention only.",
+      "You may request deletion of your account and all associated data at any time by submitting a support ticket via our Support page. We will process your request within 30 days.",
     ],
   },
   {
@@ -52,10 +81,11 @@ const sections = [
     title: "Authorised Use Policy",
     anchor: "authorised-use",
     content: [
-      "You must have explicit, written authorisation from the system owner before submitting any target for testing. Verbal permission is not sufficient.",
-      "By submitting a target you are legally attesting that you own the system or hold documented permission from the owner to conduct penetration testing.",
-      "Submitting targets you do not own or have not obtained authorisation for is a criminal offence in most jurisdictions (e.g., CFAA in the United States, Computer Misuse Act in the UK).",
-      "Affordable Pentesting operates in good faith on your attestation. Any misuse is solely your legal responsibility.",
+      "You must have explicit, written authorisation from the system owner before submitting any target for testing. Verbal permission is not sufficient and will not be accepted as a legal defence.",
+      "By submitting a target you are legally attesting that you own the system or hold current, documented permission from the owner to conduct penetration testing on it. This attestation is binding.",
+      "Submitting targets you do not own or have not obtained authorisation for is a criminal offence in most jurisdictions — including but not limited to the Computer Fraud and Abuse Act (CFAA) in the United States, the Computer Misuse Act in the United Kingdom, and equivalent statutes worldwide. Penalties can include significant fines and imprisonment.",
+      "Affordable Pentesting operates entirely in good faith on your attestation. We conduct no independent verification of target ownership. Any misuse of this platform — including testing targets without authorisation — is solely your legal and financial responsibility. We will cooperate fully with law enforcement investigations involving misuse of our platform.",
+      "We reserve the right to report suspected unauthorised use to relevant authorities and to provide all available records including IP addresses, account details, and scan logs.",
     ],
   },
   {
@@ -63,9 +93,23 @@ const sections = [
     title: "Prohibited Targets",
     anchor: "prohibited",
     content: [
-      "The following target types are strictly prohibited regardless of claimed ownership: critical national infrastructure (power grids, water systems, financial clearing systems), government systems, healthcare systems containing patient data, and any system you have been explicitly prohibited from testing.",
-      "Targets that appear to be shared hosting environments where testing could impact other tenants are also prohibited.",
-      "We reserve the right to cancel any job and suspend any account if a submitted target is determined to be prohibited.",
+      "The following target types are strictly prohibited regardless of claimed ownership or authorisation: critical national infrastructure (power grids, water treatment systems, financial clearing networks, telecommunications backbone), government and military systems at any level, healthcare systems containing protected patient data (ePHI), and any system you have been explicitly or legally prohibited from testing.",
+      "Shared hosting environments where testing activity could degrade service or expose data belonging to other tenants are also prohibited. If you are unsure whether your target qualifies, contact support before submitting.",
+      "Any target that, upon investigation, appears to belong to an organisation other than the submitting account holder will result in immediate job cancellation, account suspension, and potential law enforcement referral.",
+      "We reserve the right to cancel any in-progress or queued job and suspend any account at any time if a submitted target is determined or suspected to be prohibited. No refund or credit replacement will be issued in such cases.",
+    ],
+  },
+  {
+    icon: faTriangleExclamation,
+    title: "Liability & Disclaimer",
+    anchor: "liability",
+    content: [
+      "Affordable Pentesting provides tooling and reporting services on an \"as-is\" basis. We make no warranty, express or implied, that our automated or AI-assisted pentests will identify every vulnerability present in a target system. No penetration test — automated or manual — guarantees complete security.",
+      "We are not responsible for any damage, data loss, service disruption, regulatory penalty, or legal consequence arising from the use or misuse of our platform, including but not limited to: actions taken based on scan results, failure to remediate identified vulnerabilities, and testing performed without proper authorisation.",
+      "Our AI-assisted scanning tools may generate false positives or miss vulnerabilities. Results should be reviewed by a qualified security professional before being used as the sole basis for compliance attestations, architectural decisions, or public disclosures.",
+      "By using this platform you agree that Affordable Pentesting's total aggregate liability to you for any claim arising out of or related to these services shall not exceed the amount you paid for the specific pentest credit(s) directly involved in the claim.",
+      "We are not liable for any indirect, incidental, special, consequential, or punitive damages, including loss of revenue, loss of data, or reputational harm, even if we have been advised of the possibility of such damages.",
+      "You agree to indemnify and hold harmless Affordable Pentesting, its operators, affiliates, and personnel from any claim, demand, or damage — including reasonable legal fees — arising out of your use of the platform, your violation of these terms, or your infringement of any third-party rights.",
     ],
   },
   {
@@ -73,9 +117,10 @@ const sections = [
     title: "Responsible Disclosure",
     anchor: "disclosure",
     content: [
-      "If you discover a security vulnerability in the Affordable Pentesting platform itself, please disclose it responsibly by submitting a support ticket via our Support page — select the \"Other\" topic and include as much detail as possible.",
-      "We commit to acknowledging your report within 48 hours, working to remediate confirmed issues within 30 days, and not pursuing legal action against good-faith security researchers.",
-      "We do not currently operate a bug bounty programme, but we will credit researchers who assist us in improving our security.",
+      "If you discover a security vulnerability in the Affordable Pentesting platform itself, please disclose it responsibly by submitting a support ticket via our Support page — select the \"Other\" topic and include as much detail as possible including steps to reproduce, affected endpoints, and potential impact.",
+      "We commit to acknowledging your report within 48 hours, triaging and investigating within 5 business days, and working to remediate confirmed issues within 30 days of confirmation.",
+      "We will not pursue legal action against researchers who discover and disclose vulnerabilities in good faith, provided they do not access, exfiltrate, or modify data beyond what is necessary to demonstrate the vulnerability, and that they contact us privately before any public disclosure.",
+      "We do not currently operate a formal bug bounty programme, but we will publicly credit researchers (with their consent) who assist us in improving platform security.",
     ],
   },
 ];
@@ -84,13 +129,13 @@ export default function TrustSafetyPage() {
   return (
     <main className="min-h-screen bg-[#0a141f] text-white">
       {/* Hero */}
-      <div className="border-b border-[#34D399]/30 bg-gradient-to-b from-[#0a141f] to-[#0a1828]">
+      <div className="border-b border-[#34D399]/30 bg-gradient-to-b from-[#0a141f] to-[#071210]">
         <div className="max-w-4xl mx-auto px-6 py-20 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#34D399]/20 border border-[#34D399]/40 mb-6">
             <FontAwesomeIcon icon={faShieldHalved} className="text-3xl text-[#34D399]" />
           </div>
           <h1
-            className="text-4xl lg:text-5xl font-bold text-white mb-4"
+            className="text-4xl lg:text-5xl font-light text-white mb-4"
             style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
           >
             Trust + Safety Center
@@ -122,12 +167,12 @@ export default function TrustSafetyPage() {
         {sections.map((section) => (
           <section key={section.anchor} id={section.anchor} className="scroll-mt-16">
             <div className="flex items-center gap-3 mb-5">
-              <div className="p-2.5 rounded-lg bg-[#4590e2]/15 border border-[#4590e2]/30">
-                <FontAwesomeIcon icon={section.icon} className="text-[#4590e2] text-lg" />
+              <div className="p-2.5 rounded-lg bg-[#34D399]/15 border border-[#34D399]/30">
+                <FontAwesomeIcon icon={section.icon} className="text-[#34D399] text-lg" />
               </div>
-              <h2 className="text-2xl font-bold text-white">{section.title}</h2>
+              <h2 className="text-2xl font-normal text-white">{section.title}</h2>
             </div>
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-4">
+            <div className="bg-white/5 border border-[#34D399]/10 rounded-xl p-6 space-y-4">
               {section.content.map((para, i) => (
                 <p key={i} className="text-gray-300 leading-relaxed text-sm">
                   {para}
@@ -138,14 +183,14 @@ export default function TrustSafetyPage() {
         ))}
 
         {/* Contact CTA */}
-        <div className="bg-[#4590e2]/10 border border-[#4590e2]/30 rounded-xl p-8 text-center">
-          <h3 className="text-xl font-bold text-white mb-2">Questions about our policies?</h3>
+        <div className="bg-[#34D399]/10 border border-[#34D399]/30 rounded-xl p-8 text-center">
+          <h3 className="text-xl font-normal text-white mb-2">Questions about our policies?</h3>
           <p className="text-gray-400 mb-5 text-sm">
             Our team is happy to answer any questions about how we handle your data or operate our services.
           </p>
           <Link
             href="/support"
-            className="inline-block px-6 py-3 bg-[#4590e2] hover:bg-[#3a7bc8] text-white font-semibold rounded-lg transition-colors"
+            className="inline-block px-6 py-3 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors"
           >
             Contact Support
           </Link>
@@ -154,3 +199,6 @@ export default function TrustSafetyPage() {
     </main>
   );
 }
+
+
+

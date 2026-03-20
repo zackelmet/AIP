@@ -332,7 +332,21 @@ export default function AuthForm() {
               </div>
 
               <div className="text-xs neon-subtle text-center">
-                By continuing you agree to our Terms and Privacy.
+                By continuing you agree to our{" "}
+                <a
+                  href="/trust-safety#terms"
+                  className="underline hover:text-[#34D399] transition-colors"
+                >
+                  Terms of Service
+                </a>
+                {" "}and{" "}
+                <a
+                  href="/trust-safety#privacy"
+                  className="underline hover:text-[#34D399] transition-colors"
+                >
+                  Privacy Policy
+                </a>
+                .
               </div>
             </div>
           </div>
