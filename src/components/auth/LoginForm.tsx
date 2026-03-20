@@ -198,7 +198,7 @@ export default function AuthForm() {
               Start Pentesting in 5 Minutes.
             </h1>
             <p className="text-base lg:text-lg neon-subtle max-w-xl">
-              Join the security teams that already trust Affordable Pentesting to run
+              Join the teams already trusting Affordable Pentesting to run
               fast, AI-powered autonomous pentests.
             </p>
             <div className="flex flex-wrap gap-3 justify-center lg:justify-start text-sm text-[var(--text-muted)]">
@@ -209,7 +209,7 @@ export default function AuthForm() {
           </div>
 
           <div className="flex-1 w-full max-w-xl">
-            <div className="neon-card p-6 lg:p-7 space-y-6">
+            <div className="p-6 lg:p-7 space-y-6 rounded-[18px] bg-[rgba(255,255,255,0.06)] border border-white/10 backdrop-blur-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)] mb-1">

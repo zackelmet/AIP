@@ -237,7 +237,7 @@ export default function MyResultsPage() {
                   <div className="text-center py-12">
                     <p className="text-gray-500 mb-4">No pentest requests yet</p>
                     <Link
-                      href="/pricing"
+                      href="/#pricing"
                       className="inline-block px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
                     >
                       Request a Pentest
