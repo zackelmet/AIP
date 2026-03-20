@@ -150,7 +150,7 @@ export default function Home() {
       </section>
 
       {/* Compliance Ready Reports Section */}
-      <section className="py-14 bg-[#071510] border-y border-[#34D399]/15">
+      <section className="py-14 bg-gradient-to-r from-[#34D399]/20 to-[#34D399]/5">
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-col lg:flex-row items-center gap-10">
             <div className="flex-1 space-y-4">
@@ -177,14 +177,28 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-            <div className="flex-shrink-0 flex flex-col gap-3 text-sm">
-              {["Vanta", "Drata", "SOC 2", "HIPAA", "PCI DSS", "ISO 27001", "NIST"].map((badge) => (
-                <span
-                  key={badge}
-                  className="px-4 py-2 rounded-lg bg-[#34D399]/10 border border-[#34D399]/25 text-[#34D399] text-center font-normal tracking-wide"
+            <div className="flex-shrink-0 grid grid-cols-2 lg:grid-cols-1 gap-3 text-sm">
+              {[
+                { label: "Vanta", delay: "0ms" },
+                { label: "Drata", delay: "120ms" },
+                { label: "SOC 2", delay: "240ms" },
+                { label: "HIPAA", delay: "360ms" },
+                { label: "PCI DSS", delay: "480ms" },
+                { label: "ISO 27001", delay: "600ms" },
+                { label: "NIST", delay: "720ms" },
+              ].map(({ label, delay }) => (
+                <div
+                  key={label}
+                  className="relative overflow-hidden px-5 py-2.5 rounded-lg border border-[#34D399]/30 text-[#34D399] text-center font-normal tracking-wide"
+                  style={{ animationDelay: delay }}
                 >
-                  {badge}
-                </span>
+                  {/* shimmer sweep */}
+                  <span
+                    className="pointer-events-none absolute inset-0 -translate-x-full animate-[shimmer_2.8s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-[#34D399]/15 to-transparent"
+                    style={{ animationDelay: delay }}
+                  />
+                  {label}
+                </div>
               ))}
             </div>
           </div>

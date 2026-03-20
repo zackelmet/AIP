@@ -19,6 +19,9 @@ jest.mock("../../../lib/cookies/DefaultCookieManager", () => ({
   },
 }));
 
+// Mock fetch globally so session endpoint calls don't throw
+global.fetch = jest.fn().mockResolvedValue({ ok: true }) as jest.Mock;
+
 describe("AuthContext", () => {
   let mockAuthService: jest.Mocked<AuthService>;
   let mockUsePathname: jest.Mock;

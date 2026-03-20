@@ -226,7 +226,7 @@ export default function AuthForm() {
                   </label>
                   <input
                     type="email"
-                    placeholder="you@company.com"
+                    placeholder=" you@company.com"
                     className="neon-input w-full py-3"
                     value={email}
                     onChange={(e) => { setEmail(e.target.value); clearErrorOnChange(); }}
@@ -239,7 +239,7 @@ export default function AuthForm() {
                   </label>
                   <input
                     type="password"
-                    placeholder="Enter password"
+                    placeholder=" Enter password"
                     className="neon-input w-full py-3"
                     value={password}
                     onChange={(e) => { setPassword(e.target.value); clearErrorOnChange(); }}
@@ -253,7 +253,7 @@ export default function AuthForm() {
                     </label>
                     <input
                       type="password"
-                      placeholder="Repeat password"
+                      placeholder=" Repeat password"
                       className="neon-input w-full py-3"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
