@@ -128,7 +128,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-br from-[#34D399]/10 via-transparent to-transparent" />
         <div className="max-w-7xl mx-auto px-6 py-20 lg:py-32 relative">
           <div className="max-w-4xl mx-auto text-center space-y-8">
-            <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight">
+            <h1 className="text-5xl lg:text-7xl font-light tracking-tight">
               <span className="block text-white">Penetration Testing</span>
               <span className="block text-[#34D399] mt-2">Made Simple</span>
             </h1>
@@ -139,7 +139,7 @@ export default function Home() {
             <div className="flex justify-center pt-4">
               <button
                 onClick={handleStartPentest}
-                className="px-12 py-5 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-bold rounded-lg transition-colors text-xl"
+                className="px-12 py-5 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors text-xl"
               >
                 Start Your Pentest
               </button>
@@ -190,7 +190,7 @@ export default function Home() {
       <section id="pricing" className="py-20 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+            <h2 className="text-4xl lg:text-5xl font-light mb-4">
               Simple, Transparent <span className="text-[#34D399]">Pricing</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
@@ -215,7 +215,7 @@ export default function Home() {
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-[#34D399]/20 to-[#34D399]/5">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+          <h2 className="text-4xl lg:text-5xl font-light mb-6">
             Ready to Secure Your Systems?
           </h2>
           <p className="text-xl text-gray-300 mb-8">
@@ -223,7 +223,7 @@ export default function Home() {
           </p>
           <button
             onClick={handleStartPentest}
-            className="inline-block px-10 py-5 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-bold rounded-lg transition-colors text-xl"
+            className="inline-block px-10 py-5 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors text-xl"
           >
             {currentUser ? "Start Your Pentest" : "Get Started"}
           </button>
@@ -235,7 +235,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6">
           {/* Header */}
           <div className="text-center mb-14">
-            <p className="text-[#34D399] text-sm font-semibold uppercase tracking-widest mb-3">Powered by</p>
+            <p className="text-[#34D399] text-sm font-normal uppercase tracking-widest mb-3">Powered by</p>
             <a
               href="https://www.affordablepentesting.com/"
               target="_blank"
@@ -250,7 +250,7 @@ export default function Home() {
                 className="h-9 w-9"
               />
               <span
-                className="text-white font-bold text-3xl tracking-wide"
+                className="text-white font-light text-3xl tracking-wide"
                 style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
               >
                 Affordable Pentesting
@@ -272,7 +272,7 @@ export default function Home() {
                 key={item.label}
                 className="bg-white/5 border border-white/10 hover:border-[#34D399]/40 rounded-xl p-6 transition-colors"
               >
-                <h3 className="text-white font-bold text-base mb-2">{item.label}</h3>
+                <h3 className="text-white font-normal text-base mb-2">{item.label}</h3>
                 <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
@@ -287,9 +287,9 @@ export default function Home() {
               { title: "Clear, Actionable Reports", desc: "Jargon-free findings with step-by-step remediation guidance." },
             ].map((item) => (
               <div key={item.title} className="flex gap-4">
-                <span className="text-[#34D399] font-bold text-2xl leading-none mt-0.5">✓</span>
+                <span className="text-[#34D399] font-normal text-2xl leading-none mt-0.5">✓</span>
                 <div>
-                  <h3 className="text-white font-bold mb-1">{item.title}</h3>
+                  <h3 className="text-white font-normal mb-1">{item.title}</h3>
                   <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
                 </div>
               </div>
@@ -302,7 +302,7 @@ export default function Home() {
               href="https://www.affordablepentesting.com/get-a-quote"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-4 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-bold rounded-lg transition-colors"
+              className="px-8 py-4 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors"
             >
               Get a Pentest Quote
             </a>
@@ -310,7 +310,7 @@ export default function Home() {
               href="https://www.affordablepentesting.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-lg border border-white/20 transition-colors"
+              className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white font-normal rounded-lg border border-white/20 transition-colors"
             >
               Learn More
             </a>
@@ -377,16 +377,16 @@ function PricingCard({ tier, onSelect, loading, currentUser }: PricingCardProps)
       }`}
     >
       {tier.popular && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#34D399] text-[#041018] px-4 py-1 rounded-full text-sm font-bold">
+          <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#34D399] text-[#041018] px-4 py-1 rounded-full text-sm font-normal">
           MOST POPULAR
         </div>
       )}
 
       <div className="mb-6">
-        <h3 className="text-2xl font-bold mb-2">{tier.name}</h3>
+        <h3 className="text-2xl font-light mb-2">{tier.name}</h3>
         <p className="text-gray-400 text-sm mb-4">{tier.description}</p>
         <div className="flex items-baseline gap-2">
-          <span className="text-5xl font-extrabold text-white">
+          <span className="text-5xl font-light text-white">
             ${tier.price.toLocaleString()}
           </span>
           {tier.type === 'subscription' && (
@@ -411,7 +411,7 @@ function PricingCard({ tier, onSelect, loading, currentUser }: PricingCardProps)
           tier.popular
             ? "bg-[#34D399] hover:bg-[#10b981] text-[#041018]"
             : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
-        } disabled:opacity-50 disabled:cursor-not-allowed`}
+        } disabled:opacity-50 disabled:cursor-not-allowed font-normal`}
       >
         {loading ? "Processing..." : currentUser ? tier.cta : "Sign In to Purchase"}
       </button>

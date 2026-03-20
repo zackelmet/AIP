@@ -180,7 +180,10 @@ export default function AuthForm() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[var(--bg)] text-[--text] overflow-hidden">
+    <div
+      className="relative min-h-screen text-[--text] overflow-hidden"
+      style={{ background: "linear-gradient(135deg, rgba(52,211,153,0.06) 0%, transparent 50%), #0a141f" }}
+    >
       <div className="absolute inset-0 pointer-events-none opacity-60">
         <div className="absolute inset-6 neon-grid" />
       </div>
