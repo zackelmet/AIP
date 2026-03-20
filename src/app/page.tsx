@@ -214,6 +214,48 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
+      <section className="py-14 bg-[#071510] border-y border-[#34D399]/15">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="flex flex-col lg:flex-row items-center gap-10">
+            <div className="flex-1 space-y-4">
+              <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest">Audit-Ready Output</p>
+              <h2 className="text-3xl lg:text-4xl font-light text-white">
+                Compliance Ready Reports
+              </h2>
+              <p className="text-gray-400 leading-relaxed">
+                Every pentest generates a structured report designed to satisfy auditors — not just developers.
+                Findings are mapped to common control frameworks so your evidence package is ready the moment the scan completes.
+              </p>
+              <ul className="space-y-2 text-sm text-gray-300">
+                {[
+                  "Supports SOC 2 Type I & II audits as penetration testing evidence",
+                  "Maps findings to HIPAA, PCI DSS, ISO 27001, and NIST controls",
+                  "Plugs directly into compliance platforms like Vanta and Drata",
+                  "Upload the PDF to your auditor portal or trust centre in one step",
+                  "Includes risk ratings, remediation guidance, and retest notes",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <span className="text-[#34D399] mt-0.5">✓</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="flex-shrink-0 flex flex-col gap-3 text-sm">
+              {["Vanta", "Drata", "SOC 2", "HIPAA", "PCI DSS", "ISO 27001", "NIST"].map((badge) => (
+                <span
+                  key={badge}
+                  className="px-4 py-2 rounded-lg bg-[#34D399]/10 border border-[#34D399]/25 text-[#34D399] text-center font-normal tracking-wide"
+                >
+                  {badge}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-[#34D399]/20 to-[#34D399]/5">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl lg:text-5xl font-light mb-6">

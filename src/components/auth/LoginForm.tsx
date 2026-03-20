@@ -157,28 +157,6 @@ export default function AuthForm() {
     }
   };
 
-  const handleForgotPassword = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!email) {
-      const { toast } = await import("react-hot-toast");
-      toast.error("Please enter your email address.");
-      return;
-    }
-
-    try {
-      const authModule = await import("@/lib/firebase/firebaseClient");
-      const firebaseAuth = (authModule as any).auth;
-      const { sendPasswordResetEmail } = await import("firebase/auth");
-      await sendPasswordResetEmail(firebaseAuth, email);
-      const { toast } = await import("react-hot-toast");
-      toast.success("Password reset email sent.");
-    } catch (err) {
-      console.error(err);
-      const { toast } = await import("react-hot-toast");
-      toast.error("An error occurred. Please try again.");
-    }
-  };
-
   return (
     <div
       className="relative min-h-screen text-[--text] overflow-hidden"
@@ -204,7 +182,7 @@ export default function AuthForm() {
             <div className="flex flex-wrap gap-3 justify-center lg:justify-start text-sm text-[var(--text-muted)]">
               <span className="neon-chip">AI-Powered Pentesting</span>
               <span className="neon-chip">Anthropic Claude Agents</span>
-              <span className="neon-chip">Autonomous Security Testing</span>
+              <span className="neon-chip">Compliance Ready Reports</span>
             </div>
           </div>
 
@@ -283,16 +261,7 @@ export default function AuthForm() {
                   </div>
                 )}
 
-                {formMode === FormMode.Login && (
-                  <div className="flex justify-end">
-                    <button
-                      className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] underline"
-                      onClick={handleForgotPassword}
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
-                )}
+
               </div>
 
               <div className="space-y-3">
