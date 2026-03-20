@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { verifyAuth } from '@/lib/auth/verifyAuth';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
@@ -7,9 +8,19 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: NextRequest) {
   try {
-    const { priceId, userId, email, productType, mode, quantity, metadata } = await request.json();
+    const token = await verifyAuth(request);
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
 
-    if (!priceId || !email) {
+    const { priceId, email, productType, mode, quantity, metadata } = await request.json();
+    const userId = token.uid;
+    const verifiedEmail = token.email || email;
+
+    if (!priceId) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -30,7 +41,7 @@ export async function POST(request: NextRequest) {
       mode: mode || (productType === 'subscription' ? 'subscription' : 'payment'),
       success_url: `${siteUrl}/app/dashboard?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/app/dashboard?canceled=true`,
-      customer_email: email,
+      customer_email: verifiedEmail,
       metadata: {
         userId: userId || '',
         productType: productType || 'one-time',

@@ -113,8 +113,17 @@ function PurchaseParamHandler({ openPurchaseModal }: { openPurchaseModal: (type:
 
   useEffect(() => {
     const purchase = searchParams.get('purchase');
+    const success = searchParams.get('success');
+    const canceled = searchParams.get('canceled');
+
     if (purchase === 'web_app' || purchase === 'external_ip') {
       openPurchaseModal(purchase);
+      router.replace('/app/dashboard', { scroll: false });
+    } else if (success === 'true') {
+      toast.success('Payment successful! Your credits will appear shortly.', { duration: 6000 });
+      router.replace('/app/dashboard', { scroll: false });
+    } else if (canceled === 'true') {
+      toast('Purchase canceled — no charge was made.', { icon: 'ℹ️', duration: 5000 });
       router.replace('/app/dashboard', { scroll: false });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
