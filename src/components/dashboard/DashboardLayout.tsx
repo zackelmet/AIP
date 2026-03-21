@@ -18,6 +18,7 @@ import {
   faPlus,
   faList,
   faUserShield,
+  faCalendarCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useUserData } from "@/lib/hooks/useUserData";
@@ -66,6 +67,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { href: "/app/dashboard", label: "Dashboard", icon: faHome },
     { href: "/app/pentests", label: "Recent Tests", icon: faList },
     { href: "/app/new-pentest", label: "Launch an AI Pentest", icon: faRocket },
+    { href: "/app/scheduling", label: "Test Scheduling", icon: faCalendarCheck },
     { href: "/app/manual-pentest", label: "Request a Manual Pentest", icon: faUser },
     ...(userData?.isAdmin ? [{ href: "/admin", label: "Admin", icon: faUserShield }] : []),
   ];
