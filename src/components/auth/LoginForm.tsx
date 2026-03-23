@@ -23,7 +23,7 @@ export default function AuthForm() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const returnUrl = searchParams.get('returnUrl') || '/app/dashboard';
+  const returnUrl = searchParams.get("returnUrl") || "/app/dashboard";
 
   const handleGoogleAuth = async () => {
     try {
@@ -160,7 +160,10 @@ export default function AuthForm() {
   return (
     <div
       className="relative min-h-screen text-[--text] overflow-hidden"
-      style={{ background: "linear-gradient(135deg, rgba(52,211,153,0.06) 0%, transparent 50%), #0a141f" }}
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(52,211,153,0.06) 0%, transparent 50%), #0a141f",
+      }}
     >
       <div className="absolute inset-0 pointer-events-none opacity-60">
         <div className="absolute inset-6 neon-grid" />
@@ -172,12 +175,12 @@ export default function AuthForm() {
             <div className="inline-flex items-center gap-3 neon-badge-muted px-3 py-2 rounded-xl">
               Secure access
             </div>
-            <h1 className="text-3xl lg:text-5xl font-semibold leading-tight">
+            <h1 className="text-3xl lg:text-5xl font-light leading-tight">
               Launch a Pentest in 5 Minutes.
             </h1>
             <p className="text-base lg:text-lg neon-subtle max-w-xl">
-              Join the teams already trusting Affordable Pentesting to run
-              fast, AI-powered autonomous pentests.
+              Join the teams already trusting Affordable Pentesting to run fast,
+              AI-powered autonomous pentests.
             </p>
             <div className="flex flex-wrap gap-3 justify-center lg:justify-start text-sm text-[var(--text-muted)]">
               <span className="neon-chip">AI-Powered Pentesting</span>
@@ -195,7 +198,7 @@ export default function AuthForm() {
                       ? "Welcome back"
                       : "Create account"}
                   </p>
-                  <h2 className="text-2xl font-medium">
+                  <h2 className="text-2xl font-light">
                     {formMode === FormMode.Login ? "Sign in" : "Sign up"}
                   </h2>
                 </div>
@@ -229,7 +232,10 @@ export default function AuthForm() {
                     placeholder=" you@company.com"
                     className="neon-input w-full py-3"
                     value={email}
-                    onChange={(e) => { setEmail(e.target.value); clearErrorOnChange(); }}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      clearErrorOnChange();
+                    }}
                   />
                 </div>
 
@@ -242,7 +248,10 @@ export default function AuthForm() {
                     placeholder=" Enter password"
                     className="neon-input w-full py-3"
                     value={password}
-                    onChange={(e) => { setPassword(e.target.value); clearErrorOnChange(); }}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      clearErrorOnChange();
+                    }}
                   />
                 </div>
 
@@ -260,8 +269,6 @@ export default function AuthForm() {
                     />
                   </div>
                 )}
-
-
               </div>
 
               <div className="space-y-3">
@@ -307,8 +314,8 @@ export default function AuthForm() {
                   className="underline hover:text-[#34D399] transition-colors"
                 >
                   Terms of Service
-                </a>
-                {" "}and{" "}
+                </a>{" "}
+                and{" "}
                 <a
                   href="/trust-safety#privacy"
                   className="underline hover:text-[#34D399] transition-colors"
