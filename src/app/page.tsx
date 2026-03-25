@@ -4,8 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/lib/context/AuthContext";
-import { loadStripe } from '@stripe/stripe-js';
-import toast from 'react-hot-toast';
+import { loadStripe } from "@stripe/stripe-js";
+import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBolt,
@@ -16,7 +16,9 @@ import {
   faCircleCheck,
 } from "@fortawesome/free-solid-svg-icons";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
+);
 
 interface PricingTier {
   id: string;
@@ -26,49 +28,49 @@ interface PricingTier {
   description: string;
   features: string[];
   popular?: boolean;
-  type: 'one-time' | 'subscription';
+  type: "one-time" | "subscription";
   cta: string;
 }
 
 const PRICING_TIERS: PricingTier[] = [
   {
-    id: 'external_ip',
-    name: 'External IP Pentest',
+    id: "external_ip",
+    name: "External IP Pentest",
     price: 199,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_AI_SINGLE || '',
-    description: 'Gateways, firewalls, and external infrastructure',
-    type: 'one-time',
-    cta: 'Purchase Credit',
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_AI_SINGLE || "",
+    description: "Gateways, firewalls, and external infrastructure",
+    type: "one-time",
+    cta: "Purchase Credit",
     features: [
-      '1 External IP pentest credit',
-      'Autonomous AI penetration testing',
-      'Powered by Anthropic Claude agents',
-      'Network vulnerability assessment',
-      'Firewall & gateway testing',
-      'Detailed findings report',
-      'Remediation guidance',
-      'Results within 24 hours',
+      "1 External IP pentest credit",
+      "Autonomous AI penetration testing",
+      "Powered by Anthropic Claude agents",
+      "Network vulnerability assessment",
+      "Firewall & gateway testing",
+      "Detailed findings report",
+      "Remediation guidance",
+      "Results within 24 hours",
     ],
   },
   {
-    id: 'web_app',
-    name: 'Web Application Pentest',
+    id: "web_app",
+    name: "Web Application Pentest",
     price: 500,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_WEB_APP || '',
-    description: 'Up to 3 user roles, 20 pages & 10 API endpoints',
-    type: 'one-time',
-    cta: 'Purchase Credit',
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_WEB_APP || "",
+    description: "Up to 3 user roles, 20 pages & 10 API endpoints",
+    type: "one-time",
+    cta: "Purchase Credit",
     popular: true,
     features: [
-      '1 Web Application pentest credit',
-      'Autonomous AI penetration testing',
-      'Powered by Anthropic Claude agents',
-      'Up to 3 user roles tested',
-      'Up to 20 pages covered',
-      'Up to 10 API endpoints',
-      'Authentication & authorization testing',
-      'Detailed findings report',
-      'Results within 48 hours',
+      "1 Web Application pentest credit",
+      "Autonomous AI penetration testing",
+      "Powered by Anthropic Claude agents",
+      "Up to 3 user roles tested",
+      "Up to 20 pages covered",
+      "Up to 10 API endpoints",
+      "Authentication & authorization testing",
+      "Detailed findings report",
+      "Results within 48 hours",
     ],
   },
 ];
@@ -79,26 +81,26 @@ export default function Home() {
 
   const handleStartPentest = () => {
     if (!currentUser) {
-      window.location.href = `/login?returnUrl=${encodeURIComponent('/app/new-pentest')}`;
+      window.location.href = `/login?returnUrl=${encodeURIComponent("/app/new-pentest")}`;
       return;
     }
-    window.location.href = '/app/new-pentest';
+    window.location.href = "/app/new-pentest";
   };
 
   const handleCheckout = async (tier: PricingTier) => {
     if (!currentUser) {
-      window.location.href = `/login?returnUrl=${encodeURIComponent('/#pricing')}`;
+      window.location.href = `/login?returnUrl=${encodeURIComponent("/#pricing")}`;
       return;
     }
 
     setLoadingCheckout(tier.id);
     try {
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           priceId: tier.priceId,
-          mode: 'payment',
+          mode: "payment",
           quantity: 1,
           userId: currentUser.uid,
           email: currentUser.email,
@@ -107,16 +109,17 @@ export default function Home() {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to create checkout session');
+      if (!response.ok)
+        throw new Error(data.error || "Failed to create checkout session");
 
       // Redirect directly to Stripe-hosted checkout URL
       if (data.url) {
         window.location.href = data.url;
       }
     } catch (error: any) {
-      console.error('Checkout error:', error);
-      const { default: toast } = await import('react-hot-toast');
-      toast.error(error.message || 'Failed to start checkout');
+      console.error("Checkout error:", error);
+      const { default: toast } = await import("react-hot-toast");
+      toast.error(error.message || "Failed to start checkout");
     } finally {
       setLoadingCheckout(null);
     }
@@ -134,8 +137,8 @@ export default function Home() {
               <span className="block text-[#34D399] mt-2">Made Simple</span>
             </h1>
             <p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              AI-powered penetration testing driven by Anthropic Claude agentic systems.
-              Flexible, transparent pricing &mdash; no subscriptions, no surprises.
+              AI-powered penetration testing. Flexible, transparent pricing
+              &mdash; no subscriptions, no surprises.
             </p>
             <div className="flex justify-center pt-4">
               <button
@@ -154,13 +157,17 @@ export default function Home() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="flex-1 space-y-6">
-              <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest">Audit-Ready Output</p>
+              <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest">
+                Audit-Ready Output
+              </p>
               <h2 className="text-4xl lg:text-5xl font-light text-white">
                 Compliance Ready Reports
               </h2>
               <p className="text-gray-300 text-lg leading-relaxed">
-                Every pentest generates a structured report designed to satisfy auditors — not just developers.
-                Findings are mapped to common control frameworks so your evidence package is ready the moment the scan completes.
+                Every pentest generates a structured report designed to satisfy
+                auditors — not just developers. Findings are mapped to common
+                control frameworks so your evidence package is ready the moment
+                the scan completes.
               </p>
               <div className="grid sm:grid-cols-2 gap-3">
                 {[
@@ -173,8 +180,12 @@ export default function Home() {
                     key={item}
                     className="flex items-start gap-3 p-4 rounded-xl border border-[#34D399]/25 bg-[#34D399]/5 hover:border-[#34D399]/50 hover:bg-[#34D399]/10 transition-colors"
                   >
-                    <span className="text-[#34D399] text-lg font-bold mt-0.5 flex-shrink-0">✓</span>
-                    <span className="text-gray-200 text-base leading-snug">{item}</span>
+                    <span className="text-[#34D399] text-lg font-bold mt-0.5 flex-shrink-0">
+                      ✓
+                    </span>
+                    <span className="text-gray-200 text-base leading-snug">
+                      {item}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -248,7 +259,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Simple, Transparent <span className="text-[#34D399]">Pricing</span>
+              Simple, Transparent{" "}
+              <span className="text-[#34D399]">Pricing</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Purchase credits for the pentests you need
@@ -276,7 +288,8 @@ export default function Home() {
             Ready to Secure Your Systems?
           </h2>
           <p className="text-xl text-gray-300 mb-8">
-            Get started with AI-powered penetration testing. Purchase credits and run your first test in minutes.
+            Get started with AI-powered penetration testing. Purchase credits
+            and run your first test in minutes.
           </p>
           <button
             onClick={handleStartPentest}
@@ -292,7 +305,9 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6">
           {/* Header */}
           <div className="text-center mb-14">
-            <p className="text-[#34D399] text-sm font-normal uppercase tracking-widest mb-3">Powered by</p>
+            <p className="text-[#34D399] text-sm font-normal uppercase tracking-widest mb-3">
+              Powered by
+            </p>
             <a
               href="https://www.affordablepentesting.com/"
               target="_blank"
@@ -314,23 +329,38 @@ export default function Home() {
               </span>
             </a>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Human-led penetration testing for SOC 2, HIPAA, PCI DSS, ISO 27001, and NIST — at prices built for startups, SMBs, and growing companies.
+              Human-led penetration testing for SOC 2, HIPAA, PCI DSS, ISO
+              27001, and NIST — at prices built for startups, SMBs, and growing
+              companies.
             </p>
           </div>
 
           {/* Service pillars */}
           <div className="grid sm:grid-cols-3 gap-5 mb-14">
             {[
-              { label: "Manual Pentesting", desc: "OSCP-certified hackers simulate real-world attacks — external, internal, web app, and cloud. Audit-ready reports for SOC 2, HIPAA, PCI DSS, and more." },
-              { label: "AI-Powered Pentesting", desc: "Fast, automated assessments that go beyond a vulnerability scan. Results delivered within a day, no scheduling required." },
-              { label: "Compliance & Risk Coverage", desc: "Every engagement maps findings to SOC 2, HIPAA, PCI DSS, ISO 27001, NIST, and GDPR controls — ready for your auditor." },
+              {
+                label: "Manual Pentesting",
+                desc: "OSCP-certified hackers simulate real-world attacks — external, internal, web app, and cloud. Audit-ready reports for SOC 2, HIPAA, PCI DSS, and more.",
+              },
+              {
+                label: "AI-Powered Pentesting",
+                desc: "Fast, automated assessments that go beyond a vulnerability scan. Results delivered within a day, no scheduling required.",
+              },
+              {
+                label: "Compliance & Risk Coverage",
+                desc: "Every engagement maps findings to SOC 2, HIPAA, PCI DSS, ISO 27001, NIST, and GDPR controls — ready for your auditor.",
+              },
             ].map((item) => (
               <div
                 key={item.label}
                 className="bg-white/5 border border-white/10 hover:border-[#34D399]/40 rounded-xl p-6 transition-colors"
               >
-                <h3 className="text-white font-normal text-base mb-2">{item.label}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
+                <h3 className="text-white font-normal text-base mb-2">
+                  {item.label}
+                </h3>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  {item.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -338,16 +368,32 @@ export default function Home() {
           {/* Why AP */}
           <div className="grid sm:grid-cols-4 gap-5 mb-14">
             {[
-              { title: "Certified Ethical Hackers", desc: "OSCP, CEH, and CISSP certified experts — not automated scanners." },
-              { title: "Enterprise Quality, SMB Pricing", desc: "The most affordable pentests on the market, with zero sacrifice on quality." },
-              { title: "Fast Turnaround", desc: "Pentests start within days. No long lead times, no hidden fees." },
-              { title: "Clear, Actionable Reports", desc: "Jargon-free findings with step-by-step remediation guidance." },
+              {
+                title: "Certified Ethical Hackers",
+                desc: "OSCP, CEH, and CISSP certified experts — not automated scanners.",
+              },
+              {
+                title: "Enterprise Quality, SMB Pricing",
+                desc: "The most affordable pentests on the market, with zero sacrifice on quality.",
+              },
+              {
+                title: "Fast Turnaround",
+                desc: "Pentests start within days. No long lead times, no hidden fees.",
+              },
+              {
+                title: "Clear, Actionable Reports",
+                desc: "Jargon-free findings with step-by-step remediation guidance.",
+              },
             ].map((item) => (
               <div key={item.title} className="flex gap-4">
-                <span className="text-[#34D399] font-normal text-2xl leading-none mt-0.5">✓</span>
+                <span className="text-[#34D399] font-normal text-2xl leading-none mt-0.5">
+                  ✓
+                </span>
                 <div>
                   <h3 className="text-white font-normal mb-1">{item.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
+                  <p className="text-gray-400 text-sm leading-relaxed">
+                    {item.desc}
+                  </p>
                 </div>
               </div>
             ))}
@@ -424,7 +470,12 @@ interface PricingCardProps {
   currentUser: any;
 }
 
-function PricingCard({ tier, onSelect, loading, currentUser }: PricingCardProps) {
+function PricingCard({
+  tier,
+  onSelect,
+  loading,
+  currentUser,
+}: PricingCardProps) {
   return (
     <div
       className={`relative bg-white/5 rounded-xl p-8 border-2 transition-all hover:scale-[1.02] ${
@@ -434,7 +485,7 @@ function PricingCard({ tier, onSelect, loading, currentUser }: PricingCardProps)
       }`}
     >
       {tier.popular && (
-          <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#34D399] text-[#041018] px-4 py-1 rounded-full text-sm font-normal">
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#34D399] text-[#041018] px-4 py-1 rounded-full text-sm font-normal">
           MOST POPULAR
         </div>
       )}
@@ -446,7 +497,7 @@ function PricingCard({ tier, onSelect, loading, currentUser }: PricingCardProps)
           <span className="text-5xl font-light text-white">
             ${tier.price.toLocaleString()}
           </span>
-          {tier.type === 'subscription' && (
+          {tier.type === "subscription" && (
             <span className="text-gray-400">/month</span>
           )}
         </div>
@@ -455,7 +506,10 @@ function PricingCard({ tier, onSelect, loading, currentUser }: PricingCardProps)
       <ul className="space-y-3 mb-8">
         {tier.features.map((feature, idx) => (
           <li key={idx} className="flex items-start gap-3 text-gray-300">
-            <FontAwesomeIcon icon={faCircleCheck} className="text-[#34D399] mt-1 flex-shrink-0" />
+            <FontAwesomeIcon
+              icon={faCircleCheck}
+              className="text-[#34D399] mt-1 flex-shrink-0"
+            />
             <span>{feature}</span>
           </li>
         ))}
@@ -470,7 +524,11 @@ function PricingCard({ tier, onSelect, loading, currentUser }: PricingCardProps)
             : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
         } disabled:opacity-50 disabled:cursor-not-allowed font-normal`}
       >
-        {loading ? "Processing..." : currentUser ? tier.cta : "Sign In to Purchase"}
+        {loading
+          ? "Processing..."
+          : currentUser
+            ? tier.cta
+            : "Sign In to Purchase"}
       </button>
     </div>
   );
