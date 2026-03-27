@@ -43,11 +43,11 @@ const PRICING_TIERS: PricingTier[] = [
     cta: "Purchase Credit",
     features: [
       "1 External IP pentest credit",
-      "Autonomous AI penetration testing",
+      "Compliance ready reports",
       "Powered by Anthropic Claude agents",
       "Network vulnerability assessment",
       "Firewall & gateway testing",
-      "Detailed findings report",
+      "GRC platform integration (Drata, Vanta)",
       "Remediation guidance",
       "Results within 24 hours",
     ],
@@ -63,14 +63,14 @@ const PRICING_TIERS: PricingTier[] = [
     popular: true,
     features: [
       "1 Web Application pentest credit",
-      "Autonomous AI penetration testing",
+      "Compliance ready reports",
       "Powered by Anthropic Claude agents",
       "Up to 3 user roles tested",
       "Up to 20 pages covered",
       "Up to 10 API endpoints",
       "Authentication & authorization testing",
-      "Detailed findings report",
-      "Results within 48 hours",
+      "GRC platform integration (Drata, Vanta)",
+      "Results within 24 hours",
     ],
   },
 ];
@@ -167,7 +167,7 @@ export default function Home() {
                 Every pentest generates a structured report designed to satisfy
                 auditors — not just developers. Findings are mapped to common
                 control frameworks so your evidence package is ready the moment
-                the scan completes.
+                the pentest completes.
               </p>
               <div className="grid sm:grid-cols-2 gap-3">
                 {[
