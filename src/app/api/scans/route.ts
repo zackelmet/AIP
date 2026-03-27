@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 import { CreateScanRequest } from "@/lib/types/scanner";
-import {
-  UserDocument,
-  getPlanLimits,
-  ScanMetadata,
-} from "@/lib/types/user";
+import { UserDocument, ScanMetadata } from "@/lib/types/user";
 
 export async function POST(request: NextRequest) {
   try {
@@ -163,21 +159,8 @@ export async function POST(request: NextRequest) {
 
     const userData = userDoc.data() as UserDocument;
 
-    // Require active subscription to run scans
-    if (userData.subscriptionStatus !== "active") {
-      return NextResponse.json(
-        {
-          error: "Active subscription required to run scans",
-          message: "Please subscribe to a plan to start scanning",
-          currentPlan: userData.currentPlan || "free",
-          subscriptionStatus: userData.subscriptionStatus,
-        },
-        { status: 403 },
-      );
-    }
-
-    // Get plan limits
-    const planLimits = getPlanLimits(userData.currentPlan);
+    // Get plan limits (fall back to user doc scannerLimits or zero)
+    const defaultScannerLimits = { nmap: 0, openvas: 0, zap: 0 };
 
     // Initialize missing fields if needed
     const needsInit =
@@ -187,8 +170,8 @@ export async function POST(request: NextRequest) {
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       };
       if (!userData.scannerLimits) {
-        initData.scannerLimits = planLimits.scanners;
-        userData.scannerLimits = planLimits.scanners;
+        initData.scannerLimits = defaultScannerLimits;
+        userData.scannerLimits = defaultScannerLimits;
       }
       if (!userData.scannersUsedThisMonth) {
         initData.scannersUsedThisMonth = { nmap: 0, openvas: 0, zap: 0 };
@@ -200,8 +183,8 @@ export async function POST(request: NextRequest) {
     // Enforce per-scanner limits (no monthly reset)
     const scanner = type as "nmap" | "openvas" | "zap";
 
-    // Determine user's scanner limits (fall back to plan defaults)
-    const userScannerLimits = userData.scannerLimits || planLimits.scanners;
+    // Determine user's scanner limits (fall back to defaults)
+    const userScannerLimits = userData.scannerLimits || defaultScannerLimits;
     const scannerLimit = userScannerLimits?.[scanner] ?? 0;
 
     // Determine current used count (try user doc counters first)
@@ -224,7 +207,6 @@ export async function POST(request: NextRequest) {
           scansNeeded,
           remainingQuota,
           scanner: scanner,
-          currentPlan: userData.currentPlan,
         },
         { status: 429 },
       );
@@ -314,7 +296,6 @@ export async function POST(request: NextRequest) {
             scanLimit: scannerLimit,
             scansNeeded,
             remainingQuota,
-            currentPlan: userData.currentPlan,
           },
           { status: 429 },
         );

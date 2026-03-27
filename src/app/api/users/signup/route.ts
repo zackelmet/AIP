@@ -43,7 +43,6 @@ export async function POST(req: NextRequest) {
         stripeCustomerId: stripeCustomerId,
         stripeSubscriptionId: null,
         subscriptionStatus: "none",
-        currentPlan: "free",
         // Pentest credits
         credits: { web_app: 0, external_ip: 0 },
         createdAt: admin.firestore.FieldValue.serverTimestamp(),

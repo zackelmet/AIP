@@ -6,8 +6,6 @@ export type SubscriptionStatus =
   | "past_due"
   | "trialing"
   | "none";
-export type PlanTier = "free" | "paid";
-
 export interface UserDocument {
   // Basic Info
   uid: string;
@@ -23,7 +21,6 @@ export interface UserDocument {
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
   subscriptionStatus: SubscriptionStatus;
-  currentPlan: PlanTier;
   currentPeriodStart?: Timestamp;
   currentPeriodEnd?: Timestamp;
 
@@ -93,39 +90,6 @@ export interface ScanMetadata {
   };
   gcpStorageUrl?: string; // Signed URL to full scan results in Cloud Storage
   errorMessage?: string;
-}
-
-// Plan configuration constants
-export const PLAN_LIMITS = {
-  free: {
-    tier: "free" as PlanTier,
-    monthlyScans: 0,
-    scanners: { nmap: 0, openvas: 0, zap: 0 },
-    features: {
-      nmapEnabled: false,
-      openvasEnabled: false,
-      apiAccess: false,
-      customReports: false,
-      prioritySupport: false,
-    },
-  },
-  paid: {
-    tier: "paid" as PlanTier,
-    monthlyScans: 999,
-    scanners: { nmap: 999, openvas: 999, zap: 999 },
-    features: {
-      nmapEnabled: true,
-      openvasEnabled: true,
-      apiAccess: true,
-      customReports: true,
-      prioritySupport: true,
-    },
-  },
-} as const;
-
-// Helper function to get plan limits
-export function getPlanLimits(plan: PlanTier) {
-  return PLAN_LIMITS[plan] || PLAN_LIMITS.free;
 }
 
 // Helper to check if monthly reset is needed

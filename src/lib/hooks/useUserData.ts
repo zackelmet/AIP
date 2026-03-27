@@ -31,7 +31,6 @@ export function useUserData() {
           const data = doc.data() as UserDocument;
           console.log("📊 useUserData: User data updated:", {
             subscriptionStatus: data.subscriptionStatus,
-            currentPlan: data.currentPlan,
             monthlyScansLimit: data.monthlyScansLimit,
           });
           setUserData(data);
