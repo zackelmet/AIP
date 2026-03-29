@@ -1,22 +1,21 @@
-import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { verifyAdmin } from "@/lib/auth/verifyAuth";
 
-const admin = initializeAdmin();
+export const dynamic = "force-dynamic";
 
+/**
+ * GET /api/auth/isAdmin
+ * Returns { isAdmin: true } only when the caller carries a valid
+ * __session cookie that resolves to an admin user.
+ * No uid query parameter — the identity is taken from the verified token.
+ */
 export async function GET(req: NextRequest) {
-  const searchParams = new URLSearchParams(req.nextUrl.search);
-  const uid = searchParams.get("uid");
-
-  if (!uid) {
-    return NextResponse.json({ isAdmin: false }, { status: 401 });
-  }
-
   try {
-    const userDoc = await admin.firestore().collection("users").doc(uid).get();
-    const isAdmin = userDoc.data()?.isAdmin === true;
-
-    return NextResponse.json({ isAdmin });
+    const token = await verifyAdmin(req);
+    if (!token) {
+      return NextResponse.json({ isAdmin: false }, { status: 401 });
+    }
+    return NextResponse.json({ isAdmin: true });
   } catch (error) {
     console.error("Error checking admin status:", error);
     return NextResponse.json({ isAdmin: false }, { status: 500 });

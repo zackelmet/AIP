@@ -1,15 +1,28 @@
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 import { NextRequest, NextResponse } from "next/server";
 import { getStripeServerSide } from "@/lib/stripe/getStripeServerSide";
+import { verifyAuth } from "@/lib/auth/verifyAuth";
 
 const admin = initializeAdmin();
 
 export async function POST(req: NextRequest) {
+  // Require a valid authenticated session
+  const token = await verifyAuth(req);
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { uid, name, email } = await req.json();
 
     if (!uid) {
       return NextResponse.json({ error: "UID is required" }, { status: 400 });
+    }
+
+    // The UID in the body must match the authenticated user — prevents creating
+    // or overwriting another user's document.
+    if (uid !== token.uid) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Check if the user document already exists

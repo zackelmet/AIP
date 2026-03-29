@@ -40,3 +40,4 @@ next-env.d.ts
 gcp/keys/*.json
 gemini.md
 .gemini/
+.env.smoke
