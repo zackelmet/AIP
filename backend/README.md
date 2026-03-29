@@ -35,7 +35,7 @@ gcloud run deploy msp-pentest-backend \
   --source . \
   --region us-east1 \
   --allow-unauthenticated \
-  --set-env-vars="GCP_WEBHOOK_SECRET=9e33b83b7ae6aeda980df8152927aba5551ecd5e718b6bd475bde3902ad6ecd3" \
+  --set-env-vars="GCP_WEBHOOK_SECRET=$GCP_WEBHOOK_SECRET" \
   --set-env-vars="ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY" \
   --set-env-vars="WEBAPP_API_URL=https://msppentesting.vercel.app/api/pentests" \
   --set-env-vars="GCS_BUCKET_NAME=msp-pentest-reports" \
@@ -58,7 +58,7 @@ vercel env add BACKEND_WEBHOOK_URL production
 ```bash
 curl -X POST https://your-service-url.run.app/execute-pentest \
   -H "Content-Type: application/json" \
-  -H "X-Webhook-Secret: 9e33b83b7ae6aeda980df8152927aba5551ecd5e718b6bd475bde3902ad6ecd3" \
+  -H "X-Webhook-Secret: $GCP_WEBHOOK_SECRET" \
   -d '{
     "pentestId": "test123",
     "userId": "user_abc",

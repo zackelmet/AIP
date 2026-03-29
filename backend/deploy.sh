@@ -29,7 +29,7 @@ gcloud run deploy msp-pentest-backend \
   --project msp-ai-pentester \
   --region us-east1 \
   --allow-unauthenticated \
-  --set-env-vars="GCP_WEBHOOK_SECRET=9e33b83b7ae6aeda980df8152927aba5551ecd5e718b6bd475bde3902ad6ecd3,ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY,WEBAPP_API_URL=https://affordable-pentesting.vercel.app/api/pentests,GCS_BUCKET_NAME=msp-pentest-reports,GCP_PROJECT_ID=msp-ai-pentester" \
+  --set-env-vars="GCP_WEBHOOK_SECRET=$GCP_WEBHOOK_SECRET,ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY,WEBAPP_API_URL=https://affordable-pentesting.vercel.app/api/pentests,GCS_BUCKET_NAME=msp-pentest-reports,GCP_PROJECT_ID=msp-ai-pentester" \
   --timeout=3600 \
   --memory=2Gi \
   --cpu=2

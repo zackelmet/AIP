@@ -15,9 +15,9 @@
 
 **Webhook Secret (CRITICAL):**
 ```
-GCP_WEBHOOK_SECRET=9e33b83b7ae6aeda980df8152927aba5551ecd5e718b6bd475bde3902ad6ecd3
+GCP_WEBHOOK_SECRET=<set-in-vercel-env-vars>
 ```
-⚠️ **Use this exact value in your backend environment variables to authenticate requests**
+⚠️ **Set this in your Vercel and backend environment variables — never hardcode it in source files**
 
 **After Backend Deployment:**
 Update Vercel env var `BACKEND_WEBHOOK_URL` with your Cloud Run URL:
@@ -354,7 +354,7 @@ Response:
 ANTHROPIC_API_KEY=sk-ant-...
 
 # Webhook Authentication (CRITICAL - must match webapp)
-GCP_WEBHOOK_SECRET=9e33b83b7ae6aeda980df8152927aba5551ecd5e718b6bd475bde3902ad6ecd3
+GCP_WEBHOOK_SECRET=<your-webhook-secret>
 
 # Webapp Callback URL
 WEBAPP_API_URL=https://msppentesting.vercel.app/api/pentests
@@ -376,7 +376,7 @@ FIREBASE_ADMIN_PRIVATE_KEY=...
 BACKEND_WEBHOOK_URL=https://your-backend.run.app/execute-pentest
 
 # Shared webhook secret (already set)
-GCP_WEBHOOK_SECRET=9e33b83b7ae6aeda980df8152927aba5551ecd5e718b6bd475bde3902ad6ecd3
+GCP_WEBHOOK_SECRET=<set-in-vercel-env-vars>
 
 # Stripe webhook secret (already set)
 STRIPE_WEBHOOK_SECRET=whsec_eUo8mKBZqO31Rml5Oihq8mtLXb0EUMGB
@@ -522,7 +522,7 @@ def parse_claude_response(response) -> dict:
 - [ ] Get Anthropic API key (ask for budget/account access)
 - [ ] Set up local development environment
 - [ ] Configure environment variables:
-  - `GCP_WEBHOOK_SECRET=9e33b83b7ae6aeda980df8152927aba5551ecd5e718b6bd475bde3902ad6ecd3`
+  - `GCP_WEBHOOK_SECRET=<your-webhook-secret>`
   - `WEBAPP_API_URL=https://msppentesting.vercel.app/api/pentests`
   - `ANTHROPIC_API_KEY=sk-ant-...`
 
@@ -539,8 +539,8 @@ def parse_claude_response(response) -> dict:
 ```bash
 curl -X POST https://your-backend.run.app/execute-pentest \
   -H "Content-Type: application/json" \
-  -H "X-Webhook-Secret: 9e33b83b7ae6aeda980df8152927aba5551ecd5e718b6bd475bde3902ad6ecd3" \
-  -d '{"pentestId":"test123","type":"web_app","targetUrl":"https://test.example.com"}'
+  -H "X-Webhook-Secret: $GCP_WEBHOOK_SECRET" \
+  -d '{"pentestId":"test123","type":"web_app","targetUrl":"https://test.example.com"}'  
 ```
 - [ ] Test Claude integration with sandbox target
 - [ ] Verify results callback to webapp updates Firestore correctly
