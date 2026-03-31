@@ -178,6 +178,91 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Environments Section */}
+      <section className="py-20 bg-[#060e16]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-14">
+            <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest mb-3">
+              What We Test
+            </p>
+            <h2 className="text-4xl lg:text-5xl font-light mb-4">
+              Pentest <span className="text-[#34D399]">Environments</span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              AI-powered and manual testing across every attack surface.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                name: "External",
+                img: "/environments/external.png",
+                desc: "Simulate real-world attacks on your public-facing systems, IPs, and infrastructure.",
+                href: "https://www.affordablepentesting.com/environments/external-pentesting",
+              },
+              {
+                name: "Web Application",
+                img: "/environments/web-app.png",
+                desc: "Find XSS, SQL injection, authentication gaps, and logic flaws in your web apps.",
+                href: "https://www.affordablepentesting.com/environments/web-app-pentesting",
+              },
+              {
+                name: "Internal",
+                img: "/environments/internal.png",
+                desc: "Test insider-threat scenarios, lateral movement, and privilege escalation paths.",
+                href: "https://www.affordablepentesting.com/environments/internal-pentesting",
+              },
+              {
+                name: "Cloud",
+                img: "/environments/cloud.png",
+                desc: "Identify IAM misconfigs, exposed buckets, and vulnerabilities across AWS, Azure & GCP.",
+                href: "https://www.affordablepentesting.com/environments/cloud-pentesting",
+              },
+              {
+                name: "WiFi",
+                img: "/environments/wifi.png",
+                desc: "Detect weak encryption, rogue access points, and unauthorized wireless access.",
+                href: "https://www.affordablepentesting.com/environments/wifi-pentesting",
+              },
+              {
+                name: "API",
+                img: "/environments/api.png",
+                desc: "Uncover broken auth, BOLA, data exposure, and injection flaws across your APIs.",
+                href: "https://www.affordablepentesting.com/environments/api-pentesting",
+              },
+            ].map((env) => (
+              <a
+                key={env.name}
+                href={env.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group bg-white/5 border border-white/10 hover:border-[#34D399]/50 rounded-xl p-6 flex flex-col items-center text-center transition-all hover:bg-white/[0.07] hover:shadow-lg hover:shadow-[#34D399]/5"
+              >
+                <div className="w-20 h-20 mb-5 flex items-center justify-center">
+                  <Image
+                    src={env.img}
+                    alt={env.name}
+                    width={80}
+                    height={80}
+                    className="object-contain w-full h-full drop-shadow-[0_0_8px_rgba(52,211,153,0.25)] group-hover:drop-shadow-[0_0_14px_rgba(52,211,153,0.45)] transition-all"
+                  />
+                </div>
+                <h3 className="text-white font-normal text-lg mb-2">
+                  {env.name}
+                </h3>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  {env.desc}
+                </p>
+                <span className="mt-4 text-[#34D399] text-xs font-normal uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                  Learn more →
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Compliance Ready Reports Section */}
       <section className="py-14 bg-gradient-to-r from-[#34D399]/20 to-[#34D399]/5">
         <div className="max-w-5xl mx-auto px-6">
