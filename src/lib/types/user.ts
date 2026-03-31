@@ -41,6 +41,7 @@ export interface UserDocument {
   credits?: {
     web_app: number;
     external_ip: number;
+    pentest_plus: number;
   };
   scansThisMonth: number; // legacy counter (kept for compatibility) that resets monthly
   totalScansAllTime: number; // Lifetime counter

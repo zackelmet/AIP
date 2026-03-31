@@ -27,7 +27,7 @@ export default function DashboardPage() {
   );
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [selectedPentestType, setSelectedPentestType] = useState<
-    "web_app" | "external_ip" | null
+    "web_app" | "external_ip" | "pentest_plus" | null
   >(null);
   const [purchaseQuantity, setPurchaseQuantity] = useState(1);
   const [loadingCheckout, setLoadingCheckout] = useState(false);
@@ -36,6 +36,7 @@ export default function DashboardPage() {
     return {
       web_app: userData?.credits?.web_app || 0,
       external_ip: userData?.credits?.external_ip || 0,
+      pentest_plus: userData?.credits?.pentest_plus || 0,
     };
   }, [userData]);
 
@@ -44,7 +45,7 @@ export default function DashboardPage() {
   }, [userScans]);
 
   const handlePurchaseCredits = async (
-    pentestType: "web_app" | "external_ip",
+    pentestType: "web_app" | "external_ip" | "pentest_plus",
     quantity: number,
   ) => {
     setLoadingCheckout(true);
@@ -52,9 +53,10 @@ export default function DashboardPage() {
     try {
       const priceId =
         pentestType === "web_app"
-          ? process.env.NEXT_PUBLIC_STRIPE_PRICE_WEB_APP ||
-            process.env.NEXT_PUBLIC_STRIPE_PRICE_AI_SINGLE
-          : process.env.NEXT_PUBLIC_STRIPE_PRICE_AI_SINGLE;
+          ? process.env.NEXT_PUBLIC_STRIPE_PRICE_WEB_APP
+          : pentestType === "pentest_plus"
+            ? process.env.NEXT_PUBLIC_STRIPE_PRICE_PENTEST_PLUS
+            : process.env.NEXT_PUBLIC_STRIPE_PRICE_AI_SINGLE;
 
       const response = await fetch("/api/checkout", {
         method: "POST",
@@ -88,7 +90,9 @@ export default function DashboardPage() {
     }
   };
 
-  const openPurchaseModal = (type: "web_app" | "external_ip") => {
+  const openPurchaseModal = (
+    type: "web_app" | "external_ip" | "pentest_plus",
+  ) => {
     setSelectedPentestType(type);
     setPurchaseQuantity(1);
     setShowPurchaseModal(true);
@@ -117,7 +121,7 @@ export default function DashboardPage() {
 function PurchaseParamHandler({
   openPurchaseModal,
 }: {
-  openPurchaseModal: (type: "web_app" | "external_ip") => void;
+  openPurchaseModal: (type: "web_app" | "external_ip" | "pentest_plus") => void;
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -127,7 +131,11 @@ function PurchaseParamHandler({
     const success = searchParams.get("success");
     const canceled = searchParams.get("canceled");
 
-    if (purchase === "web_app" || purchase === "external_ip") {
+    if (
+      purchase === "web_app" ||
+      purchase === "external_ip" ||
+      purchase === "pentest_plus"
+    ) {
       openPurchaseModal(purchase);
       router.replace("/app/dashboard", { scroll: false });
     } else if (success === "true") {
@@ -162,15 +170,18 @@ function DashboardInner({
   loading,
   scansLoading,
 }: {
-  openPurchaseModal: (type: "web_app" | "external_ip") => void;
+  openPurchaseModal: (type: "web_app" | "external_ip" | "pentest_plus") => void;
   showPurchaseModal: boolean;
   setShowPurchaseModal: (v: boolean) => void;
-  selectedPentestType: "web_app" | "external_ip" | null;
+  selectedPentestType: "web_app" | "external_ip" | "pentest_plus" | null;
   purchaseQuantity: number;
   setPurchaseQuantity: (v: number) => void;
   loadingCheckout: boolean;
-  handlePurchaseCredits: (type: "web_app" | "external_ip", qty: number) => void;
-  credits: { web_app: number; external_ip: number };
+  handlePurchaseCredits: (
+    type: "web_app" | "external_ip" | "pentest_plus",
+    qty: number,
+  ) => void;
+  credits: { web_app: number; external_ip: number; pentest_plus: number };
   recentScans: any[];
   loading: boolean;
   scansLoading: boolean;
@@ -215,7 +226,7 @@ function DashboardInner({
             <p className="text-white/80 text-sm">Configure and launch</p>
           </Link>
 
-          <div className="grid lg:grid-cols-2 gap-6">
+          <div className="grid lg:grid-cols-3 gap-6">
             {/* Web App Credits Card */}
             <div className="bg-gradient-to-br from-[#0a141f] to-[#0a141f]/80 border border-[#34D399]/30 rounded-xl p-6 shadow-lg">
               <div className="flex items-start justify-between mb-4">
@@ -281,47 +292,86 @@ function DashboardInner({
                 <p className="text-xs text-gray-500">$199 per credit</p>
               </div>
             </div>
+
+            {/* Pentest+ Credits Card */}
+            <div className="bg-gradient-to-br from-[#0a141f] to-[#0a141f]/80 border border-[#34D399]/30 rounded-xl p-6 shadow-lg">
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
+                  <FontAwesomeIcon
+                    icon={faShieldHalved}
+                    className="text-2xl text-[#34D399]"
+                  />
+                </div>
+                <button
+                  onClick={() => openPurchaseModal("pentest_plus")}
+                  className="buy-credits-btn flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#34D399]/10 hover:bg-[#34D399]/25 border border-[#34D399]/50 hover:border-[#34D399] transition-colors cursor-pointer"
+                  title="Purchase Pentest+ credits"
+                >
+                  <span className="text-sm font-semibold text-[#34D399]">
+                    Buy Pentest
+                  </span>
+                  <FontAwesomeIcon
+                    icon={faPlus}
+                    className="text-[#34D399] text-xs"
+                  />
+                </button>
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Pentest+ Credits</p>
+                <p className="text-5xl font-bold text-white mb-2">
+                  {credits.pentest_plus}
+                </p>
+                <p className="text-xs text-gray-500">$1,500 per credit</p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* No credits banner */}
-        {credits.web_app === 0 && credits.external_ip === 0 && (
-          <div className="bg-gradient-to-r from-[#34D399]/10 to-[#34D399]/5 border border-[#34D399]/30 rounded-xl p-6">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
-                <FontAwesomeIcon
-                  icon={faShieldHalved}
-                  className="text-2xl text-[#34D399]"
-                />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-bold text-xl text-white mb-2">
-                  Purchase Credits to Get Started
-                </h3>
-                <p className="text-gray-300 mb-4">
-                  Choose between Web Application pentests ($500) or External IP
-                  pentests ($199). Our Anthropic Claude agentic systems conduct
-                  comprehensive security assessments delivered within 24-48
-                  hours.
-                </p>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => openPurchaseModal("web_app")}
-                    className="px-6 py-3 bg-[#34D399] hover:bg-[#10b981] text-white font-semibold rounded-lg transition-colors"
-                  >
-                    Buy Web App Credits
-                  </button>
-                  <button
-                    onClick={() => openPurchaseModal("external_ip")}
-                    className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg border border-white/20 transition-colors"
-                  >
-                    Buy External IP Credits
-                  </button>
+        {credits.web_app === 0 &&
+          credits.external_ip === 0 &&
+          credits.pentest_plus === 0 && (
+            <div className="bg-gradient-to-r from-[#34D399]/10 to-[#34D399]/5 border border-[#34D399]/30 rounded-xl p-6">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
+                  <FontAwesomeIcon
+                    icon={faShieldHalved}
+                    className="text-2xl text-[#34D399]"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-xl text-white mb-2">
+                    Purchase Credits to Get Started
+                  </h3>
+                  <p className="text-gray-300 mb-4">
+                    Choose from Web App ($500), External IP ($199), or Pentest+
+                    ($1,500) for up to 50 IPs or 100 API endpoints with
+                    unlimited user roles.
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={() => openPurchaseModal("web_app")}
+                      className="px-6 py-3 bg-[#34D399] hover:bg-[#10b981] text-white font-semibold rounded-lg transition-colors"
+                    >
+                      Buy Web App Credits
+                    </button>
+                    <button
+                      onClick={() => openPurchaseModal("external_ip")}
+                      className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg border border-white/20 transition-colors"
+                    >
+                      Buy External IP Credits
+                    </button>
+                    <button
+                      onClick={() => openPurchaseModal("pentest_plus")}
+                      className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg border border-[#34D399]/40 transition-colors"
+                    >
+                      Buy Pentest+ Credits
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Recent Pentests */}
         {recentScans.length > 0 && (
@@ -414,7 +464,9 @@ function DashboardInner({
                 <p className="text-gray-400">
                   {selectedPentestType === "web_app"
                     ? "Web Application Pentest"
-                    : "External IP Pentest"}
+                    : selectedPentestType === "pentest_plus"
+                      ? "Pentest+"
+                      : "External IP Pentest"}
                 </p>
               </div>
               <button
@@ -434,20 +486,31 @@ function DashboardInner({
                 <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
                   <FontAwesomeIcon
                     icon={
-                      selectedPentestType === "web_app" ? faGlobe : faServer
+                      selectedPentestType === "web_app"
+                        ? faGlobe
+                        : selectedPentestType === "pentest_plus"
+                          ? faShieldHalved
+                          : faServer
                     }
                     className="text-2xl text-[#34D399]"
                   />
                 </div>
                 <div>
                   <p className="text-white font-bold text-xl">
-                    ${selectedPentestType === "web_app" ? "500" : "199"} per
-                    credit
+                    $
+                    {selectedPentestType === "web_app"
+                      ? "500"
+                      : selectedPentestType === "pentest_plus"
+                        ? "1,500"
+                        : "199"}{" "}
+                    per credit
                   </p>
                   <p className="text-gray-400 text-sm">
                     {selectedPentestType === "web_app"
                       ? "Up to 3 roles, 10 endpoints"
-                      : "Gateways & firewalls"}
+                      : selectedPentestType === "pentest_plus"
+                        ? "50 IPs or 100 API endpoints, unlimited roles"
+                        : "Gateways & firewalls"}
                   </p>
                 </div>
               </div>
@@ -520,8 +583,11 @@ function DashboardInner({
                 <span className="text-[#34D399] font-bold text-4xl">
                   $
                   {(
-                    (selectedPentestType === "web_app" ? 500 : 199) *
-                    purchaseQuantity
+                    (selectedPentestType === "web_app"
+                      ? 500
+                      : selectedPentestType === "pentest_plus"
+                        ? 1500
+                        : 199) * purchaseQuantity
                   ).toLocaleString()}
                 </span>
               </p>
