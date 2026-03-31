@@ -60,6 +60,7 @@ const PRICING_TIERS: PricingTier[] = [
     description: "Up to 3 user roles, 20 pages & 10 API endpoints",
     type: "one-time",
     cta: "Purchase Credit",
+    popular: true,
     features: [
       "1 Web Application pentest credit",
       "Compliance ready reports",
@@ -80,7 +81,6 @@ const PRICING_TIERS: PricingTier[] = [
     description: "Up to 50 external IPs or webapp with 100 API endpoints",
     type: "one-time",
     cta: "Purchase Credit",
-    popular: true,
     features: [
       "1 Pentest+ credit",
       "AI pentest: up to 50 external IPs",
