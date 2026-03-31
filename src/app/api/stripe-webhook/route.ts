@@ -76,9 +76,9 @@ async function handleCheckoutSessionCompleted(
   }
 
   // If this is a pentest credit purchase
-  // Only 'web_app' and 'external_ip' are valid credit types — guard against
+  // Only 'web_app', 'external_ip', and 'pentest_plus' are valid credit types — guard against
   // stale/invalid values (e.g. 'subscription') writing junk fields to Firestore.
-  const validCreditTypes = ["web_app", "external_ip"];
+  const validCreditTypes = ["web_app", "external_ip", "pentest_plus"];
   if (pentestType && validCreditTypes.includes(pentestType)) {
     // line_items are NOT included in webhook events by default - retrieve them
     let quantity = 1;
@@ -123,6 +123,7 @@ async function handleCheckoutSessionCompleted(
               credits: {
                 web_app: pentestType === "web_app" ? quantity : 0,
                 external_ip: pentestType === "external_ip" ? quantity : 0,
+                pentest_plus: pentestType === "pentest_plus" ? quantity : 0,
               },
               updatedAt: FieldValue.serverTimestamp(),
             },

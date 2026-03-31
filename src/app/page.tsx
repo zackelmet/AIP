@@ -60,7 +60,6 @@ const PRICING_TIERS: PricingTier[] = [
     description: "Up to 3 user roles, 20 pages & 10 API endpoints",
     type: "one-time",
     cta: "Purchase Credit",
-    popular: true,
     features: [
       "1 Web Application pentest credit",
       "Compliance ready reports",
@@ -68,6 +67,27 @@ const PRICING_TIERS: PricingTier[] = [
       "Up to 3 user roles tested",
       "Up to 20 pages covered",
       "Up to 10 API endpoints",
+      "Authentication & authorization testing",
+      "GRC platform integration (Drata, Vanta)",
+      "Results within 24 hours",
+    ],
+  },
+  {
+    id: "pentest_plus",
+    name: "Pentest+",
+    price: 1500,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PENTEST_PLUS || "",
+    description: "Up to 50 external IPs or webapp with 100 API endpoints",
+    type: "one-time",
+    cta: "Purchase Credit",
+    popular: true,
+    features: [
+      "1 Pentest+ credit",
+      "AI pentest: up to 50 external IPs",
+      "Or webapp with up to 100 API endpoints",
+      "Unlimited user roles tested",
+      "Compliance ready reports",
+      "Powered by Anthropic Claude agents",
       "Authentication & authorization testing",
       "GRC platform integration (Drata, Vanta)",
       "Results within 24 hours",
@@ -140,13 +160,19 @@ export default function Home() {
               AI-powered penetration testing. Flexible, transparent pricing
               &mdash; no subscriptions, no surprises.
             </p>
-            <div className="flex justify-center pt-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <button
                 onClick={handleStartPentest}
-                className="px-12 py-5 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors text-xl"
+                className="px-10 py-5 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors text-xl"
               >
-                Start Your Pentest
+                Launch an AI Pentest Now
               </button>
+              <Link
+                href="/LaunchAPentest"
+                className="px-10 py-5 bg-white/5 hover:bg-white/10 text-white font-normal rounded-lg border border-white/20 transition-colors text-xl"
+              >
+                Get a Manual Pentest
+              </Link>
             </div>
           </div>
         </div>
@@ -267,7 +293,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {PRICING_TIERS.map((tier) => (
               <PricingCard
                 key={tier.id}
