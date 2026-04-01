@@ -11,13 +11,13 @@
 }
 
 * {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-ibm-plex-sans), 'IBM Plex Sans', sans-serif;
 }
 
 body {
   background-color: var(--primary-bg);
   color: var(--text-primary);
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-ibm-plex-sans), 'IBM Plex Sans', sans-serif;
 }
 
 :root {
@@ -45,7 +45,7 @@ body {
 		var(--bg);
 	color: var(--text);
 	min-height: 100vh;
-	font-family: 'IBM Plex Sans', sans-serif;
+	font-family: var(--font-ibm-plex-sans), 'IBM Plex Sans', sans-serif;
 }
 
 h1,
@@ -54,7 +54,7 @@ h3,
 h4,
 h5,
 h6 {
-	font-family: 'IBM Plex Sans', sans-serif;
+	font-family: var(--font-ibm-plex-sans), 'IBM Plex Sans', sans-serif;
 }
 
 /* DaisyUI override for the active theme (cupcake is set in layout) */

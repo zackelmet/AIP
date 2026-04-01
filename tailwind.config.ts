@@ -9,12 +9,12 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Chakra Petch', 'sans-serif'],
+        sans: ["var(--font-ibm-plex-sans)", "IBM Plex Sans", "sans-serif"],
         serif: ['"Roboto Slab"', "ui-serif", "Georgia", "serif"],
       },
       colors: {
-        'ap-dark': '#0a141f',
-        'ap-green': '#34D399',
+        "ap-dark": "#0a141f",
+        "ap-green": "#34D399",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
