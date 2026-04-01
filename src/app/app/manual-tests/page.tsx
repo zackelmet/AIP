@@ -34,9 +34,9 @@ const testTypeLabels: Record<ManualTestType, string> = {
 };
 
 const statusColors = {
-  in_progress: "bg-yellow-100 text-yellow-700",
-  completed: "bg-green-100 text-green-700",
-  blocked: "bg-red-100 text-red-700",
+  in_progress: "bg-yellow-500/20 text-yellow-400",
+  completed: "bg-green-500/20 text-green-400",
+  blocked: "bg-red-500/20 text-red-400",
 };
 
 const statusIcons = {
@@ -126,7 +126,11 @@ export default function ManualTestsPage() {
   const formatTimestamp = (timestamp: any) => {
     if (!timestamp) return "-";
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleDateString() + " " + date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return (
+      date.toLocaleDateString() +
+      " " +
+      date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    );
   };
 
   return (
@@ -135,14 +139,14 @@ export default function ManualTestsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Manual Tests</h1>
-            <p className="text-gray-500 mt-1">
+            <h1 className="text-2xl font-bold text-white">Manual Tests</h1>
+            <p className="text-gray-400 mt-1">
               Log and track your manual pentesting activities
             </p>
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500 text-white font-semibold rounded-lg hover:bg-cyan-600 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
           >
             <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
             New Manual Test
@@ -150,19 +154,19 @@ export default function ManualTestsPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="bg-white/5 rounded-xl border border-white/10 p-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
               <FontAwesomeIcon
                 icon={faSearch}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4"
               />
               <input
                 type="text"
                 placeholder="Search tests..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className="w-full pl-10 pr-4 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white"
               />
             </div>
             <div className="relative">
@@ -173,7 +177,7 @@ export default function ManualTestsPage() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="pl-10 pr-8 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 appearance-none bg-white min-w-[160px]"
+                className="pl-10 pr-8 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] appearance-none bg-white/5 text-white min-w-[160px]"
               >
                 <option value="all">All Status</option>
                 <option value="in_progress">In Progress</option>
@@ -185,40 +189,42 @@ export default function ManualTestsPage() {
         </div>
 
         {/* Tests List */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="bg-white/5 rounded-xl border border-white/10">
           {loading ? (
-            <div className="p-8 text-center text-gray-500">Loading tests...</div>
+            <div className="p-8 text-center text-gray-500">
+              Loading tests...
+            </div>
           ) : filteredTests.length === 0 ? (
             <div className="p-8 text-center">
               <FontAwesomeIcon
                 icon={faUser}
-                className="w-12 h-12 text-gray-300 mb-4"
+                className="w-12 h-12 text-gray-600 mb-4"
               />
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-white">
                 No manual tests yet
               </h3>
-              <p className="text-gray-500 mt-1">
+              <p className="text-gray-400 mt-1">
                 Start logging your manual pentesting work.
               </p>
               <button
                 onClick={() => setShowModal(true)}
-                className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-cyan-500 text-white font-semibold rounded-lg hover:bg-cyan-600 transition-colors"
+                className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
               >
                 <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
                 Log Manual Test
               </button>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-white/5">
               {filteredTests.map((test) => (
                 <div
                   key={test.id}
-                  className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                  className="p-4 hover:bg-white/5 transition-colors cursor-pointer"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3">
-                        <h4 className="font-medium text-gray-900 truncate">
+                        <h4 className="font-medium text-white truncate">
                           {test.title}
                         </h4>
                         <span
@@ -232,7 +238,7 @@ export default function ManualTestsPage() {
                         </span>
                       </div>
                       <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                        <span className="font-mono bg-gray-100 px-2 py-0.5 rounded">
+                        <span className="font-mono bg-white/10 px-2 py-0.5 rounded text-gray-300">
                           {test.target}
                         </span>
                         <span>{testTypeLabels[test.testType]}</span>
@@ -265,20 +271,20 @@ export default function ManualTestsPage() {
       {/* New Test Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#0d1117] rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-white/10">
             <form onSubmit={handleSubmit}>
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-xl font-bold text-gray-900">
+              <div className="p-6 border-b border-white/10">
+                <h2 className="text-xl font-bold text-white">
                   Log Manual Test
                 </h2>
-                <p className="text-gray-500 mt-1">
+                <p className="text-gray-400 mt-1">
                   Record your manual pentesting activity
                 </p>
               </div>
 
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Title *
                   </label>
                   <input
@@ -287,12 +293,12 @@ export default function ManualTestsPage() {
                     onChange={(e) => setTitle(e.target.value)}
                     required
                     placeholder="e.g., SQL Injection Testing"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Target *
                   </label>
                   <input
@@ -301,19 +307,21 @@ export default function ManualTestsPage() {
                     onChange={(e) => setTarget(e.target.value)}
                     required
                     placeholder="e.g., https://example.com or 192.168.1.1"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono"
+                    className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] font-mono bg-white/5 text-white"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-1">
                       Test Type *
                     </label>
                     <select
                       value={testType}
-                      onChange={(e) => setTestType(e.target.value as ManualTestType)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      onChange={(e) =>
+                        setTestType(e.target.value as ManualTestType)
+                      }
+                      className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white"
                     >
                       {Object.entries(testTypeLabels).map(([key, label]) => (
                         <option key={key} value={key}>
@@ -324,13 +332,13 @@ export default function ManualTestsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-1">
                       Methodology
                     </label>
                     <select
                       value={methodology}
                       onChange={(e) => setMethodology(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white"
                     >
                       <option value="OWASP">OWASP</option>
                       <option value="PTES">PTES</option>
@@ -341,7 +349,7 @@ export default function ManualTestsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Description
                   </label>
                   <textarea
@@ -349,12 +357,12 @@ export default function ManualTestsPage() {
                     onChange={(e) => setDescription(e.target.value)}
                     rows={3}
                     placeholder="Describe what you're testing..."
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Notes
                   </label>
                   <textarea
@@ -362,26 +370,26 @@ export default function ManualTestsPage() {
                     onChange={(e) => setNotes(e.target.value)}
                     rows={2}
                     placeholder="Any additional notes..."
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white"
                   />
                 </div>
               </div>
 
-              <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+              <div className="p-6 border-t border-white/10 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => {
                     setShowModal(false);
                     resetForm();
                   }}
-                  className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-400 font-medium hover:bg-white/5 rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 bg-cyan-500 text-white font-semibold rounded-lg hover:bg-cyan-600 transition-colors disabled:opacity-50"
+                  className="px-4 py-2 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:opacity-50"
                 >
                   {submitting ? "Starting..." : "Start Test"}
                 </button>

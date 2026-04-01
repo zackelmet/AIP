@@ -33,16 +33,16 @@ const activityIcons: Record<ActivityType, any> = {
 };
 
 const activityColors: Record<ActivityType, string> = {
-  manual_test: "bg-emerald-100 text-emerald-600",
-  ai_scan: "bg-purple-100 text-purple-600",
-  nmap_scan: "bg-cyan-100 text-cyan-600",
-  openvas_scan: "bg-orange-100 text-orange-600",
-  zap_scan: "bg-green-100 text-green-600",
-  finding_added: "bg-red-100 text-red-600",
-  report_generated: "bg-gray-100 text-gray-600",
-  target_added: "bg-yellow-100 text-yellow-600",
-  engagement_started: "bg-emerald-100 text-emerald-600",
-  engagement_completed: "bg-teal-100 text-teal-600",
+  manual_test: "bg-emerald-500/20 text-emerald-400",
+  ai_scan: "bg-purple-500/20 text-purple-400",
+  nmap_scan: "bg-cyan-500/20 text-cyan-400",
+  openvas_scan: "bg-orange-500/20 text-orange-400",
+  zap_scan: "bg-green-500/20 text-green-400",
+  finding_added: "bg-red-500/20 text-red-400",
+  report_generated: "bg-gray-500/20 text-gray-400",
+  target_added: "bg-yellow-500/20 text-yellow-400",
+  engagement_started: "bg-emerald-500/20 text-emerald-400",
+  engagement_completed: "bg-teal-500/20 text-teal-400",
 };
 
 export default function ActivityPage() {
@@ -83,28 +83,28 @@ export default function ActivityPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Activity Log</h1>
-            <p className="text-gray-500 mt-1">
+            <h1 className="text-2xl font-bold text-white">Activity Log</h1>
+            <p className="text-gray-400 mt-1">
               Track all pentest activities - manual and automated
             </p>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="bg-white/5 rounded-xl border border-white/10 p-4">
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Search */}
             <div className="relative flex-1">
               <FontAwesomeIcon
                 icon={faSearch}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4"
               />
               <input
                 type="text"
                 placeholder="Search activities..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] focus:border-transparent bg-white/5 text-white"
               />
             </div>
 
@@ -119,7 +119,7 @@ export default function ActivityPage() {
                 onChange={(e) =>
                   setFilterType(e.target.value as ActivityType | "all")
                 }
-                className="pl-10 pr-8 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent appearance-none bg-white min-w-[180px]"
+                className="pl-10 pr-8 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] focus:border-transparent appearance-none bg-white/5 text-white min-w-[180px]"
               >
                 <option value="all">All Activities</option>
                 <option value="manual_test">Manual Tests</option>
@@ -135,7 +135,7 @@ export default function ActivityPage() {
         </div>
 
         {/* Activity List */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="bg-white/5 rounded-xl border border-white/10">
           {loading ? (
             <div className="p-8 text-center text-gray-500">
               Loading activities...
@@ -144,25 +144,25 @@ export default function ActivityPage() {
             <div className="p-8 text-center">
               <FontAwesomeIcon
                 icon={faClipboardList}
-                className="w-12 h-12 text-gray-300 mb-4"
+                className="w-12 h-12 text-gray-600 mb-4"
               />
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-white">
                 No activities yet
               </h3>
-              <p className="text-gray-500 mt-1">
+              <p className="text-gray-400 mt-1">
                 Start a manual test or run an AI scan to see activities here.
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-white/5">
               {filteredActivities.map((activity) => (
                 <div
                   key={activity.id}
-                  className="p-4 hover:bg-gray-50 transition-colors"
+                  className="p-4 hover:bg-white/5 transition-colors"
                 >
                   <div className="flex items-start gap-4">
                     <div
-                      className={`p-2 rounded-lg ${activityColors[activity.type] || "bg-gray-100 text-gray-600"}`}
+                      className={`p-2 rounded-lg ${activityColors[activity.type] || "bg-gray-500/20 text-gray-400"}`}
                     >
                       {activityIcons[activity.type] ? (
                         <FontAwesomeIcon
@@ -170,12 +170,18 @@ export default function ActivityPage() {
                           className="w-4 h-4"
                         />
                       ) : (
-                        <Image src="/brain.png" alt="AI" width={16} height={16} className="w-4 h-4" />
+                        <Image
+                          src="/brain.png"
+                          alt="AI"
+                          width={16}
+                          height={16}
+                          className="w-4 h-4"
+                        />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
-                        <h4 className="font-medium text-gray-900 truncate">
+                        <h4 className="font-medium text-white truncate">
                           {activity.title}
                         </h4>
                         <span className="text-sm text-gray-500 whitespace-nowrap">
@@ -183,13 +189,13 @@ export default function ActivityPage() {
                         </span>
                       </div>
                       {activity.description && (
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-gray-400 mt-1">
                           {activity.description}
                         </p>
                       )}
                       {activity.target && (
                         <div className="mt-2">
-                          <span className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-gray-700 text-xs font-mono">
+                          <span className="inline-flex items-center px-2 py-1 rounded-md bg-white/10 text-gray-300 text-xs font-mono">
                             {activity.target}
                           </span>
                         </div>

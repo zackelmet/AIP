@@ -20,31 +20,34 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { auth } from "@/lib/firebase/firebaseClient";
 import { Severity, FindingStatus } from "@/lib/types/pentest";
 
-const severityConfig: Record<Severity, { icon: any; color: string; bg: string }> = {
+const severityConfig: Record<
+  Severity,
+  { icon: any; color: string; bg: string }
+> = {
   critical: {
     icon: faExclamationCircle,
-    color: "text-red-700",
-    bg: "bg-red-100",
+    color: "text-red-400",
+    bg: "bg-red-500/20",
   },
   high: {
     icon: faExclamationTriangle,
-    color: "text-orange-700",
-    bg: "bg-orange-100",
+    color: "text-orange-400",
+    bg: "bg-orange-500/20",
   },
   medium: {
     icon: faExclamationTriangle,
-    color: "text-yellow-700",
-    bg: "bg-yellow-100",
+    color: "text-yellow-400",
+    bg: "bg-yellow-500/20",
   },
   low: {
     icon: faInfoCircle,
-    color: "text-emerald-700",
-    bg: "bg-emerald-100",
+    color: "text-emerald-400",
+    bg: "bg-emerald-500/20",
   },
   info: {
     icon: faInfoCircle,
-    color: "text-gray-700",
-    bg: "bg-gray-100",
+    color: "text-gray-400",
+    bg: "bg-gray-500/20",
   },
 };
 
@@ -159,14 +162,14 @@ export default function FindingsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Findings</h1>
-            <p className="text-gray-500 mt-1">
+            <h1 className="text-2xl font-bold text-white">Findings</h1>
+            <p className="text-gray-400 mt-1">
               Track vulnerabilities and security findings
             </p>
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500 text-white font-semibold rounded-lg hover:bg-cyan-600 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
           >
             <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
             Add Finding
@@ -175,52 +178,62 @@ export default function FindingsPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-            <div className="text-sm text-gray-500">Total</div>
+          <div className="bg-white/5 rounded-xl border border-white/10 p-4">
+            <div className="text-2xl font-bold text-white">{stats.total}</div>
+            <div className="text-sm text-gray-400">Total</div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="text-2xl font-bold text-red-600">{stats.critical}</div>
-            <div className="text-sm text-gray-500">Critical</div>
+          <div className="bg-white/5 rounded-xl border border-white/10 p-4">
+            <div className="text-2xl font-bold text-red-400">
+              {stats.critical}
+            </div>
+            <div className="text-sm text-gray-400">Critical</div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="text-2xl font-bold text-orange-600">{stats.high}</div>
-            <div className="text-sm text-gray-500">High</div>
+          <div className="bg-white/5 rounded-xl border border-white/10 p-4">
+            <div className="text-2xl font-bold text-orange-400">
+              {stats.high}
+            </div>
+            <div className="text-sm text-gray-400">High</div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="text-2xl font-bold text-yellow-600">{stats.medium}</div>
-            <div className="text-sm text-gray-500">Medium</div>
+          <div className="bg-white/5 rounded-xl border border-white/10 p-4">
+            <div className="text-2xl font-bold text-yellow-400">
+              {stats.medium}
+            </div>
+            <div className="text-sm text-gray-400">Medium</div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="text-2xl font-bold text-emerald-600">{stats.low}</div>
-            <div className="text-sm text-gray-500">Low</div>
+          <div className="bg-white/5 rounded-xl border border-white/10 p-4">
+            <div className="text-2xl font-bold text-emerald-400">
+              {stats.low}
+            </div>
+            <div className="text-sm text-gray-400">Low</div>
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="text-2xl font-bold text-purple-600">{stats.open}</div>
-            <div className="text-sm text-gray-500">Open</div>
+          <div className="bg-white/5 rounded-xl border border-white/10 p-4">
+            <div className="text-2xl font-bold text-purple-400">
+              {stats.open}
+            </div>
+            <div className="text-sm text-gray-400">Open</div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="bg-white/5 rounded-xl border border-white/10 p-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
               <FontAwesomeIcon
                 icon={faSearch}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4"
               />
               <input
                 type="text"
                 placeholder="Search findings..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className="w-full pl-10 pr-4 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white"
               />
             </div>
             <select
               value={filterSeverity}
               onChange={(e) => setFilterSeverity(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 min-w-[140px]"
+              className="px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] min-w-[140px] bg-white/5 text-white"
             >
               <option value="all">All Severity</option>
               <option value="critical">Critical</option>
@@ -232,7 +245,7 @@ export default function FindingsPage() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 min-w-[140px]"
+              className="px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] min-w-[140px] bg-white/5 text-white"
             >
               <option value="all">All Status</option>
               <option value="open">Open</option>
@@ -245,37 +258,39 @@ export default function FindingsPage() {
         </div>
 
         {/* Findings List */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div className="bg-white/5 rounded-xl border border-white/10">
           {loading ? (
-            <div className="p-8 text-center text-gray-500">Loading findings...</div>
+            <div className="p-8 text-center text-gray-500">
+              Loading findings...
+            </div>
           ) : filteredFindings.length === 0 ? (
             <div className="p-8 text-center">
               <FontAwesomeIcon
                 icon={faShieldAlt}
-                className="w-12 h-12 text-gray-300 mb-4"
+                className="w-12 h-12 text-gray-600 mb-4"
               />
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-white">
                 No findings yet
               </h3>
-              <p className="text-gray-500 mt-1">
+              <p className="text-gray-400 mt-1">
                 Add findings from your pentests.
               </p>
               <button
                 onClick={() => setShowModal(true)}
-                className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-cyan-500 text-white font-semibold rounded-lg hover:bg-cyan-600 transition-colors"
+                className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
               >
                 <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
                 Add Finding
               </button>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-white/5">
               {filteredFindings.map((finding) => {
                 const sevConfig = severityConfig[finding.severity];
                 return (
                   <div
                     key={finding.id}
-                    className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="p-4 hover:bg-white/5 transition-colors cursor-pointer"
                   >
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
@@ -287,7 +302,7 @@ export default function FindingsPage() {
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h4 className="font-medium text-gray-900">
+                            <h4 className="font-medium text-white">
                               {finding.title}
                             </h4>
                             <span
@@ -297,7 +312,7 @@ export default function FindingsPage() {
                             </span>
                           </div>
                           <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
-                            <span className="font-mono bg-gray-100 px-2 py-0.5 rounded">
+                            <span className="font-mono bg-white/10 px-2 py-0.5 rounded text-gray-300">
                               {finding.target}
                             </span>
                             <span>{statusLabels[finding.status]}</span>
@@ -325,11 +340,11 @@ export default function FindingsPage() {
       {/* New Finding Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#0d1117] rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white/10">
             <form onSubmit={handleSubmit}>
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-xl font-bold text-gray-900">Add Finding</h2>
-                <p className="text-gray-500 mt-1">
+              <div className="p-6 border-b border-white/10">
+                <h2 className="text-xl font-bold text-white">Add Finding</h2>
+                <p className="text-gray-400 mt-1">
                   Document a security vulnerability or issue
                 </p>
               </div>
@@ -337,7 +352,7 @@ export default function FindingsPage() {
               <div className="p-6 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2 sm:col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-1">
                       Title *
                     </label>
                     <input
@@ -346,18 +361,18 @@ export default function FindingsPage() {
                       onChange={(e) => setTitle(e.target.value)}
                       required
                       placeholder="e.g., SQL Injection in Login Form"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white"
                     />
                   </div>
 
                   <div className="col-span-2 sm:col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-1">
                       Severity *
                     </label>
                     <select
                       value={severity}
                       onChange={(e) => setSeverity(e.target.value as Severity)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white"
                     >
                       <option value="critical">Critical</option>
                       <option value="high">High</option>
@@ -370,7 +385,7 @@ export default function FindingsPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-1">
                       Target *
                     </label>
                     <input
@@ -379,12 +394,12 @@ export default function FindingsPage() {
                       onChange={(e) => setTarget(e.target.value)}
                       required
                       placeholder="e.g., https://example.com"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono text-sm"
+                      className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] font-mono text-sm bg-white/5 text-white"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-1">
                       Affected Component
                     </label>
                     <input
@@ -392,13 +407,13 @@ export default function FindingsPage() {
                       value={affectedComponent}
                       onChange={(e) => setAffectedComponent(e.target.value)}
                       placeholder="e.g., /api/login endpoint"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Description
                   </label>
                   <textarea
@@ -406,12 +421,12 @@ export default function FindingsPage() {
                     onChange={(e) => setDescription(e.target.value)}
                     rows={3}
                     placeholder="Describe the vulnerability..."
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Evidence / Proof of Concept
                   </label>
                   <textarea
@@ -419,12 +434,12 @@ export default function FindingsPage() {
                     onChange={(e) => setEvidence(e.target.value)}
                     rows={3}
                     placeholder="Include payloads, screenshots description, etc."
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 font-mono text-sm"
+                    className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] font-mono text-sm bg-white/5 text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Steps to Reproduce
                   </label>
                   <textarea
@@ -432,12 +447,12 @@ export default function FindingsPage() {
                     onChange={(e) => setStepsToReproduce(e.target.value)}
                     rows={3}
                     placeholder="1. Go to login page&#10;2. Enter payload in username field&#10;3. ..."
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Remediation Recommendation
                   </label>
                   <textarea
@@ -445,26 +460,26 @@ export default function FindingsPage() {
                     onChange={(e) => setRemediation(e.target.value)}
                     rows={2}
                     placeholder="How to fix this vulnerability..."
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white"
                   />
                 </div>
               </div>
 
-              <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+              <div className="p-6 border-t border-white/10 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => {
                     setShowModal(false);
                     resetForm();
                   }}
-                  className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-400 font-medium hover:bg-white/5 rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 bg-cyan-500 text-white font-semibold rounded-lg hover:bg-cyan-600 transition-colors disabled:opacity-50"
+                  className="px-4 py-2 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:opacity-50"
                 >
                   {submitting ? "Adding..." : "Add Finding"}
                 </button>

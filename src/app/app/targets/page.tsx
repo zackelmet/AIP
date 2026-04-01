@@ -230,19 +230,19 @@ export default function TargetsPage() {
       <div className="p-6 lg:p-8 space-y-6 max-w-full">
         <div className="flex flex-col gap-3">
           <div>
-            <h1 className="text-3xl font-bold text-[#0A1128]">Targets</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-white">Targets</h1>
+            <p className="text-gray-400 mt-1">
               Save IPs, URLs, and domains so you can replay them whenever you
               scan.
             </p>
           </div>
           <form
-            className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4"
+            className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-4"
             onSubmit={handleSubmit}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <label className="flex flex-col">
-                <span className="text-sm font-semibold text-gray-700">
+                <span className="text-sm font-semibold text-gray-300">
                   Target name
                 </span>
                 <input
@@ -252,11 +252,11 @@ export default function TargetsPage() {
                     handleInputChange("name", event.target.value)
                   }
                   placeholder="Example: Internal API Gateway"
-                  className="mt-2 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#0A1128]"
+                  className="mt-2 px-3 py-2 border border-white/10 rounded-lg bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-[#34D399]"
                 />
               </label>
               <label className="flex flex-col md:col-span-2">
-                <span className="text-sm font-semibold text-gray-700">
+                <span className="text-sm font-semibold text-gray-300">
                   Addresses (one per line)
                 </span>
                 <textarea
@@ -267,7 +267,7 @@ export default function TargetsPage() {
                   required
                   placeholder="192.168.1.1&#10;example.com&#10;https://test.com"
                   rows={4}
-                  className="mt-2 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#0A1128] font-mono text-sm"
+                  className="mt-2 px-3 py-2 border border-white/10 rounded-lg bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-[#34D399] font-mono text-sm"
                 />
                 <span className="text-xs text-gray-500 mt-1">
                   Enter one address per line. Multiple addresses will create a
@@ -277,7 +277,7 @@ export default function TargetsPage() {
             </div>
             <div>
               <label className="flex flex-col">
-                <span className="text-sm font-semibold text-gray-700">
+                <span className="text-sm font-semibold text-gray-300">
                   Tags (comma separated)
                 </span>
                 <input
@@ -287,7 +287,7 @@ export default function TargetsPage() {
                     handleInputChange("tags", event.target.value)
                   }
                   placeholder="production, api"
-                  className="mt-2 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#0A1128]"
+                  className="mt-2 px-3 py-2 border border-white/10 rounded-lg bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-[#34D399]"
                 />
               </label>
             </div>
@@ -295,7 +295,7 @@ export default function TargetsPage() {
               <button
                 type="submit"
                 disabled={saving || !currentUser || !formState.addresses.trim()}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#00FED9] text-[#0A1128] font-semibold rounded-lg hover:bg-[#00D4B8] transition-colors disabled:bg-gray-300 disabled:text-gray-500"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:bg-gray-700 disabled:text-gray-500"
               >
                 <FontAwesomeIcon icon={faPlus} />
                 {saving ? "Saving target…" : "Save target"}
@@ -317,10 +317,10 @@ export default function TargetsPage() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-xl font-semibold text-[#0A1128]">
+              <h2 className="text-xl font-semibold text-white">
                 Saved targets
               </h2>
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-400 text-sm">
                 Keep favorite infrastructure handy for any scan.
               </p>
             </div>
@@ -334,15 +334,15 @@ export default function TargetsPage() {
               {savedTargets.map((target) => (
                 <div
                   key={target.id}
-                  className="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
+                  className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-[#34D399]/20 transition-colors"
                 >
                   <div className="flex items-start justify-between mb-4">
-                    <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-[#0A1128]">
+                    <div className="p-2 rounded-lg bg-[#34D399]/10 border border-[#34D399]/30 text-[#34D399]">
                       <FontAwesomeIcon icon={faBullseye} />
                     </div>
                     <div className="flex gap-2">
                       <button
-                        className="p-2 text-gray-400 hover:text-[#0A1128] transition-colors"
+                        className="p-2 text-gray-500 hover:text-[#34D399] transition-colors"
                         onClick={() => startEditing(target)}
                         aria-label={`Edit ${target.name}`}
                       >
@@ -357,16 +357,16 @@ export default function TargetsPage() {
                       </button>
                     </div>
                   </div>
-                  <h3 className="font-semibold text-lg text-[#0A1128] mb-1">
+                  <h3 className="font-semibold text-lg text-white mb-1">
                     {target.name}
                   </h3>
                   {target.addresses.length === 1 ? (
-                    <p className="text-gray-600 text-sm font-mono mb-2">
+                    <p className="text-gray-400 text-sm font-mono mb-2">
                       {target.addresses[0]}
                     </p>
                   ) : (
-                    <div className="text-gray-600 text-sm mb-2">
-                      <p className="font-semibold text-[#0A1128] mb-1">
+                    <div className="text-gray-400 text-sm mb-2">
+                      <p className="font-semibold text-white mb-1">
                         {target.addresses.length} addresses
                       </p>
                       <div className="max-h-20 overflow-y-auto font-mono text-xs space-y-0.5">
@@ -378,14 +378,14 @@ export default function TargetsPage() {
                       </div>
                     </div>
                   )}
-                  <p className="text-xs uppercase tracking-[0.2em] text-[#0A1128] font-semibold mb-3">
+                  <p className="text-xs uppercase tracking-[0.2em] text-[#34D399] font-semibold mb-3">
                     {target.type}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {(target.tags ?? []).map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md"
+                        className="px-2 py-1 bg-white/10 text-gray-300 text-xs rounded-md"
                       >
                         {tag}
                       </span>
@@ -397,24 +397,24 @@ export default function TargetsPage() {
           )}
           {editingTarget && (
             <form
-              className="mt-6 bg-white border border-gray-200 rounded-xl p-6 shadow-sm space-y-4"
+              className="mt-6 bg-white/5 border border-white/10 rounded-xl p-6 space-y-4"
               onSubmit={handleEditSubmit}
             >
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-[#0A1128]">
+                <h3 className="text-lg font-semibold text-white">
                   Edit target
                 </h3>
                 <button
                   type="button"
                   onClick={cancelEditing}
-                  className="text-sm text-gray-500 hover:text-gray-700"
+                  className="text-sm text-gray-500 hover:text-gray-300"
                 >
                   Cancel
                 </button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <label className="flex flex-col">
-                  <span className="text-sm font-semibold text-gray-700">
+                  <span className="text-sm font-semibold text-gray-300">
                     Target name
                   </span>
                   <input
@@ -427,11 +427,11 @@ export default function TargetsPage() {
                       }))
                     }
                     placeholder="Friendly name"
-                    className="mt-2 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#0A1128]"
+                    className="mt-2 px-3 py-2 border border-white/10 rounded-lg bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-[#34D399]"
                   />
                 </label>
                 <label className="flex flex-col md:col-span-2">
-                  <span className="text-sm font-semibold text-gray-700">
+                  <span className="text-sm font-semibold text-gray-300">
                     Addresses (one per line)
                   </span>
                   <textarea
@@ -444,13 +444,13 @@ export default function TargetsPage() {
                     }
                     required
                     rows={4}
-                    className="mt-2 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#0A1128] font-mono text-sm"
+                    className="mt-2 px-3 py-2 border border-white/10 rounded-lg bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-[#34D399] font-mono text-sm"
                   />
                 </label>
               </div>
               <div>
                 <label className="flex flex-col">
-                  <span className="text-sm font-semibold text-gray-700">
+                  <span className="text-sm font-semibold text-gray-300">
                     Tags (comma separated)
                   </span>
                   <input
@@ -463,7 +463,7 @@ export default function TargetsPage() {
                       }))
                     }
                     placeholder="production, api"
-                    className="mt-2 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#0A1128]"
+                    className="mt-2 px-3 py-2 border border-white/10 rounded-lg bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-[#34D399]"
                   />
                 </label>
               </div>
@@ -472,14 +472,14 @@ export default function TargetsPage() {
                 <button
                   type="submit"
                   disabled={editLoading}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#00FED9] text-[#0A1128] font-semibold rounded-lg hover:bg-[#00D4B8] transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:opacity-50"
                 >
                   {editLoading ? "Saving…" : "Save changes"}
                 </button>
                 <button
                   type="button"
                   onClick={cancelEditing}
-                  className="px-4 py-2.5 border border-gray-300 rounded-lg text-sm hover:border-[#0A1128]"
+                  className="px-4 py-2.5 border border-white/10 rounded-lg text-sm text-gray-400 hover:border-white/20"
                 >
                   Cancel
                 </button>
@@ -488,11 +488,11 @@ export default function TargetsPage() {
           )}
         </div>
 
-        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6">
-          <h3 className="font-semibold text-[#0A1128] mb-2">
+        <div className="bg-[#34D399]/10 border border-[#34D399]/30 rounded-xl p-6">
+          <h3 className="font-semibold text-white mb-2">
             💡 About saved targets
           </h3>
-          <p className="text-gray-600 text-sm">
+          <p className="text-gray-400 text-sm">
             Saved targets are persisted directly on your user record so you can
             reference them across scans and devices.
           </p>
