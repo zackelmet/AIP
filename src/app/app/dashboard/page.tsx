@@ -11,7 +11,7 @@ import {
   faServer,
   faPlus,
   faXmark,
-  faRocket,
+  faJetFighter,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { useUserData } from "@/lib/hooks/useUserData";
@@ -299,7 +299,7 @@ function DashboardInner({
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
                   <FontAwesomeIcon
-                    icon={faRocket}
+                    icon={faJetFighter}
                     className="text-2xl text-[#34D399]"
                   />
                 </div>
@@ -490,7 +490,7 @@ function DashboardInner({
                       selectedPentestType === "web_app"
                         ? faGlobe
                         : selectedPentestType === "pentest_plus"
-                          ? faRocket
+                          ? faJetFighter
                           : faServer
                     }
                     className="text-2xl text-[#34D399]"
