@@ -12,6 +12,7 @@ import {
   faPlus,
   faXmark,
   faJetFighter,
+  faRocket,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { useUserData } from "@/lib/hooks/useUserData";
@@ -217,7 +218,7 @@ function DashboardInner({
           >
             <div className="p-4 rounded-full bg-white/10 mb-3 inline-block">
               <FontAwesomeIcon
-                icon={faShieldHalved}
+                icon={faRocket}
                 className="text-4xl text-white"
               />
             </div>

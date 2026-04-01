@@ -65,7 +65,7 @@ export default function RootLayout({
         gtag('config', 'G-M5G1ZEH7SX');
       `}</Script>
       {/* Change your theme HERE */}
-      <body data-theme="cupcake">
+      <body data-theme="cupcake" className={ibmPlexSans.className}>
         <ClientProviders>
           <ConditionalNav>{children}</ConditionalNav>
         </ClientProviders>
