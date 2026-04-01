@@ -31,10 +31,13 @@ export default function AuthForm() {
       const { signIn, SignInMethod } = signInModule as any;
       const { user, error } = await signIn(SignInMethod.Google, {
         signupCallback: async (userCredential: any) => {
-          // When a new user signs up, call the signup endpoint
+          const idToken = await userCredential.user.getIdToken();
           await fetch("/api/users/signup", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${idToken}`,
+            },
             body: JSON.stringify({
               uid: userCredential.user.uid,
               email: userCredential.user.email,
@@ -62,9 +65,13 @@ export default function AuthForm() {
       const { signIn, SignInMethod } = signInModule as any;
       const { user, error } = await signIn(SignInMethod.Microsoft, {
         signupCallback: async (userCredential: any) => {
+          const idToken = await userCredential.user.getIdToken();
           await fetch("/api/users/signup", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${idToken}`,
+            },
             body: JSON.stringify({
               uid: userCredential.user.uid,
               email: userCredential.user.email,
@@ -96,10 +103,13 @@ export default function AuthForm() {
           password,
         },
         signupCallback: async (userCredential: any) => {
-          // When a new user signs up, call the signup endpoint
+          const idToken = await userCredential.user.getIdToken();
           await fetch("/api/users/signup", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${idToken}`,
+            },
             body: JSON.stringify({
               uid: userCredential.user.uid,
               email: userCredential.user.email,
@@ -134,10 +144,16 @@ export default function AuthForm() {
         email,
         password,
         async (userCredential: any) => {
-          // Ensure a Firestore user document is created for newly registered users
+          // Ensure a Firestore user document is created for newly registered users.
+          // Pass the ID token directly — the __session cookie hasn't been set yet
+          // (AuthContext.onAuthStateChanged fires asynchronously after this callback).
+          const idToken = await userCredential.user.getIdToken();
           await fetch("/api/users/signup", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${idToken}`,
+            },
             body: JSON.stringify({
               uid: userCredential.user.uid,
               email: userCredential.user.email,

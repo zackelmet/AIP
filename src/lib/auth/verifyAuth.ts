@@ -10,11 +10,22 @@
  *   const uid = token.uid;
  */
 
-import { NextRequest } from 'next/server';
-import { initializeAdmin } from '@/lib/firebase/firebaseAdmin';
+import { NextRequest } from "next/server";
+import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 
 export async function verifyAuth(request: NextRequest) {
-  const idToken = request.cookies.get('__session')?.value;
+  // Primary: httpOnly session cookie (set post-login by AuthContext)
+  let idToken = request.cookies.get("__session")?.value;
+
+  // Fallback: Authorization: Bearer <token> — used during signup before the
+  // session cookie has been written (race condition on first auth state change)
+  if (!idToken) {
+    const authHeader = request.headers.get("authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      idToken = authHeader.slice(7);
+    }
+  }
+
   if (!idToken) return null;
 
   try {
@@ -39,7 +50,11 @@ export async function verifyAdmin(request: NextRequest) {
 
   // Fallback: check Firestore (for accounts where claim hasn't been set yet)
   const admin = initializeAdmin();
-  const userDoc = await admin.firestore().collection('users').doc(token.uid).get();
+  const userDoc = await admin
+    .firestore()
+    .collection("users")
+    .doc(token.uid)
+    .get();
   if (userDoc.data()?.isAdmin === true) return token;
 
   return null;
