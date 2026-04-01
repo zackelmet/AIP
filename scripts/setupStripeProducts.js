@@ -2,98 +2,80 @@
 
 /**
  * Stripe Products Setup for Affordable Pentesting PTaaS Platform
- * 
+ *
  * Creates products and pricing for:
- * - AI-driven automated pentests (single purchase + monthly subscription)
- * - Manual pentesting services (basic + advanced tiers)
+ * - External IP Pentest ($199 one-time)
+ * - Web Application Pentest ($500 one-time)
+ * - Pentest+ ($1,500 one-time)
  */
 
-require('dotenv').config({ path: '.env.local' });
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+require("dotenv").config({ path: ".env.local" });
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const PRODUCTS = [
-  // AI-Driven Pentests
   {
-    name: 'AI Pentest - Single Scan',
-    description: 'One-time AI-driven automated penetration test across your infrastructure. Includes Nmap, OpenVAS, and OWASP ZAP scanning.',
-    type: 'ai_single',
+    name: "External IP Pentest",
+    description:
+      "AI-driven automated penetration test for external-facing IPs and services. 1 credit per scan.",
+    type: "external_ip",
     price: 199,
-    currency: 'usd',
+    currency: "usd",
     recurring: false,
     features: [
-      'AI-powered vulnerability scanning',
-      'Nmap network discovery',
-      'OpenVAS vulnerability assessment',
-      'OWASP ZAP web application testing',
-      'Automated findings report',
-      'Up to 5 targets per scan'
-    ]
+      "AI-powered vulnerability scanning",
+      "Nmap network discovery",
+      "OpenVAS vulnerability assessment",
+      "Automated findings report",
+      "Up to 5 targets per scan",
+      "Export results (PDF/JSON)",
+    ],
   },
   {
-    name: 'AI Pentest - Monthly Unlimited',
-    description: 'Unlimited AI-driven automated pentests. Run as many scans as you need, whenever you need them.',
-    type: 'ai_monthly',
-    price: 499,
-    currency: 'usd',
-    recurring: true,
-    interval: 'month',
-    features: [
-      'Unlimited AI-powered scans',
-      'Priority scan queue',
-      'Advanced scan configurations',
-      'Automated scheduling',
-      'Historical trend analysis',
-      'Unlimited targets',
-      'API access'
-    ]
-  },
-  
-  // Manual Pentesting Services
-  {
-    name: 'Manual Pentest - Basic',
-    description: 'Professional manual penetration testing by certified security experts. Ideal for small to medium applications.',
-    type: 'manual_basic',
-    price: 2000,
-    currency: 'usd',
+    name: "Web Application Pentest",
+    description:
+      "AI-driven automated penetration test for web applications. Up to 3 user roles, 20 pages & 10 API endpoints.",
+    type: "web_app",
+    price: 500,
+    currency: "usd",
     recurring: false,
     features: [
-      'Certified pentesting team',
-      'Up to 3 targets/applications',
-      'OWASP Top 10 coverage',
-      '40 hours of testing',
-      'Executive summary report',
-      'Detailed technical findings',
-      'Remediation recommendations',
-      '2 weeks engagement timeline'
-    ]
+      "AI-powered vulnerability scanning",
+      "OWASP ZAP web application testing",
+      "OWASP Top 10 coverage",
+      "Authenticated scan support",
+      "Detailed findings report",
+      "Export results (PDF/JSON)",
+    ],
   },
   {
-    name: 'Manual Pentest - Advanced',
-    description: 'Comprehensive manual penetration testing for complex infrastructure. Includes web, network, and API testing.',
-    type: 'manual_advanced',
-    price: 5000,
-    currency: 'usd',
+    name: "Pentest+",
+    description:
+      "Comprehensive AI pentest credit. Up to 50 external IPs or webapp with up to 100 API endpoints. Unlimited user roles.",
+    type: "pentest_plus",
+    price: 1500,
+    currency: "usd",
     recurring: false,
     features: [
-      'Senior pentesting specialists',
-      'Unlimited targets',
-      'Full-scope testing (web, network, API, mobile)',
-      '120 hours of testing',
-      'Executive and board-level reports',
-      'Detailed technical documentation',
-      'Remediation support and retesting',
-      'Compliance mapping (PCI-DSS, SOC2, etc.)',
-      '4-6 weeks engagement timeline',
-      'Dedicated project manager'
-    ]
-  }
+      "AI pentest: up to 50 external IPs",
+      "Or webapp with up to 100 API endpoints",
+      "Unlimited user roles tested",
+      "Compliance ready reports",
+      "Authentication & authorization testing",
+      "GRC platform integration (Drata, Vanta)",
+    ],
+  },
 ];
 
 async function setupProducts() {
-  console.log('🚀 Setting up Stripe products for Affordable Pentesting PTaaS...\n');
+  console.log(
+    "🚀 Setting up Stripe products for Affordable Pentesting PTaaS...\n",
+  );
 
-  if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY.trim() === '') {
-    console.error('❌ Error: STRIPE_SECRET_KEY not found in .env.local');
+  if (
+    !process.env.STRIPE_SECRET_KEY ||
+    process.env.STRIPE_SECRET_KEY.trim() === ""
+  ) {
+    console.error("❌ Error: STRIPE_SECRET_KEY not found in .env.local");
     process.exit(1);
   }
 
@@ -109,8 +91,8 @@ async function setupProducts() {
         description: product.description,
         metadata: {
           type: product.type,
-          features: JSON.stringify(product.features)
-        }
+          features: JSON.stringify(product.features),
+        },
       });
 
       console.log(`   ✓ Product created: ${stripeProduct.id}`);
@@ -121,76 +103,81 @@ async function setupProducts() {
         unit_amount: product.price * 100, // Convert to cents
         currency: product.currency,
         metadata: {
-          type: product.type
-        }
+          type: product.type,
+        },
       };
 
       if (product.recurring) {
         priceData.recurring = {
-          interval: product.interval
+          interval: product.interval,
         };
       }
 
       const stripePrice = await stripe.prices.create(priceData);
 
-      console.log(`   ✓ Price created: ${stripePrice.id} ($${product.price}${product.recurring ? `/${product.interval}` : ''})`);
+      console.log(
+        `   ✓ Price created: ${stripePrice.id} ($${product.price}${product.recurring ? `/${product.interval}` : ""})`,
+      );
 
       // Store result
       results[product.type] = {
         productId: stripeProduct.id,
         priceId: stripePrice.id,
         amount: product.price,
-        recurring: product.recurring || false
+        recurring: product.recurring || false,
       };
 
-      console.log('');
+      console.log("");
     } catch (error) {
       console.error(`   ❌ Error creating ${product.name}:`, error.message);
-      console.log('');
+      console.log("");
     }
   }
 
   // Display environment variables to add
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('✅ Products created successfully!\n');
-  console.log('📝 Add these to your .env.local file:\n');
-  
-  if (results.ai_single) {
-    console.log(`NEXT_PUBLIC_STRIPE_PRICE_AI_SINGLE=${results.ai_single.priceId}`);
+  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  console.log("✅ Products created successfully!\n");
+  console.log("📝 Add these to your .env.local file:\n");
+
+  if (results.external_ip) {
+    console.log(
+      `NEXT_PUBLIC_STRIPE_PRICE_AI_SINGLE=${results.external_ip.priceId}`,
+    );
   }
-  if (results.ai_monthly) {
-    console.log(`NEXT_PUBLIC_STRIPE_PRICE_AI_MONTHLY=${results.ai_monthly.priceId}`);
+  if (results.web_app) {
+    console.log(`NEXT_PUBLIC_STRIPE_PRICE_WEB_APP=${results.web_app.priceId}`);
   }
-  if (results.manual_basic) {
-    console.log(`NEXT_PUBLIC_STRIPE_PRICE_MANUAL_BASIC=${results.manual_basic.priceId}`);
-  }
-  if (results.manual_advanced) {
-    console.log(`NEXT_PUBLIC_STRIPE_PRICE_MANUAL_ADVANCED=${results.manual_advanced.priceId}`);
+  if (results.pentest_plus) {
+    console.log(
+      `NEXT_PUBLIC_STRIPE_PRICE_PENTEST_PLUS=${results.pentest_plus.priceId}`,
+    );
   }
 
-  console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('\n📊 Product Summary:\n');
-  
+  console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  console.log("\n📊 Product Summary:\n");
+
   Object.entries(results).forEach(([type, data]) => {
-    const productInfo = PRODUCTS.find(p => p.type === type);
+    const productInfo = PRODUCTS.find((p) => p.type === type);
     console.log(`${productInfo.name}:`);
     console.log(`  Product ID: ${data.productId}`);
     console.log(`  Price ID:   ${data.priceId}`);
-    console.log(`  Amount:     $${data.amount}${data.recurring ? '/month' : ''}`);
-    console.log('');
+    console.log(
+      `  Amount:     $${data.amount}${data.recurring ? "/month" : ""}`,
+    );
+    console.log("");
   });
 
-  console.log('🔗 View in Stripe Dashboard:');
-  console.log('   https://dashboard.stripe.com/products\n');
+  console.log("🔗 View in Stripe Dashboard:");
+  console.log("   https://dashboard.stripe.com/products\n");
 }
 
 // Run setup
 setupProducts()
   .then(() => {
-    console.log('✨ Setup complete!');
+    console.log("✨ Setup complete!");
     process.exit(0);
   })
   .catch((error) => {
-    console.error('\n❌ Setup failed:', error.message);
+    console.error("\n❌ Setup failed:", error.message);
     process.exit(1);
   });
