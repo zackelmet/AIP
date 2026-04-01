@@ -56,12 +56,11 @@ const sections = [
     title: "Report Storage & Data Security",
     anchor: "data-security",
     content: [
-      "All pentest reports and scan data are stored in Google Cloud Storage (GCS) with server-side encryption at rest using AES-256. Reports are never stored on local infrastructure or unencrypted media.",
-      "Report files are stored in private GCS buckets. Access is enforced through Google Cloud IAM policies — only your authenticated account and our backend service accounts have permission to read or write your report files. No report is ever publicly accessible via a shareable URL without an expiring signed link generated at your request.",
-      "Signed download links for reports are time-limited (typically 15 minutes) and single-use in intent. They are generated server-side only after verifying your authenticated session via Firebase ID token. This ensures that even if a link were intercepted, it would expire before it could be meaningfully reused.",
-      "Pentest metadata (target, scan status, timestamps, finding summaries) is stored in Google Cloud Firestore. Firestore security rules restrict read and write access strictly to the account that owns the record. Our admin team can access records for support and compliance purposes only.",
+      "All pentest reports and scan data are encrypted at rest and in transit. We use industry-standard encryption and access controls to ensure only your authenticated account can access your reports and findings.",
+      "Report download links are time-limited and generated only after verifying your authenticated session. No report is ever publicly accessible.",
+      "Pentest metadata — including targets, scan status, and findings — is stored securely and access-restricted to your account. Our team may access records only for support and compliance purposes.",
       "We do not share your scan targets, findings, or reports with any third parties, advertisers, or data brokers. Your security data is yours.",
-      "We retain your pentest data for as long as your account is active. Upon account deletion, your Firestore records and GCS report files are permanently deleted within 30 days. Stripe payment records are retained separately per their own data retention policies and applicable financial regulations.",
+      "Upon account deletion, your data is permanently deleted within 30 days. Payment records are retained separately per applicable financial regulations.",
     ],
   },
   {
@@ -70,9 +69,9 @@ const sections = [
     anchor: "privacy",
     content: [
       "We collect only the data necessary to provide our services: your email address, payment information (processed by Stripe — we never see or store card details), and the scan targets you submit.",
-      "We use Firebase Authentication for identity management. Your password is never stored by us — Firebase handles credential hashing and storage according to Google's security standards.",
-      "We use session cookies (httpOnly, Secure, SameSite=Strict) to maintain your authenticated session. These cookies contain a short-lived Firebase ID token and are never accessible to client-side JavaScript, mitigating XSS-based session theft.",
-      "We do not use third-party advertising trackers, analytics pixels, or sell your personal information to any party. We use basic server-side logging for error monitoring and abuse prevention only.",
+      "We use secure, industry-standard authentication for identity management. Your password is never stored by us in plain text.",
+      "We use secure session cookies to maintain your authenticated session. These cookies are protected against client-side access, reducing the risk of session theft.",
+      "We do not use third-party advertising trackers, analytics pixels, or sell your personal information to any party. We use basic logging for error monitoring and abuse prevention only.",
       "You may request deletion of your account and all associated data at any time by submitting a support ticket via our Support page. We will process your request within 30 days.",
     ],
   },
@@ -104,7 +103,7 @@ const sections = [
     title: "Liability & Disclaimer",
     anchor: "liability",
     content: [
-      "Affordable Pentesting provides tooling and reporting services on an \"as-is\" basis. We make no warranty, express or implied, that our automated or AI-assisted pentests will identify every vulnerability present in a target system. No penetration test — automated or manual — guarantees complete security.",
+      'Affordable Pentesting provides tooling and reporting services on an "as-is" basis. We make no warranty, express or implied, that our automated or AI-assisted pentests will identify every vulnerability present in a target system. No penetration test — automated or manual — guarantees complete security.',
       "We are not responsible for any damage, data loss, service disruption, regulatory penalty, or legal consequence arising from the use or misuse of our platform, including but not limited to: actions taken based on scan results, failure to remediate identified vulnerabilities, and testing performed without proper authorisation.",
       "Our AI-assisted scanning tools may generate false positives or miss vulnerabilities. Results should be reviewed by a qualified security professional before being used as the sole basis for compliance attestations, architectural decisions, or public disclosures.",
       "By using this platform you agree that Affordable Pentesting's total aggregate liability to you for any claim arising out of or related to these services shall not exceed the amount you paid for the specific pentest credit(s) directly involved in the claim.",
@@ -117,7 +116,7 @@ const sections = [
     title: "Responsible Disclosure",
     anchor: "disclosure",
     content: [
-      "If you discover a security vulnerability in the Affordable Pentesting platform itself, please disclose it responsibly by submitting a support ticket via our Support page — select the \"Other\" topic and include as much detail as possible including steps to reproduce, affected endpoints, and potential impact.",
+      'If you discover a security vulnerability in the Affordable Pentesting platform itself, please disclose it responsibly by submitting a support ticket via our Support page — select the "Other" topic and include as much detail as possible including steps to reproduce, affected endpoints, and potential impact.',
       "We commit to acknowledging your report within 48 hours, triaging and investigating within 5 business days, and working to remediate confirmed issues within 30 days of confirmation.",
       "We will not pursue legal action against researchers who discover and disclose vulnerabilities in good faith, provided they do not access, exfiltrate, or modify data beyond what is necessary to demonstrate the vulnerability, and that they contact us privately before any public disclosure.",
       "We do not currently operate a formal bug bounty programme, but we will publicly credit researchers (with their consent) who assist us in improving platform security.",
@@ -132,7 +131,10 @@ export default function TrustSafetyPage() {
       <div className="border-b border-[#34D399]/30 bg-gradient-to-b from-[#0a141f] to-[#071210]">
         <div className="max-w-4xl mx-auto px-6 py-20 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#34D399]/20 border border-[#34D399]/40 mb-6">
-            <FontAwesomeIcon icon={faShieldHalved} className="text-3xl text-[#34D399]" />
+            <FontAwesomeIcon
+              icon={faShieldHalved}
+              className="text-3xl text-[#34D399]"
+            />
           </div>
           <h1
             className="text-4xl lg:text-5xl font-light text-white mb-4"
@@ -141,7 +143,8 @@ export default function TrustSafetyPage() {
             Trust + Safety Center
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Our policies governing the ethical, legal, and responsible use of Affordable Pentesting services.
+            Our policies governing the ethical, legal, and responsible use of
+            Affordable Pentesting services.
           </p>
           <p className="mt-3 text-sm text-gray-500">Last updated: March 2026</p>
         </div>
@@ -149,7 +152,7 @@ export default function TrustSafetyPage() {
 
       {/* Quick nav */}
       <div className="border-b border-white/10 bg-[#0a141f]/80 sticky top-0 z-10 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto px-6 py-3 flex gap-4 overflow-x-auto text-sm">
+        <div className="max-w-4xl mx-auto px-6 py-3 flex flex-wrap gap-x-4 gap-y-1 text-sm overflow-hidden">
           {sections.map((s) => (
             <a
               key={s.anchor}
@@ -165,12 +168,21 @@ export default function TrustSafetyPage() {
       {/* Content */}
       <div className="max-w-4xl mx-auto px-6 py-16 space-y-12">
         {sections.map((section) => (
-          <section key={section.anchor} id={section.anchor} className="scroll-mt-16">
+          <section
+            key={section.anchor}
+            id={section.anchor}
+            className="scroll-mt-16"
+          >
             <div className="flex items-center gap-3 mb-5">
               <div className="p-2.5 rounded-lg bg-[#34D399]/15 border border-[#34D399]/30">
-                <FontAwesomeIcon icon={section.icon} className="text-[#34D399] text-lg" />
+                <FontAwesomeIcon
+                  icon={section.icon}
+                  className="text-[#34D399] text-lg"
+                />
               </div>
-              <h2 className="text-2xl font-normal text-white">{section.title}</h2>
+              <h2 className="text-2xl font-normal text-white">
+                {section.title}
+              </h2>
             </div>
             <div className="bg-white/5 border border-[#34D399]/10 rounded-xl p-6 space-y-4">
               {section.content.map((para, i) => (
@@ -184,9 +196,12 @@ export default function TrustSafetyPage() {
 
         {/* Contact CTA */}
         <div className="bg-[#34D399]/10 border border-[#34D399]/30 rounded-xl p-8 text-center">
-          <h3 className="text-xl font-normal text-white mb-2">Questions about our policies?</h3>
+          <h3 className="text-xl font-normal text-white mb-2">
+            Questions about our policies?
+          </h3>
           <p className="text-gray-400 mb-5 text-sm">
-            Our team is happy to answer any questions about how we handle your data or operate our services.
+            Our team is happy to answer any questions about how we handle your
+            data or operate our services.
           </p>
           <Link
             href="/support"
@@ -199,6 +214,3 @@ export default function TrustSafetyPage() {
     </main>
   );
 }
-
-
-
