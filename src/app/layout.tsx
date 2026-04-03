@@ -63,6 +63,7 @@ export default function RootLayout({
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', 'G-M5G1ZEH7SX');
+        gtag('config', 'G-W7KR3XVQTY');
       `}</Script>
       {/* Change your theme HERE */}
       <body data-theme="cupcake" className={ibmPlexSans.className}>
