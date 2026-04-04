@@ -14,6 +14,7 @@ import {
   faCalendarCheck,
   faGlobe,
   faServer,
+  faRocket,
   faPlay,
   faPause,
   faBan,
@@ -28,7 +29,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import toast from "react-hot-toast";
 
-type PentestType = "web_app" | "external_ip";
+type PentestType = "web_app" | "external_ip" | "pentest_plus";
 type IntervalPreset =
   | "weekly"
   | "biweekly"
@@ -123,6 +124,11 @@ function RunHistory({ scheduleId }: { scheduleId: string }) {
             </span>
           </div>
           <div className="flex items-center gap-4">
+            {typeof run.targetCount === "number" && run.targetCount > 1 && (
+              <span className="text-gray-500 text-xs">
+                {run.targetCount} targets
+              </span>
+            )}
             {run.pentestId && (
               <a
                 href={`/app/pentests#${run.pentestId}`}
@@ -177,7 +183,13 @@ function ScheduleCard({
           <div className="flex items-center gap-3 min-w-0">
             <div className="p-2.5 rounded-lg bg-[#34D399]/10 border border-[#34D399]/30 flex-shrink-0">
               <FontAwesomeIcon
-                icon={schedule.type === "web_app" ? faGlobe : faServer}
+                icon={
+                  schedule.type === "web_app"
+                    ? faGlobe
+                    : schedule.type === "pentest_plus"
+                      ? faRocket
+                      : faServer
+                }
                 className="text-[#34D399] w-4"
               />
             </div>
@@ -188,7 +200,9 @@ function ScheduleCard({
               <p className="text-gray-500 text-xs mt-0.5">
                 {schedule.type === "web_app"
                   ? "Web Application"
-                  : "External IP"}{" "}
+                  : schedule.type === "pentest_plus"
+                    ? "Pentest+"
+                    : "External IP"}{" "}
                 · {intervalText}
               </p>
             </div>
@@ -326,6 +340,7 @@ export default function SchedulingPage() {
 
   const webAppCredits = userData?.credits?.web_app || 0;
   const externalIpCredits = userData?.credits?.external_ip || 0;
+  const pentestPlusCredits = userData?.credits?.pentest_plus || 0;
 
   const activeSchedules = schedules.filter((s) => s.status === "active");
   const pausedSchedules = schedules.filter((s) => s.status === "paused");
@@ -455,7 +470,7 @@ export default function SchedulingPage() {
               <label className="block text-sm font-semibold text-white mb-3">
                 Pentest Type *
               </label>
-              <div className="grid sm:grid-cols-2 gap-3">
+              <div className="grid sm:grid-cols-3 gap-3">
                 <button
                   type="button"
                   onClick={() => setPentestType("web_app")}
@@ -499,12 +514,38 @@ export default function SchedulingPage() {
                     External IP
                   </h3>
                   <p className="text-gray-400 text-xs">
-                    $199/credit · Gateways & firewalls
+                    $199/credit per target · comma-separated targets supported
                   </p>
                   {externalIpCredits > 0 && (
                     <p className="text-green-400 text-xs mt-1">
                       {externalIpCredits} credit
                       {externalIpCredits !== 1 ? "s" : ""} available
+                    </p>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPentestType("pentest_plus")}
+                  className={`p-5 rounded-lg border-2 text-left transition-all ${
+                    pentestType === "pentest_plus"
+                      ? "border-[#34D399] bg-[#34D399]/10"
+                      : "border-white/10 bg-white/5 hover:border-[#34D399]/50"
+                  }`}
+                >
+                  <FontAwesomeIcon
+                    icon={faRocket}
+                    className="text-2xl text-[#34D399] mb-2"
+                  />
+                  <h3 className="text-lg font-bold text-white mb-1">
+                    Pentest+
+                  </h3>
+                  <p className="text-gray-400 text-xs">
+                    $1500/credit · advanced app/API coverage
+                  </p>
+                  {pentestPlusCredits > 0 && (
+                    <p className="text-green-400 text-xs mt-1">
+                      {pentestPlusCredits} credit
+                      {pentestPlusCredits !== 1 ? "s" : ""} available
                     </p>
                   )}
                 </button>
@@ -526,19 +567,21 @@ export default function SchedulingPage() {
                 onChange={(e) => setTargetUrl(e.target.value)}
                 placeholder={
                   pentestType === "external_ip"
-                    ? "192.168.1.1"
+                    ? "192.168.1.1, 10.0.0.5"
                     : "https://example.com"
                 }
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#34D399]"
                 required
               />
               <p className="text-xs text-gray-500 mt-1">
-                This target will be tested on every run.
+                {pentestType === "external_ip"
+                  ? "Each comma-separated target runs as a separate test on every run."
+                  : "This target will be tested on every run."}
               </p>
             </div>
 
             {/* Web App extras */}
-            {pentestType === "web_app" && (
+            {(pentestType === "web_app" || pentestType === "pentest_plus") && (
               <>
                 <div>
                   <label className="block text-sm font-semibold text-white mb-4">
@@ -735,10 +778,10 @@ export default function SchedulingPage() {
                   icon={faArrowRotateRight}
                   className="text-[#34D399] mr-2"
                 />
-                <strong>1 credit</strong> will be deducted each time this
-                schedule runs. If you have no credits when a run is due, the run
-                will be skipped and the schedule paused until you purchase more
-                credits.
+                <strong>Credits are deducted on each run</strong>: 1 credit for
+                Web App/Pentest+, or 1 credit per comma-separated External IP
+                target. If you do not have enough credits when a run is due, the
+                run is skipped and the schedule pauses until you purchase more.
               </p>
             </div>
 
@@ -873,8 +916,8 @@ export default function SchedulingPage() {
               </h3>
               <p className="text-gray-400 mb-6">
                 Set up recurring pentests to automatically test your targets on
-                a schedule. Credits are deducted one at a time as each run
-                executes.
+                a schedule. For External IP schedules, one credit is deducted
+                per comma-separated target on each run.
               </p>
               <button
                 onClick={() => setShowForm(true)}

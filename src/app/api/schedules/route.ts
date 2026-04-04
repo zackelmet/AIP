@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
       type,
       targetUrl,
       userRoles,
+      roles,
       endpoints,
       additionalContext,
       intervalPreset,
@@ -36,9 +37,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (type !== "web_app" && type !== "external_ip") {
+    if (
+      type !== "web_app" &&
+      type !== "external_ip" &&
+      type !== "pentest_plus"
+    ) {
       return NextResponse.json(
-        { error: "Invalid type. Must be web_app or external_ip" },
+        {
+          error: "Invalid type. Must be web_app, external_ip, or pentest_plus",
+        },
+        { status: 400 },
+      );
+    }
+
+    const normalizedTargetUrl =
+      type === "external_ip"
+        ? String(targetUrl)
+            .split(",")
+            .map((target: string) => target.trim())
+            .filter(Boolean)
+            .join(", ")
+        : String(targetUrl).trim();
+
+    if (!normalizedTargetUrl) {
+      return NextResponse.json(
+        { error: "Target is required" },
         { status: 400 },
       );
     }
@@ -74,8 +97,8 @@ export async function POST(request: NextRequest) {
       id: scheduleRef.id,
       userId,
       type,
-      targetUrl,
-      userRoles: userRoles || null,
+      targetUrl: normalizedTargetUrl,
+      userRoles: userRoles || roles || null,
       endpoints: endpoints || null,
       additionalContext: additionalContext || null,
       intervalDays,

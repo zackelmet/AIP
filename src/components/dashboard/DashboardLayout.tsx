@@ -67,9 +67,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { href: "/app/dashboard", label: "Dashboard", icon: faHome },
     { href: "/app/pentests", label: "Recent Tests", icon: faList },
     { href: "/app/new-pentest", label: "Launch an AI Pentest", icon: faRocket },
-    { href: "/app/scheduling", label: "Test Scheduling", icon: faCalendarCheck },
-    { href: "/app/manual-pentest", label: "Request a Manual Pentest", icon: faUser },
-    ...(userData?.isAdmin ? [{ href: "/admin", label: "Admin", icon: faUserShield }] : []),
+    {
+      href: "/app/scheduling",
+      label: "Test Scheduling",
+      icon: faCalendarCheck,
+    },
+    {
+      href: "/app/manual-pentest",
+      label: "Request a Manual Pentest",
+      icon: faUser,
+    },
+    ...(userData?.isAdmin
+      ? [{ href: "/admin", label: "Admin", icon: faUserShield }]
+      : []),
   ];
 
   const bottomItems = [
@@ -95,7 +105,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       >
         {/* Logo */}
         <div className="p-6 border-b border-[#34D399]">
-          <Link href="https://ai.affordablepentesting.com/" className="flex items-center gap-3">
+          <Link
+            href="https://ai.affordablepentesting.com/"
+            className="flex items-center gap-3"
+          >
             <Image
               src="/affordablepentestinglogo.svg"
               alt="Affordable Pentesting"
@@ -225,7 +238,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             >
               <FontAwesomeIcon icon={faBars} className="w-6 h-6" />
             </button>
-            <Link href="https://ai.affordablepentesting.com/" className="flex items-center gap-2">
+            <Link
+              href="https://ai.affordablepentesting.com/"
+              className="flex items-center gap-2"
+            >
               <Image
                 src="/affordablepentestinglogo.svg"
                 alt="Affordable Pentesting"
@@ -245,7 +261,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         )}
 
         {/* Page content */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto">{children}</main>
+        <main className="flex-1 overflow-x-hidden overflow-y-auto font-light">
+          {children}
+        </main>
       </div>
     </div>
   );

@@ -42,6 +42,7 @@ export async function POST(request: NextRequest) {
       scheduleId: string;
       status: string;
       pentestId?: string;
+      pentestIds?: string[];
       error?: string;
     }> = [];
 
@@ -51,11 +52,29 @@ export async function POST(request: NextRequest) {
 
       try {
         const creditType =
-          schedule.type === "web_app" ? "web_app" : "external_ip";
-        const userRef = adminDb.collection("users").doc(schedule.userId);
-        const pentestRef = adminDb.collection("pentests").doc();
+          schedule.type === "web_app"
+            ? "web_app"
+            : schedule.type === "pentest_plus"
+              ? "pentest_plus"
+              : "external_ip";
 
-        let creditAvailable = false;
+        const scheduledTargets =
+          schedule.type === "external_ip"
+            ? String(schedule.targetUrl || "")
+                .split(",")
+                .map((target: string) => target.trim())
+                .filter(Boolean)
+            : [schedule.targetUrl];
+
+        if (scheduledTargets.length === 0) {
+          throw new Error("invalid_targets");
+        }
+
+        const creditsNeeded = scheduledTargets.length;
+        const userRef = adminDb.collection("users").doc(schedule.userId);
+        const pentestRefs = scheduledTargets.map(() =>
+          adminDb.collection("pentests").doc(),
+        );
 
         // Transaction: check credit, deduct, create pentest
         await adminDb.runTransaction(async (transaction: Transaction) => {
@@ -67,36 +86,39 @@ export async function POST(request: NextRequest) {
           const credits = userDoc.data()?.credits || {};
           const available = credits[creditType] || 0;
 
-          if (available < 1) {
-            creditAvailable = false;
+          if (available < creditsNeeded) {
             throw new Error("no_credits");
           }
 
-          creditAvailable = true;
-
           // Deduct credit
           transaction.update(userRef, {
-            [`credits.${creditType}`]: FieldValue.increment(-1),
+            [`credits.${creditType}`]: FieldValue.increment(-creditsNeeded),
           });
 
-          // Create pentest
-          transaction.set(pentestRef, {
-            id: pentestRef.id,
-            userId: schedule.userId,
-            type: schedule.type,
-            targetUrl: schedule.targetUrl,
-            userRoles: schedule.userRoles || null,
-            endpoints: schedule.endpoints || null,
-            additionalContext: schedule.additionalContext || null,
-            status: "pending",
-            createdAt: FieldValue.serverTimestamp(),
-            updatedAt: FieldValue.serverTimestamp(),
-            results: null,
-            vulnerabilities: [],
-            completedAt: null,
-            scheduledBy: scheduleId,
+          // Create pentests (one per target for external_ip)
+          pentestRefs.forEach((pentestRef, index) => {
+            transaction.set(pentestRef, {
+              id: pentestRef.id,
+              userId: schedule.userId,
+              type: schedule.type,
+              targetUrl: scheduledTargets[index],
+              userRoles: schedule.userRoles || null,
+              endpoints: schedule.endpoints || null,
+              additionalContext: schedule.additionalContext || null,
+              status: "pending",
+              createdAt: FieldValue.serverTimestamp(),
+              updatedAt: FieldValue.serverTimestamp(),
+              results: null,
+              vulnerabilities: [],
+              completedAt: null,
+              scheduledBy: scheduleId,
+              scheduledTargetIndex: index,
+              scheduledTargetCount: scheduledTargets.length,
+            });
           });
         });
+
+        const launchedPentestIds = pentestRefs.map((ref) => ref.id);
 
         // Update schedule: advance nextRunAt, increment totalRuns
         const nextRunAt = new Date(
@@ -112,10 +134,13 @@ export async function POST(request: NextRequest) {
         // Record the run
         await scheduleDoc.ref.collection("runs").add({
           scheduleId,
-          pentestId: pentestRef.id,
+          pentestId: launchedPentestIds[0] || null,
+          pentestIds: launchedPentestIds,
           status: "pending",
           ranAt: FieldValue.serverTimestamp(),
-          creditDeducted: true,
+          creditDeducted: creditsNeeded > 0,
+          creditsUsed: creditsNeeded,
+          targetCount: scheduledTargets.length,
         });
 
         // Fire Make.com webhook (non-blocking on failure)
@@ -123,24 +148,28 @@ export async function POST(request: NextRequest) {
         if (makeWebhookUrl) {
           try {
             const userDoc = await userRef.get();
-            await fetch(makeWebhookUrl, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                pentestId: pentestRef.id,
-                userId: schedule.userId,
-                userEmail: userDoc.data()?.email || null,
-                type: schedule.type,
-                targetUrl: schedule.targetUrl,
-                userRoles: schedule.userRoles || null,
-                endpoints: schedule.endpoints || null,
-                additionalContext: schedule.additionalContext || null,
-                callbackUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/pentests`,
-                webhookSecret: process.env.GCP_WEBHOOK_SECRET || "",
-                scheduledRun: true,
-                scheduleId,
-              }),
-            });
+            for (let index = 0; index < launchedPentestIds.length; index += 1) {
+              await fetch(makeWebhookUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  pentestId: launchedPentestIds[index],
+                  userId: schedule.userId,
+                  userEmail: userDoc.data()?.email || null,
+                  type: schedule.type,
+                  targetUrl: scheduledTargets[index],
+                  userRoles: schedule.userRoles || null,
+                  endpoints: schedule.endpoints || null,
+                  additionalContext: schedule.additionalContext || null,
+                  callbackUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/pentests`,
+                  webhookSecret: process.env.GCP_WEBHOOK_SECRET || "",
+                  scheduledRun: true,
+                  scheduleId,
+                  targetIndex: index,
+                  targetCount: scheduledTargets.length,
+                }),
+              });
+            }
           } catch (webhookErr) {
             console.error(
               `Webhook failed for schedule ${scheduleId}:`,
@@ -152,7 +181,8 @@ export async function POST(request: NextRequest) {
         results.push({
           scheduleId,
           status: "launched",
-          pentestId: pentestRef.id,
+          pentestId: launchedPentestIds[0],
+          pentestIds: launchedPentestIds,
         });
       } catch (err: any) {
         if (err.message === "no_credits") {
@@ -172,6 +202,21 @@ export async function POST(request: NextRequest) {
           });
 
           results.push({ scheduleId, status: "skipped_no_credits" });
+        } else if (err.message === "invalid_targets") {
+          await scheduleDoc.ref.collection("runs").add({
+            scheduleId,
+            pentestId: null,
+            status: "failed",
+            error: "Invalid or empty target list",
+            ranAt: FieldValue.serverTimestamp(),
+            creditDeducted: false,
+          });
+
+          results.push({
+            scheduleId,
+            status: "error",
+            error: "invalid_targets",
+          });
         } else {
           console.error(`Schedule ${scheduleId} failed:`, err);
           results.push({ scheduleId, status: "error", error: err.message });
