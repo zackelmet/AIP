@@ -230,7 +230,7 @@ export default function TargetsPage() {
       <div className="p-6 lg:p-8 space-y-6 max-w-full">
         <div className="flex flex-col gap-3">
           <div>
-            <h1 className="text-3xl font-bold text-white">Targets</h1>
+            <h1 className="text-3xl font-light text-white mb-2">Targets</h1>
             <p className="text-gray-400 mt-1">
               Save IPs, URLs, and domains so you can replay them whenever you
               scan.

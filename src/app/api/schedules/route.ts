@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase/firebaseAdmin';
-import { FieldValue } from 'firebase-admin/firestore';
-import { verifyAuth } from '@/lib/auth/verifyAuth';
+import { NextRequest, NextResponse } from "next/server";
+import { adminDb } from "@/lib/firebase/firebaseAdmin";
+import { FieldValue } from "firebase-admin/firestore";
+import { verifyAuth } from "@/lib/auth/verifyAuth";
 
 const INTERVAL_PRESETS: Record<string, number> = {
   weekly: 7,
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
   try {
     const token = await verifyAuth(request);
     if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const userId = token.uid;
 
@@ -31,14 +31,14 @@ export async function POST(request: NextRequest) {
 
     if (!type || !targetUrl) {
       return NextResponse.json(
-        { error: 'Missing required fields: type and targetUrl' },
+        { error: "Missing required fields: type and targetUrl" },
         { status: 400 },
       );
     }
 
-    if (type !== 'web_app' && type !== 'external_ip') {
+    if (type !== "web_app" && type !== "external_ip") {
       return NextResponse.json(
-        { error: 'Invalid type. Must be web_app or external_ip' },
+        { error: "Invalid type. Must be web_app or external_ip" },
         { status: 400 },
       );
     }
@@ -52,19 +52,24 @@ export async function POST(request: NextRequest) {
       intervalLabel = intervalPreset;
     } else if (customIntervalDays && Number(customIntervalDays) >= 1) {
       intervalDays = Math.round(Number(customIntervalDays));
-      intervalLabel = `every ${intervalDays} day${intervalDays !== 1 ? 's' : ''}`;
+      intervalLabel = `every ${intervalDays} day${intervalDays !== 1 ? "s" : ""}`;
     } else {
       return NextResponse.json(
-        { error: 'Provide intervalPreset (weekly|biweekly|monthly|quarterly) or customIntervalDays' },
+        {
+          error:
+            "Provide intervalPreset (weekly|biweekly|monthly|quarterly) or customIntervalDays",
+        },
         { status: 400 },
       );
     }
 
     // Calculate next run date
     const now = new Date();
-    const nextRunAt = new Date(now.getTime() + intervalDays * 24 * 60 * 60 * 1000);
+    const nextRunAt = new Date(
+      now.getTime() + intervalDays * 24 * 60 * 60 * 1000,
+    );
 
-    const scheduleRef = adminDb.collection('schedules').doc();
+    const scheduleRef = adminDb.collection("schedules").doc();
     const scheduleData = {
       id: scheduleRef.id,
       userId,
@@ -77,7 +82,7 @@ export async function POST(request: NextRequest) {
       intervalLabel,
       nextRunAt: nextRunAt,
       lastRunAt: null,
-      status: 'active',
+      status: "active",
       totalRuns: 0,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
@@ -87,13 +92,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       scheduleId: scheduleRef.id,
-      message: 'Schedule created successfully',
+      message: "Schedule created successfully",
       nextRunAt: nextRunAt.toISOString(),
     });
   } catch (error: any) {
-    console.error('Error creating schedule:', error);
+    console.error("Error creating schedule:", error);
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: error.message || "Internal server error" },
       { status: 500 },
     );
   }
@@ -103,14 +108,13 @@ export async function GET(request: NextRequest) {
   try {
     const token = await verifyAuth(request);
     if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const userId = token.uid;
 
     const schedulesSnapshot = await adminDb
-      .collection('schedules')
-      .where('userId', '==', userId)
-      .orderBy('createdAt', 'desc')
+      .collection("schedules")
+      .where("userId", "==", userId)
       .get();
 
     const schedules = schedulesSnapshot.docs.map((doc: any) => ({
@@ -118,11 +122,17 @@ export async function GET(request: NextRequest) {
       ...doc.data(),
     }));
 
+    schedules.sort((left: any, right: any) => {
+      const leftMs = left.createdAt?.toMillis?.() || 0;
+      const rightMs = right.createdAt?.toMillis?.() || 0;
+      return rightMs - leftMs;
+    });
+
     return NextResponse.json({ schedules });
   } catch (error: any) {
-    console.error('Error fetching schedules:', error);
+    console.error("Error fetching schedules:", error);
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: error.message || "Internal server error" },
       { status: 500 },
     );
   }

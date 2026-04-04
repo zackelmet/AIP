@@ -176,7 +176,7 @@ export default function MyResultsPage() {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-3xl font-light text-white mb-2">
               My Pentest Results
             </h1>
             <p className="text-gray-400 mt-2">

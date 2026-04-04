@@ -305,7 +305,7 @@ export default function ScansPage() {
       <div className="p-6 lg:p-8 space-y-6 max-w-full">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-white">Scans</h1>
+          <h1 className="text-3xl font-light text-white mb-2">Scans</h1>
           <p className="text-gray-400 mt-1">
             Launch new scans and view your scan history
           </p>

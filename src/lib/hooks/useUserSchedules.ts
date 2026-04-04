@@ -46,11 +46,7 @@ export function useUserSchedules(uid?: string | null) {
       return;
     }
 
-    const q = query(
-      collection(db, "schedules"),
-      where("userId", "==", uid),
-      orderBy("createdAt", "desc"),
-    );
+    const q = query(collection(db, "schedules"), where("userId", "==", uid));
 
     const unsubscribe = onSnapshot(
       q,
@@ -59,6 +55,11 @@ export function useUserSchedules(uid?: string | null) {
           id: doc.id,
           ...doc.data(),
         })) as Schedule[];
+        items.sort((left, right) => {
+          const leftMs = left.createdAt?.toMillis?.() ?? 0;
+          const rightMs = right.createdAt?.toMillis?.() ?? 0;
+          return rightMs - leftMs;
+        });
         setSchedules(items);
         setLoading(false);
       },

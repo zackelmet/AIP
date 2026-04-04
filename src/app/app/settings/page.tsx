@@ -31,7 +31,7 @@ export default function SettingsPage() {
 
   // Profile form state
   const [displayName, setDisplayName] = useState(
-    currentUser?.displayName || ""
+    currentUser?.displayName || "",
   );
   const [savingProfile, setSavingProfile] = useState(false);
 
@@ -45,14 +45,13 @@ export default function SettingsPage() {
   const stats = useMemo(() => {
     const completed = scans.filter((s) => s.status === "completed").length;
     const running = scans.filter(
-      (s) => s.status === "running" || s.status === "in_progress"
+      (s) => s.status === "running" || s.status === "in_progress",
     ).length;
     const pending = scans.filter(
-      (s) => s.status === "pending" || s.status === "queued"
+      (s) => s.status === "pending" || s.status === "queued",
     ).length;
     const creditsLeft =
-      (userData?.credits?.web_app ?? 0) +
-      (userData?.credits?.external_ip ?? 0);
+      (userData?.credits?.web_app ?? 0) + (userData?.credits?.external_ip ?? 0);
     return { total: scans.length, completed, running, pending, creditsLeft };
   }, [scans, userData]);
 
@@ -87,7 +86,7 @@ export default function SettingsPage() {
     try {
       const cred = EmailAuthProvider.credential(
         currentUser.email,
-        currentPassword
+        currentPassword,
       );
       await reauthenticateWithCredential(currentUser, cred);
       await updatePassword(currentUser, newPassword);
@@ -97,7 +96,10 @@ export default function SettingsPage() {
       setConfirmPassword("");
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code;
-      if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
+      if (
+        code === "auth/wrong-password" ||
+        code === "auth/invalid-credential"
+      ) {
         toast.error("Current password is incorrect");
       } else {
         toast.error("Failed to change password");
@@ -139,7 +141,10 @@ export default function SettingsPage() {
       <div className="p-6 lg:p-8 space-y-6 max-w-3xl">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold" style={{ color: "var(--text)" }}>
+          <h1
+            className="text-3xl font-light mb-2"
+            style={{ color: "var(--text)" }}
+          >
             Settings
           </h1>
           <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
@@ -155,7 +160,10 @@ export default function SettingsPage() {
               className="text-xl text-[var(--neon)]"
             />
             <div>
-              <h2 className="text-lg font-semibold" style={{ color: "var(--text)" }}>
+              <h2
+                className="text-lg font-semibold"
+                style={{ color: "var(--text)" }}
+              >
                 Activity
               </h2>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
@@ -168,7 +176,10 @@ export default function SettingsPage() {
               <div
                 key={card.label}
                 className="rounded-xl p-4 text-center"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                }}
               >
                 <FontAwesomeIcon
                   icon={card.icon}
@@ -180,7 +191,10 @@ export default function SettingsPage() {
                 >
                   {card.value}
                 </div>
-                <div className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+                <div
+                  className="text-xs mt-1"
+                  style={{ color: "var(--text-muted)" }}
+                >
                   {card.label}
                 </div>
               </div>
@@ -196,7 +210,10 @@ export default function SettingsPage() {
               className="text-xl text-[var(--neon)]"
             />
             <div>
-              <h2 className="text-lg font-semibold" style={{ color: "var(--text)" }}>
+              <h2
+                className="text-lg font-semibold"
+                style={{ color: "var(--text)" }}
+              >
                 Profile
               </h2>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
@@ -267,7 +284,10 @@ export default function SettingsPage() {
                 className="text-xl text-[var(--neon)]"
               />
               <div>
-                <h2 className="text-lg font-semibold" style={{ color: "var(--text)" }}>
+                <h2
+                  className="text-lg font-semibold"
+                  style={{ color: "var(--text)" }}
+                >
                   Change Password
                 </h2>
                 <p className="text-xs" style={{ color: "var(--text-muted)" }}>
@@ -345,7 +365,10 @@ export default function SettingsPage() {
               className="text-xl text-[var(--neon)]"
             />
             <div>
-              <h2 className="text-lg font-semibold" style={{ color: "var(--text)" }}>
+              <h2
+                className="text-lg font-semibold"
+                style={{ color: "var(--text)" }}
+              >
                 Security
               </h2>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
@@ -365,8 +388,8 @@ export default function SettingsPage() {
                 {currentUser?.providerData?.[0]?.providerId === "google.com"
                   ? "Google"
                   : currentUser?.providerData?.[0]?.providerId === "github.com"
-                  ? "GitHub"
-                  : "Email / Password"}
+                    ? "GitHub"
+                    : "Email / Password"}
               </span>
             </div>
             <div
@@ -377,10 +400,13 @@ export default function SettingsPage() {
               <span className="text-sm" style={{ color: "var(--text-muted)" }}>
                 Account created
               </span>
-              <span className="text-sm font-medium" style={{ color: "var(--text)" }}>
+              <span
+                className="text-sm font-medium"
+                style={{ color: "var(--text)" }}
+              >
                 {currentUser?.metadata?.creationTime
                   ? new Date(
-                      currentUser.metadata.creationTime
+                      currentUser.metadata.creationTime,
                     ).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "long",
@@ -397,10 +423,13 @@ export default function SettingsPage() {
               <span className="text-sm" style={{ color: "var(--text-muted)" }}>
                 Last sign-in
               </span>
-              <span className="text-sm font-medium" style={{ color: "var(--text)" }}>
+              <span
+                className="text-sm font-medium"
+                style={{ color: "var(--text)" }}
+              >
                 {currentUser?.metadata?.lastSignInTime
                   ? new Date(
-                      currentUser.metadata.lastSignInTime
+                      currentUser.metadata.lastSignInTime,
                     ).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "long",

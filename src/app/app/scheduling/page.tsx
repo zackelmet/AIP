@@ -416,7 +416,7 @@ export default function SchedulingPage() {
         {/* Page Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+            <h1 className="text-3xl font-light text-white mb-2 flex items-center gap-3">
               <FontAwesomeIcon
                 icon={faCalendarCheck}
                 className="text-[#34D399]"
