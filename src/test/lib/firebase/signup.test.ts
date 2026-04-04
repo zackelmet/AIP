@@ -1,10 +1,17 @@
 import signUp from "@/lib/firebase/signup";
-import { createUserWithEmailAndPassword, UserCredential } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  signOut,
+  UserCredential,
+} from "firebase/auth";
 
 // Mock the entire firebase/auth module
 jest.mock("firebase/auth", () => ({
   getAuth: jest.fn(() => ({})),
   createUserWithEmailAndPassword: jest.fn(),
+  sendEmailVerification: jest.fn(),
+  signOut: jest.fn(),
 }));
 
 // Mock the firebaseClient module
@@ -21,7 +28,7 @@ describe("signUp function", () => {
   it("should sign up a user successfully", async () => {
     const mockUserCredential = { user: { uid: "123" } } as UserCredential;
     (createUserWithEmailAndPassword as jest.Mock).mockResolvedValue(
-      mockUserCredential
+      mockUserCredential,
     );
 
     const result = await signUp("test@example.com", "password123");
@@ -29,15 +36,17 @@ describe("signUp function", () => {
     expect(createUserWithEmailAndPassword).toHaveBeenCalledWith(
       expect.anything(),
       "test@example.com",
-      "password123"
+      "password123",
     );
     expect(result).toEqual({ user: mockUserCredential, error: null });
+    expect(sendEmailVerification).toHaveBeenCalledWith(mockUserCredential.user);
+    expect(signOut).toHaveBeenCalled();
   });
 
   it("should call the signupCallback if provided", async () => {
     const mockUserCredential = { user: { uid: "123" } } as UserCredential;
     (createUserWithEmailAndPassword as jest.Mock).mockResolvedValue(
-      mockUserCredential
+      mockUserCredential,
     );
 
     const mockSignupCallback = jest.fn().mockResolvedValue(undefined);
@@ -57,7 +66,7 @@ describe("signUp function", () => {
 
   it("should handle non-Error objects", async () => {
     (createUserWithEmailAndPassword as jest.Mock).mockRejectedValue(
-      "String error"
+      "String error",
     );
 
     const result = await signUp("test@example.com", "password123");

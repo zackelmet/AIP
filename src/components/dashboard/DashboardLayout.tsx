@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { currentUser } = useAuth();
+  const { currentUser, isLoadingAuth } = useAuth();
   const { userData } = useUserData();
   const accountMenuRef = useRef<HTMLDivElement>(null);
 
@@ -261,6 +261,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         )}
 
         {/* Page content */}
+        {!isLoadingAuth && !currentUser && (
+          <div className="bg-gray-700/40 border-b border-gray-600 text-gray-200 px-4 py-2 text-sm flex items-center justify-between gap-3">
+            <span>Your session has expired. Please sign in again.</span>
+            <Link
+              href={`/login?redirect=${encodeURIComponent(pathname || "/app/dashboard")}`}
+              className="text-gray-100 hover:text-white underline underline-offset-2 transition-colors font-medium"
+            >
+              Sign in
+            </Link>
+          </div>
+        )}
         <main className="flex-1 overflow-x-hidden overflow-y-auto font-light">
           {children}
         </main>

@@ -7,6 +7,9 @@ jest.mock("firebase/auth", () => ({
   signInWithEmailAndPassword: jest.fn(),
   signInWithPopup: jest.fn(),
   GoogleAuthProvider: jest.fn(),
+  OAuthProvider: jest.fn(() => ({ setCustomParameters: jest.fn() })),
+  sendEmailVerification: jest.fn(),
+  signOut: jest.fn(),
   getAuth: jest.fn(() => ({})),
 }));
 
@@ -26,9 +29,11 @@ describe("signIn function", () => {
   });
 
   it("should sign in with email and password successfully", async () => {
-    const mockUserCredential = { user: { uid: "123" } } as UserCredential;
+    const mockUserCredential = {
+      user: { uid: "123", emailVerified: true },
+    } as UserCredential;
     require("firebase/auth").signInWithEmailAndPassword.mockResolvedValue(
-      mockUserCredential
+      mockUserCredential,
     );
 
     const result = await signIn(SignInMethod.EmailPassword, {
@@ -37,11 +42,11 @@ describe("signIn function", () => {
 
     expect(result).toEqual({ user: mockUserCredential, error: null });
     expect(
-      require("firebase/auth").signInWithEmailAndPassword
+      require("firebase/auth").signInWithEmailAndPassword,
     ).toHaveBeenCalledWith(
       expect.anything(),
       "test@example.com",
-      "password123"
+      "password123",
     );
   });
 
@@ -53,7 +58,7 @@ describe("signIn function", () => {
       },
     } as UserCredential;
     require("firebase/auth").signInWithPopup.mockResolvedValue(
-      mockUserCredential
+      mockUserCredential,
     );
 
     const mockSignupCallback = jest.fn();
@@ -69,10 +74,10 @@ describe("signIn function", () => {
   it("should handle errors for invalid credentials", async () => {
     const mockError = new FirebaseError(
       "auth/wrong-password",
-      "Invalid password"
+      "Invalid password",
     );
     require("firebase/auth").signInWithEmailAndPassword.mockRejectedValue(
-      mockError
+      mockError,
     );
 
     const result = await signIn(SignInMethod.EmailPassword, {
@@ -83,6 +88,28 @@ describe("signIn function", () => {
       user: null,
       error: "Mocked error: auth/wrong-password",
     });
+  });
+
+  it("should block unverified email/password users and resend verification", async () => {
+    const mockUserCredential = {
+      user: { uid: "123", emailVerified: false },
+    } as UserCredential;
+    require("firebase/auth").signInWithEmailAndPassword.mockResolvedValue(
+      mockUserCredential,
+    );
+
+    const result = await signIn(SignInMethod.EmailPassword, {
+      credentials: { email: "test@example.com", password: "password123" },
+    });
+
+    expect(result).toEqual({
+      user: null,
+      error: "Mocked error: auth/email-not-verified",
+    });
+    expect(require("firebase/auth").sendEmailVerification).toHaveBeenCalledWith(
+      mockUserCredential.user,
+    );
+    expect(require("firebase/auth").signOut).toHaveBeenCalled();
   });
 
   it("should throw an error for unsupported sign-in method", async () => {
@@ -100,7 +127,7 @@ describe("signIn function", () => {
       },
     } as UserCredential;
     require("firebase/auth").signInWithPopup.mockResolvedValue(
-      mockUserCredential
+      mockUserCredential,
     );
 
     const mockSignupCallback = jest.fn();

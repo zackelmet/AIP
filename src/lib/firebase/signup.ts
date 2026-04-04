@@ -1,6 +1,8 @@
 import {
   createUserWithEmailAndPassword,
   getAuth,
+  sendEmailVerification,
+  signOut,
   UserCredential,
 } from "firebase/auth";
 import firebase_app from "./firebaseClient";
@@ -58,18 +60,21 @@ interface SignUpResult {
 export default async function signUp(
   email: string,
   password: string,
-  signupCallback?: (userCredential: UserCredential) => Promise<void>
+  signupCallback?: (userCredential: UserCredential) => Promise<void>,
 ): Promise<SignUpResult> {
   try {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     );
 
     if (signupCallback) {
       await signupCallback(userCredential);
     }
+
+    await sendEmailVerification(userCredential.user);
+    await signOut(auth);
 
     return { user: userCredential, error: null };
   } catch (error) {

@@ -15,6 +15,8 @@ export function getAuthErrorMessage(error: FirebaseError): string {
     case "auth/user-not-found":
     case "auth/wrong-password":
       return "Invalid email or password. Please try again.";
+    case "auth/email-not-verified":
+      return "Please verify your email before signing in. We sent a new verification email.";
     case "auth/email-already-in-use":
       return "An account with this email already exists.";
     case "auth/weak-password":

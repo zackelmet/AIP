@@ -21,6 +21,7 @@ export default function AuthForm() {
   };
   const [formMode, setFormMode] = useState<FormMode>(FormMode.Login);
   const [error, setError] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("returnUrl") || "/app/dashboard";
@@ -95,6 +96,8 @@ export default function AuthForm() {
 
   const handleLogin = async () => {
     try {
+      setError(null);
+      setInfoMessage(null);
       const signInModule = await import("@/lib/firebase/signin");
       const { signIn, SignInMethod } = signInModule as any;
       const { user, error } = await signIn(SignInMethod.EmailPassword, {
@@ -123,6 +126,9 @@ export default function AuthForm() {
       } else if (error) {
         const { toast } = await import("react-hot-toast");
         toast.error(error);
+        if (error.toLowerCase().includes("verify your email")) {
+          setInfoMessage("Please verify your email first, then sign in again.");
+        }
       }
     } catch (err) {
       console.error("Email/password sign-in error:", err);
@@ -132,6 +138,9 @@ export default function AuthForm() {
   };
 
   const handleRegister = async () => {
+    setError(null);
+    setInfoMessage(null);
+
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -163,7 +172,12 @@ export default function AuthForm() {
         },
       );
       if (user) {
-        router.push(returnUrl);
+        setFormMode(FormMode.Login);
+        setPassword("");
+        setConfirmPassword("");
+        setInfoMessage(
+          "Account created. Check your inbox for a verification email before signing in.",
+        );
       } else if (error) {
         setError(error.message);
       }
@@ -236,6 +250,9 @@ export default function AuthForm() {
 
               {error && (
                 <div className="text-[var(--danger)] text-sm">{error}</div>
+              )}
+              {infoMessage && (
+                <div className="text-gray-300 text-sm">{infoMessage}</div>
               )}
 
               <div className="space-y-4">

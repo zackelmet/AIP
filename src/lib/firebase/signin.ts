@@ -4,6 +4,8 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   OAuthProvider,
+  sendEmailVerification,
+  signOut,
   UserCredential,
 } from "firebase/auth";
 import firebase_app from "./firebaseClient";
@@ -66,7 +68,7 @@ export async function signIn(
   options?: {
     credentials?: { email: string; password: string };
     signupCallback?: (user: UserCredential) => Promise<void>;
-  }
+  },
 ): Promise<SignInResult> {
   try {
     let userCredential: UserCredential;
@@ -75,14 +77,31 @@ export async function signIn(
       case SignInMethod.EmailPassword:
         if (!options?.credentials) {
           throw new Error(
-            "Email and password are required for email/password sign-in"
+            "Email and password are required for email/password sign-in",
           );
         }
         userCredential = await signInWithEmailAndPassword(
           auth,
           options.credentials.email,
-          options.credentials.password
+          options.credentials.password,
         );
+
+        if (!userCredential.user.emailVerified) {
+          try {
+            await sendEmailVerification(userCredential.user);
+          } catch (verificationError) {
+            console.error(
+              "Failed to resend verification email:",
+              verificationError,
+            );
+          }
+
+          await signOut(auth);
+          throw new FirebaseError(
+            "auth/email-not-verified",
+            "Please verify your email before signing in.",
+          );
+        }
 
         // Always call signupCallback — the endpoint is idempotent (no-op if doc exists)
         if (options?.signupCallback) {
@@ -101,8 +120,8 @@ export async function signIn(
         break;
 
       case SignInMethod.Microsoft:
-        const microsoftProvider = new OAuthProvider('microsoft.com');
-        microsoftProvider.setCustomParameters({ prompt: 'select_account' });
+        const microsoftProvider = new OAuthProvider("microsoft.com");
+        microsoftProvider.setCustomParameters({ prompt: "select_account" });
         userCredential = await signInWithPopup(auth, microsoftProvider);
 
         // Always call signupCallback — the endpoint is idempotent (no-op if doc exists)

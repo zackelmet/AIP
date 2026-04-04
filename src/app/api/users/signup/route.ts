@@ -7,7 +7,7 @@ const admin = initializeAdmin();
 
 export async function POST(req: NextRequest) {
   // Require a valid authenticated session
-  const token = await verifyAuth(req);
+  const token = await verifyAuth(req, { allowUnverified: true });
   if (!token) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

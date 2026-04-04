@@ -13,7 +13,14 @@
 import { NextRequest } from "next/server";
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 
-export async function verifyAuth(request: NextRequest) {
+type VerifyAuthOptions = {
+  allowUnverified?: boolean;
+};
+
+export async function verifyAuth(
+  request: NextRequest,
+  options: VerifyAuthOptions = {},
+) {
   // Primary: httpOnly session cookie (set post-login by AuthContext)
   let idToken = request.cookies.get("__session")?.value;
 
@@ -31,6 +38,15 @@ export async function verifyAuth(request: NextRequest) {
   try {
     const admin = initializeAdmin();
     const decoded = await admin.auth().verifyIdToken(idToken);
+
+    const signInProvider = (decoded as any)?.firebase?.sign_in_provider;
+    const isPasswordUser = signInProvider === "password";
+    const isEmailVerified = decoded.email_verified === true;
+
+    if (!options.allowUnverified && isPasswordUser && !isEmailVerified) {
+      return null;
+    }
+
     return decoded; // { uid, email, isAdmin (custom claim), ... }
   } catch {
     return null;
