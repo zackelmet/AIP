@@ -85,7 +85,7 @@ const PRICING_TIERS: PricingTier[] = [
       "1 Pentest+ credit",
       "AI pentest: up to 50 external IPs",
       "Or webapp with up to 100 API endpoints",
-      "Unlimited user roles tested",
+      "Up to 10 user roles tested",
       "Compliance ready reports",
       "Powered by Anthropic Claude agents",
       "Authentication & authorization testing",

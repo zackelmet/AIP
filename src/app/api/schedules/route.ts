@@ -66,6 +66,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const roleList = Array.isArray(roles) ? roles : null;
+    if (roleList && (type === "web_app" || type === "pentest_plus")) {
+      const maxRoles = type === "pentest_plus" ? 10 : 3;
+      if (roleList.length > maxRoles) {
+        return NextResponse.json(
+          {
+            error: `Too many roles provided. Maximum ${maxRoles} roles allowed for ${type}.`,
+          },
+          { status: 400 },
+        );
+      }
+    }
+
     // Resolve interval
     let intervalDays: number;
     let intervalLabel: string;

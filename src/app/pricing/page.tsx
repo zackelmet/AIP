@@ -60,7 +60,7 @@ const PRODUCTS: Product[] = [
       "1 Pentest+ credit",
       "AI pentest: up to 50 external IPs",
       "Or webapp with up to 100 API endpoints",
-      "Unlimited user roles tested",
+      "Up to 10 user roles tested",
       "Compliance ready reports",
       "Authentication & authorization testing",
       "GRC platform integration (Drata, Vanta)",
@@ -211,7 +211,7 @@ function PricingPageInner() {
             {[
               {
                 q: "What does each credit type include?",
-                a: "External IP covers gateways, firewalls, and external infrastructure. Web App covers up to 3 user roles, 20 pages, and 10 API endpoints. Pentest+ covers up to 50 external IPs or a webapp with up to 100 API endpoints with unlimited user roles.",
+                a: "External IP covers gateways, firewalls, and external infrastructure. Web App covers up to 3 user roles, 20 pages, and 10 API endpoints. Pentest+ covers up to 50 external IPs or a webapp with up to 100 API endpoints and up to 10 user roles.",
               },
               {
                 q: "Do pentest credits expire?",

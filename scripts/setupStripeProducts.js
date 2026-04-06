@@ -50,7 +50,7 @@ const PRODUCTS = [
   {
     name: "Pentest+",
     description:
-      "Comprehensive AI pentest credit. Up to 50 external IPs or webapp with up to 100 API endpoints. Unlimited user roles.",
+      "Comprehensive AI pentest credit. Up to 50 external IPs or webapp with up to 100 API endpoints. Up to 10 user roles.",
     type: "pentest_plus",
     price: 1500,
     currency: "usd",
@@ -58,7 +58,7 @@ const PRODUCTS = [
     features: [
       "AI pentest: up to 50 external IPs",
       "Or webapp with up to 100 API endpoints",
-      "Unlimited user roles tested",
+      "Up to 10 user roles tested",
       "Compliance ready reports",
       "Authentication & authorization testing",
       "GRC platform integration (Drata, Vanta)",
