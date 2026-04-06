@@ -58,12 +58,17 @@ export default function RootLayout({
         src="https://www.googletagmanager.com/gtag/js?id=G-M5G1ZEH7SX"
         strategy="afterInteractive"
       />
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=AW-18028367660"
+        strategy="afterInteractive"
+      />
       <Script id="gtag-init" strategy="afterInteractive">{`
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', 'G-M5G1ZEH7SX');
         gtag('config', 'G-W7KR3XVQTY');
+        gtag('config', 'AW-18028367660');
       `}</Script>
       {/* Change your theme HERE */}
       <body data-theme="cupcake" className={ibmPlexSans.className}>
