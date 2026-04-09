@@ -19,6 +19,7 @@ import {
   faList,
   faUserShield,
   faCalendarCheck,
+  faChartLine,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useUserData } from "@/lib/hooks/useUserData";
@@ -78,7 +79,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       icon: faUser,
     },
     ...(userData?.isAdmin
-      ? [{ href: "/admin", label: "Admin", icon: faUserShield }]
+      ? [
+          { href: "/admin", label: "Admin", icon: faUserShield },
+          { href: "/admin/analytics", label: "Analytics", icon: faChartLine },
+          { href: "/admin/requests", label: "Requests", icon: faList },
+        ]
       : []),
   ];
 
@@ -128,7 +133,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Navigation */}
         <nav className="flex-1 px-4 py-6 space-y-1">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive =
+              pathname === item.href ||
+              (item.href !== "/admin" && pathname?.startsWith(`${item.href}/`));
             return (
               <Link
                 key={item.href}
@@ -230,7 +237,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
         {/* Mobile header with hamburger - hidden on admin page */}
-        {pathname !== "/admin" && (
+        {!pathname?.startsWith("/admin") && (
           <header className="lg:hidden bg-[#0a141f] border-b border-[#34D399] px-4 py-3 flex items-center justify-between sticky top-0 z-30">
             <button
               onClick={() => setSidebarOpen(true)}
