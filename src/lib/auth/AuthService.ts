@@ -1,9 +1,9 @@
-import { User, onAuthStateChanged } from "firebase/auth";
+import { User, onIdTokenChanged } from "firebase/auth";
 import { auth, db } from "../firebase/firebaseClient";
 
 export class AuthService {
   onAuthStateChanged(callback: (user: User | null) => void) {
-    return onAuthStateChanged(auth, callback);
+    return onIdTokenChanged(auth, callback);
   }
 
   async getUserClaims(user: User): Promise<{ [key: string]: any }> {

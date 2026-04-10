@@ -28,12 +28,20 @@ export const metadata: Metadata = {
       "AI-powered automated pentests and expert-led manual penetration testing.",
     url: "https://ai.affordablepentesting.com",
     siteName: "Affordable Pentesting",
+    images: [
+      {
+        url: "/brain.png",
+        alt: "Affordable Pentesting",
+      },
+    ],
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Affordable Pentesting - Penetration Testing as a Service",
     description:
       "AI-powered automated pentests and expert-led manual penetration testing.",
+    images: ["/brain.png"],
   },
   icons: {
     icon: [

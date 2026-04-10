@@ -42,17 +42,22 @@ export default function PasswordResetForm() {
   return (
     <div
       className="relative flex flex-col items-center justify-center min-h-screen text-[--text] overflow-hidden"
-      style={{ background: "linear-gradient(135deg, rgba(52,211,153,0.06) 0%, transparent 50%), #0a141f" }}
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(52,211,153,0.06) 0%, transparent 50%), #0a141f",
+      }}
     >
       <div className="absolute inset-0 pointer-events-none opacity-60">
         <div className="absolute inset-6 neon-grid" />
       </div>
       <div className="relative w-full max-w-md px-6">
         <div className="neon-card p-8 space-y-5">
-          <h1 className="text-2xl font-medium text-center">Reset your password</h1>
+          <h1 className="text-2xl font-medium text-center">
+            Reset your password
+          </h1>
           <input
             type="password"
-            className="neon-input w-full py-3"
+            className="neon-input w-full py-3 px-4"
             placeholder="New Password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
