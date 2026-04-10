@@ -7,10 +7,10 @@ import {
   faDollarSign,
   faFlask,
   faSpinner,
-  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useMemo, useState } from "react";
+import { normalizePentestStatus } from "@/lib/pentests/status";
 
 type AdminStatsResponse = {
   totalUsers: number;
@@ -19,8 +19,6 @@ type AdminStatsResponse = {
   pentestStatusCounts: {
     completed: number;
     running: number;
-    pending: number;
-    failed: number;
   };
   pentestsLast7Days: Array<{
     date: string;
@@ -54,8 +52,6 @@ const initialStats: AdminStatsResponse = {
   pentestStatusCounts: {
     completed: 0,
     running: 0,
-    pending: 0,
-    failed: 0,
   },
   pentestsLast7Days: [],
   sales30DaysCents: 0,
@@ -81,13 +77,12 @@ function formatDate(iso: string | null) {
 }
 
 function statusBadge(status: string) {
+  const normalized = normalizePentestStatus(status);
   const map: Record<string, string> = {
     completed: "text-[#34D399]",
     running: "text-yellow-400",
-    pending: "text-blue-400",
-    failed: "text-red-400",
   };
-  return map[status] ?? "text-[var(--text-muted)]";
+  return map[normalized] ?? "text-[var(--text-muted)]";
 }
 
 export default function AdminAnalytics() {
@@ -235,22 +230,7 @@ export default function AdminAnalytics() {
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
-        <div className="neon-card p-5">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
-              Total Users
-            </p>
-            <FontAwesomeIcon icon={faUsers} className="text-[#34D399]" />
-          </div>
-          <p className="text-3xl font-black text-[var(--text)]">
-            {stats.totalUsers}
-          </p>
-          <p className="text-xs text-[var(--text-muted)] mt-2">
-            +{stats.newUsers30Days} in last 30 days
-          </p>
-        </div>
-
+      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
         <div className="neon-card p-5">
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
@@ -311,18 +291,6 @@ export default function AdminAnalytics() {
               <span className="text-[var(--text-muted)]">Running</span>
               <span className="text-yellow-400 font-semibold">
                 {stats.pentestStatusCounts.running}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-[var(--text-muted)]">Pending</span>
-              <span className="text-blue-400 font-semibold">
-                {stats.pentestStatusCounts.pending}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-[var(--text-muted)]">Failed</span>
-              <span className="text-red-400 font-semibold">
-                {stats.pentestStatusCounts.failed}
               </span>
             </div>
           </div>
@@ -454,7 +422,7 @@ export default function AdminAnalytics() {
                               <p
                                 className={`text-xs mt-1 font-semibold ${statusBadge(pentest.status)}`}
                               >
-                                {pentest.status}
+                                {normalizePentestStatus(pentest.status)}
                               </p>
                             </div>
                           ))}

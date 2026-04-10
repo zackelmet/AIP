@@ -57,6 +57,11 @@ h6 {
 	font-family: var(--font-ibm-plex-sans), 'IBM Plex Sans', sans-serif;
 }
 
+h2,
+h3 {
+	font-family: var(--font-ibm-plex-sans), 'IBM Plex Sans', sans-serif !important;
+}
+
 /* DaisyUI override for the active theme (cupcake is set in layout) */
 body[data-theme="cupcake"] {
 	--p: 152 69% 60%;

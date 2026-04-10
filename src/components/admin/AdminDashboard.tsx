@@ -15,6 +15,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { normalizePentestStatus } from "@/lib/pentests/status";
 
 const showToast = (type: "error" | "success", message: string) => {
   import("react-hot-toast")
@@ -49,17 +50,17 @@ function formatDate(iso: string | null) {
 }
 
 function statusBadge(status: string) {
+  const normalized = normalizePentestStatus(status);
   const map: Record<string, string> = {
     completed: "text-[#34D399]",
     running: "text-yellow-400",
-    pending: "text-blue-400",
-    failed: "text-red-400",
   };
-  return map[status] ?? "text-[var(--text-muted)]";
+  return map[normalized] ?? "text-[var(--text-muted)]";
 }
 
 export default function AdminDashboard() {
   const [totalUsers, setTotalUsers] = useState<number | null>(null);
+  const [newUsers30Days, setNewUsers30Days] = useState<number>(0);
   const [loadingUsers, setLoadingUsers] = useState(true);
 
   // Wizard state
@@ -88,8 +89,14 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetch("/api/admin/stats")
       .then((r) => r.json())
-      .then((d) => setTotalUsers(d.totalUsers ?? 0))
-      .catch(() => setTotalUsers(0))
+      .then((d) => {
+        setTotalUsers(d.totalUsers ?? 0);
+        setNewUsers30Days(d.newUsers30Days ?? 0);
+      })
+      .catch(() => {
+        setTotalUsers(0);
+        setNewUsers30Days(0);
+      })
       .finally(() => setLoadingUsers(false));
   }, []);
 
@@ -251,6 +258,9 @@ export default function AdminDashboard() {
           </p>
           <p className="text-3xl font-black text-[var(--text)]">
             {loadingUsers ? <span className="opacity-40">—</span> : totalUsers}
+          </p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">
+            +{newUsers30Days} in last 30 days
           </p>
         </div>
       </div>
@@ -446,7 +456,7 @@ export default function AdminDashboard() {
                           <span
                             className={`text-xs font-semibold capitalize flex-shrink-0 ${statusBadge(p.status)}`}
                           >
-                            {p.status}
+                            {normalizePentestStatus(p.status)}
                           </span>
                         </div>
                       </button>

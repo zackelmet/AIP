@@ -9,6 +9,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase/firebaseClient";
+import { normalizePentestStatus } from "@/lib/pentests/status";
 
 export function useUserScans(uid?: string | null) {
   const [scans, setScans] = useState<any[]>([]);
@@ -37,7 +38,7 @@ export function useUserScans(uid?: string | null) {
             scanId: doc.id,
             type: data.type,
             target: data.targetUrl,
-            status: data.status,
+            status: normalizePentestStatus(data.status),
             startTime: data.createdAt || null,
             endTime: data.completedAt || null,
             results: data.results || null,

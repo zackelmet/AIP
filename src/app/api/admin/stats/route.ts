@@ -32,18 +32,12 @@ export async function GET(request: NextRequest) {
       newUsers30dSnap,
       totalPentestsSnap,
       completedPentestsSnap,
-      runningPentestsSnap,
-      pendingPentestsSnap,
-      failedPentestsSnap,
       recentPentestsSnap,
     ] = await Promise.all([
       usersRef.count().get(),
       usersRef.where("createdAt", ">=", thirtyDaysAgo).count().get(),
       pentestsRef.count().get(),
       pentestsRef.where("status", "==", "completed").count().get(),
-      pentestsRef.where("status", "==", "running").count().get(),
-      pentestsRef.where("status", "==", "pending").count().get(),
-      pentestsRef.where("status", "==", "failed").count().get(),
       pentestsRef.where("createdAt", ">=", sevenDaysAgo).get(),
     ]);
 
@@ -53,9 +47,7 @@ export async function GET(request: NextRequest) {
 
     const pentestStatusCounts = {
       completed: completedPentestsSnap.data().count,
-      running: runningPentestsSnap.data().count,
-      pending: pendingPentestsSnap.data().count,
-      failed: failedPentestsSnap.data().count,
+      running: Math.max(0, totalPentests - completedPentestsSnap.data().count),
     };
 
     const dayKeys = Array.from({ length: 7 }, (_, index) => {

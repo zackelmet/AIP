@@ -406,11 +406,7 @@ function DashboardInner({
                       <p className="text-sm text-gray-400">
                         {scan.status === "completed"
                           ? "✓ Completed"
-                          : scan.status === "in_progress"
-                            ? "⏳ Running..."
-                            : scan.status === "failed"
-                              ? "✗ Failed"
-                              : "⏸ Queued"}
+                          : "⏳ Running..."}
                       </p>
                     </div>
                     <Link
