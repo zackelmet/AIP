@@ -1,8 +1,8 @@
 /**
  * Server-side auth helper.
- * Reads the __session cookie (Firebase ID token) and verifies it with
+ * Reads the __session cookie (Firebase session cookie) and verifies it with
  * Firebase Admin, returning the decoded token (which includes uid, email,
- * and any custom claims).
+ * and any custom claims). Falls back to verifying ID tokens for compatibility.
  *
  * Usage in an API route:
  *   const token = await verifyAuth(request);
@@ -22,22 +22,36 @@ export async function verifyAuth(
   options: VerifyAuthOptions = {},
 ) {
   // Primary: httpOnly session cookie (set post-login by AuthContext)
-  let idToken = request.cookies.get("__session")?.value;
+  const sessionCookie = request.cookies.get("__session")?.value;
 
   // Fallback: Authorization: Bearer <token> — used during signup before the
   // session cookie has been written (race condition on first auth state change)
-  if (!idToken) {
+  let idToken: string | undefined;
+  if (!sessionCookie) {
     const authHeader = request.headers.get("authorization");
     if (authHeader?.startsWith("Bearer ")) {
       idToken = authHeader.slice(7);
     }
   }
 
-  if (!idToken) return null;
+  if (!sessionCookie && !idToken) return null;
 
   try {
     const admin = initializeAdmin();
-    const decoded = await admin.auth().verifyIdToken(idToken);
+    let decoded: any = null;
+
+    if (sessionCookie) {
+      try {
+        decoded = await admin.auth().verifySessionCookie(sessionCookie, false);
+      } catch {
+        // Backward compatibility: older cookies may still contain raw ID tokens.
+        decoded = await admin.auth().verifyIdToken(sessionCookie);
+      }
+    } else if (idToken) {
+      decoded = await admin.auth().verifyIdToken(idToken);
+    }
+
+    if (!decoded) return null;
 
     const signInProvider = (decoded as any)?.firebase?.sign_in_provider;
     const isPasswordUser = signInProvider === "password";

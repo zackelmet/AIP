@@ -15,7 +15,12 @@ export default async function AdminAnalyticsPage() {
   const admin = initializeAdmin();
   let isAdmin = false;
   try {
-    const decoded = await admin.auth().verifyIdToken(sessionToken);
+    let decoded: any;
+    try {
+      decoded = await admin.auth().verifySessionCookie(sessionToken, false);
+    } catch {
+      decoded = await admin.auth().verifyIdToken(sessionToken);
+    }
     if (decoded.isAdmin === true) {
       isAdmin = true;
     } else {

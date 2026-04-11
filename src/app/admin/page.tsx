@@ -15,7 +15,12 @@ export default async function AdminDashboardPage() {
   const admin = initializeAdmin();
   let isAdmin = false;
   try {
-    const decoded = await admin.auth().verifyIdToken(sessionToken);
+    let decoded: any;
+    try {
+      decoded = await admin.auth().verifySessionCookie(sessionToken, false);
+    } catch {
+      decoded = await admin.auth().verifyIdToken(sessionToken);
+    }
     // Fast path: custom claim
     if (decoded.isAdmin === true) {
       isAdmin = true;

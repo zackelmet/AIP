@@ -4,13 +4,13 @@ import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 export const dynamic = "force-dynamic";
 
 const COOKIE_NAME = "__session";
-// 1 hour — client refreshes the token before it expires
-const MAX_AGE = 60 * 60;
+// 14 days
+const MAX_AGE = 60 * 60 * 24 * 14;
 
 /**
  * POST /api/auth/session
  * Body: { idToken: string }
- * Sets an httpOnly __session cookie containing the verified Firebase ID token.
+ * Sets an httpOnly __session cookie containing a Firebase session cookie.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -32,8 +32,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const expiresIn = MAX_AGE * 1000;
+    const sessionCookie = await admin.auth().createSessionCookie(idToken, {
+      expiresIn,
+    });
+
     const response = NextResponse.json({ ok: true });
-    response.cookies.set(COOKIE_NAME, idToken, {
+    response.cookies.set(COOKIE_NAME, sessionCookie, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
