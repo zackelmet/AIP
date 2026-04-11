@@ -9,11 +9,12 @@ import {
   faArrowRight,
   faArrowLeft,
   faChevronDown,
+  faChevronUp,
   faSpinner,
   faChartLine,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { normalizePentestStatus } from "@/lib/pentests/status";
 
@@ -34,6 +35,21 @@ interface UserSuggestion {
   email: string;
 }
 interface PentestOption {
+  pentestId: string;
+  target: string;
+  status: string;
+  createdAt: string | null;
+}
+
+interface AdminUser {
+  uid: string;
+  email: string;
+  name: string | null;
+  isAdmin: boolean;
+  createdAt: string | null;
+}
+
+interface PentestHistoryItem {
   pentestId: string;
   target: string;
   status: string;
@@ -62,6 +78,19 @@ export default function AdminDashboard() {
   const [totalUsers, setTotalUsers] = useState<number | null>(null);
   const [newUsers30Days, setNewUsers30Days] = useState<number>(0);
   const [loadingUsers, setLoadingUsers] = useState(true);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [loadingUserDirectory, setLoadingUserDirectory] = useState(true);
+  const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
+  const [loadingHistoryByUser, setLoadingHistoryByUser] = useState<
+    Record<string, boolean>
+  >({});
+  const [historyByUser, setHistoryByUser] = useState<
+    Record<string, PentestHistoryItem[]>
+  >({});
+  const [usersError, setUsersError] = useState<string | null>(null);
+  const [userSearch, setUserSearch] = useState("");
+  const [usersPage, setUsersPage] = useState(1);
+  const usersPerPage = 12;
 
   // Wizard state
   const [step, setStep] = useState<Step>(1);
@@ -98,6 +127,26 @@ export default function AdminDashboard() {
         setNewUsers30Days(0);
       })
       .finally(() => setLoadingUsers(false));
+  }, []);
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const response = await fetch("/api/admin/users?limit=100");
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to load users");
+        }
+        setUsers(data.users || []);
+      } catch (error: any) {
+        setUsers([]);
+        setUsersError(error.message || "Failed to load users");
+      } finally {
+        setLoadingUserDirectory(false);
+      }
+    };
+
+    loadUsers();
   }, []);
 
   // Close autocomplete on outside click
@@ -152,6 +201,68 @@ export default function AdminDashboard() {
     setSuggestions([]);
     setShowSuggestions(false);
   };
+
+  const handleToggleUser = async (userId: string) => {
+    if (expandedUserId === userId) {
+      setExpandedUserId(null);
+      return;
+    }
+
+    setExpandedUserId(userId);
+    if (historyByUser[userId]) return;
+
+    setLoadingHistoryByUser((previous) => ({ ...previous, [userId]: true }));
+    try {
+      const response = await fetch(
+        `/api/admin/user-pentests?userId=${encodeURIComponent(userId)}`,
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to load user pentests");
+      }
+      setHistoryByUser((previous) => ({
+        ...previous,
+        [userId]: data.pentests || [],
+      }));
+    } catch {
+      setHistoryByUser((previous) => ({
+        ...previous,
+        [userId]: [],
+      }));
+    } finally {
+      setLoadingHistoryByUser((previous) => ({ ...previous, [userId]: false }));
+    }
+  };
+
+  const filteredUsers = useMemo(() => {
+    const query = userSearch.trim().toLowerCase();
+    if (!query) return users;
+    return users.filter((user) => {
+      const email = user.email.toLowerCase();
+      const name = (user.name || "").toLowerCase();
+      return email.includes(query) || name.includes(query);
+    });
+  }, [users, userSearch]);
+
+  const totalUserPages = Math.max(
+    1,
+    Math.ceil(filteredUsers.length / usersPerPage),
+  );
+
+  const pagedUsers = useMemo(() => {
+    const startIndex = (usersPage - 1) * usersPerPage;
+    return filteredUsers.slice(startIndex, startIndex + usersPerPage);
+  }, [filteredUsers, usersPage]);
+
+  useEffect(() => {
+    setUsersPage(1);
+  }, [userSearch]);
+
+  useEffect(() => {
+    if (usersPage > totalUserPages) {
+      setUsersPage(totalUserPages);
+    }
+  }, [usersPage, totalUserPages]);
 
   const confirmEmail = async () => {
     const email = userEmail.trim();
@@ -584,6 +695,144 @@ export default function AdminDashboard() {
             >
               Upload Another Report
             </button>
+          </div>
+        )}
+      </div>
+
+      <div className="neon-card p-5 space-y-4 max-w-4xl">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold text-[var(--text)]">Users</h2>
+          <p className="text-xs text-[var(--text-muted)]">
+            Click a user to view pentest history
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+          <input
+            type="text"
+            value={userSearch}
+            onChange={(event) => setUserSearch(event.target.value)}
+            placeholder="Search users by email or name"
+            className="neon-input w-full sm:max-w-sm py-2.5 px-4 text-sm"
+          />
+          <p className="text-xs text-[var(--text-muted)]">
+            Showing {filteredUsers.length} user
+            {filteredUsers.length === 1 ? "" : "s"}
+          </p>
+        </div>
+
+        {loadingUserDirectory ? (
+          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
+            <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+            Loading users…
+          </div>
+        ) : usersError ? (
+          <p className="text-sm text-red-400">{usersError}</p>
+        ) : filteredUsers.length === 0 ? (
+          <p className="text-sm text-[var(--text-muted)]">No users found.</p>
+        ) : (
+          <div className="space-y-2">
+            {pagedUsers.map((user) => {
+              const isExpanded = expandedUserId === user.uid;
+              const isHistoryLoading = loadingHistoryByUser[user.uid] === true;
+              const history = historyByUser[user.uid] || [];
+
+              return (
+                <div
+                  key={user.uid}
+                  className="rounded-lg border border-white/10"
+                >
+                  <button
+                    type="button"
+                    onClick={() => handleToggleUser(user.uid)}
+                    className="w-full px-4 py-3 text-left flex items-center justify-between gap-3 hover:bg-white/5 transition-colors"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm text-[var(--text)] truncate">
+                        {user.email}
+                      </p>
+                      <p className="text-xs text-[var(--text-muted)] truncate">
+                        {user.name || "Unnamed user"}
+                        {user.isAdmin ? " • Admin" : ""}
+                      </p>
+                    </div>
+                    <FontAwesomeIcon
+                      icon={isExpanded ? faChevronUp : faChevronDown}
+                      className="text-[var(--text-muted)]"
+                    />
+                  </button>
+
+                  {isExpanded && (
+                    <div className="px-4 pb-4">
+                      {isHistoryLoading ? (
+                        <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                          <FontAwesomeIcon
+                            icon={faSpinner}
+                            className="animate-spin"
+                          />
+                          Loading pentest history…
+                        </div>
+                      ) : history.length === 0 ? (
+                        <p className="text-xs text-[var(--text-muted)]">
+                          No pentests found for this user.
+                        </p>
+                      ) : (
+                        <div className="space-y-2">
+                          {history.map((pentest) => (
+                            <div
+                              key={pentest.pentestId}
+                              className="rounded-md bg-white/5 border border-white/10 px-3 py-2"
+                            >
+                              <div className="flex items-center justify-between gap-3 text-xs">
+                                <span className="text-[var(--text)] truncate">
+                                  {pentest.target}
+                                </span>
+                                <span className="text-[var(--text-muted)] whitespace-nowrap">
+                                  {formatDate(pentest.createdAt)}
+                                </span>
+                              </div>
+                              <p
+                                className={`text-xs mt-1 font-semibold ${statusBadge(pentest.status)}`}
+                              >
+                                {normalizePentestStatus(pentest.status)}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            <div className="pt-2 flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() =>
+                  setUsersPage((previous) => Math.max(1, previous - 1))
+                }
+                disabled={usersPage <= 1}
+                className="neon-outline-btn px-3 py-1.5 text-xs disabled:opacity-40"
+              >
+                Previous
+              </button>
+              <p className="text-xs text-[var(--text-muted)]">
+                Page {usersPage} of {totalUserPages}
+              </p>
+              <button
+                type="button"
+                onClick={() =>
+                  setUsersPage((previous) =>
+                    Math.min(totalUserPages, previous + 1),
+                  )
+                }
+                disabled={usersPage >= totalUserPages}
+                className="neon-outline-btn px-3 py-1.5 text-xs disabled:opacity-40"
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </div>
