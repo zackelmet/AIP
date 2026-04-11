@@ -20,6 +20,7 @@ export interface ReportPayload {
   notes?: string;
   executiveSummary?: string;
   purpose?: string;
+  detailedAnalysis?: string;
   scopeTargets?: string[];
   sharedWithUserIds?: string[];
   findings: ReportFinding[];

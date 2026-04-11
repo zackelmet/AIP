@@ -110,6 +110,7 @@ export async function POST(request: NextRequest) {
       notes: body.notes?.trim() || undefined,
       executiveSummary: body.executiveSummary?.trim() || undefined,
       purpose: body.purpose?.trim() || undefined,
+      detailedAnalysis: body.detailedAnalysis?.trim() || undefined,
       scopeTargets: Array.isArray(body.scopeTargets)
         ? body.scopeTargets.filter((item: unknown) => typeof item === "string")
         : undefined,

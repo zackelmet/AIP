@@ -26,6 +26,8 @@ export default function ReportEngine() {
   const [clientName, setClientName] = useState("");
   const [projectTitle, setProjectTitle] = useState("");
   const [target, setTarget] = useState("");
+  const [executiveSummary, setExecutiveSummary] = useState("");
+  const [detailedAnalysis, setDetailedAnalysis] = useState("");
   const [findings, setFindings] = useState<Finding[]>([emptyFinding()]);
   const [errors, setErrors] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -105,6 +107,8 @@ export default function ReportEngine() {
       clientName: clientName.trim(),
       projectTitle: projectTitle.trim(),
       target: target.trim() || undefined,
+      executiveSummary: executiveSummary.trim() || undefined,
+      detailedAnalysis: detailedAnalysis.trim() || undefined,
       findings: findings.map((finding) => ({
         title: finding.title.trim(),
         description: finding.description.trim(),
@@ -134,6 +138,8 @@ export default function ReportEngine() {
       setClientName("");
       setProjectTitle("");
       setTarget("");
+      setExecutiveSummary("");
+      setDetailedAnalysis("");
       setFindings([emptyFinding()]);
       setErrors([]);
     } catch {
@@ -219,6 +225,33 @@ export default function ReportEngine() {
                 onChange={(event) => setTarget(event.target.value)}
                 placeholder="domain/IP"
                 className={inputClassName}
+              />
+            </label>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <label className="space-y-1.5 block">
+              <span className="text-sm text-gray-400">
+                Executive Summary (optional)
+              </span>
+              <textarea
+                rows={4}
+                value={executiveSummary}
+                onChange={(event) => setExecutiveSummary(event.target.value)}
+                placeholder="High-level business summary for leadership"
+                className={`${inputClassName} resize-y`}
+              />
+            </label>
+            <label className="space-y-1.5 block">
+              <span className="text-sm text-gray-400">
+                Detailed Analysis (optional)
+              </span>
+              <textarea
+                rows={4}
+                value={detailedAnalysis}
+                onChange={(event) => setDetailedAnalysis(event.target.value)}
+                placeholder="Raw notes, methodology details, or analyst output"
+                className={`${inputClassName} resize-y`}
               />
             </label>
           </div>
