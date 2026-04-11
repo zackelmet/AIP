@@ -82,6 +82,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       ? [
           { href: "/admin", label: "Admin", icon: faUserShield },
           { href: "/admin/analytics", label: "Analytics", icon: faChartLine },
+          {
+            href: "/admin/report-engine",
+            label: "Report Engine",
+            icon: faShieldHalved,
+          },
         ]
       : []),
   ];
