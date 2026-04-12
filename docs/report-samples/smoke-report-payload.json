@@ -1,0 +1,21 @@
+{
+  "reportType": "external",
+  "clientName": "CASTATUS",
+  "projectTitle": "Password Reset Flow Security Assessment",
+  "target": "castatus.cloud / dashboard.castatus.cloud",
+  "executiveSummary": "The password reset flow is vulnerable to practical brute-force attacks due to missing rate limiting, lockout controls, and cross-session validation protections. The attack chain is fully unauthenticated and can lead to account takeover.",
+  "purpose": "Validate whether the password reset mechanism can be abused to take over accounts and enumerate user information.",
+  "detailedAnalysis": "Observed chain: ForgotPassword leaks PII and static TUG token -> SendCode can be triggered repeatedly -> ValidateCode accepts parallel, repeated wrong attempts with no lockout and no throttling -> cross-session validation succeeds. Measured throughput: ~11.25 req/sec using 5 concurrent connections.",
+  "findings": [
+    {
+      "title": "Password Reset Code Brute-Force Feasible via Parallel Cross-Session Requests with No Rate Limiting",
+      "description": "The password reset flow (ForgotPassword -> SendCode -> ValidateCode -> ResetPassword) on castatus.cloud lacks rate limiting, account lockout, and effective expiry after failed validation attempts. An unauthenticated attacker can retrieve a static TUG token, trigger code delivery repeatedly, brute-force ValidateCode in parallel sessions, and then reset victim passwords.",
+      "poc": "$ node validate_finding.js\nForgotPassword leaks email/phone + static TUG (same across calls)\nSendCode returns Success with no controls\nValidateCode: 50+ failed attempts all return HTTP 200 'Error'\nCross-session validation returns 200/Error (no session binding)\nParallel throughput: ~11.25 req/sec\n\n$ node validate_benign.js\nNo rate-limit headers present\nUnauthenticated ForgotPassword reveals PII",
+      "impact": "Unauthenticated account takeover is feasible for known-email users via reset-code brute force. User enumeration and PII disclosure (email + phone) are also possible. At ~11 req/sec, a 4-digit code can be brute-forced in ~15 minutes.",
+      "remediation": "Implement strict rate limiting and lockout on ValidateCode, expire reset codes within 10-15 minutes, bind validation to the originating session, generate per-request reset tokens, return generic ForgotPassword responses without PII, add CAPTCHA/challenge after failures, and alert on repeated failed validations.",
+      "cvss": 9.1,
+      "cvssValue": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:L",
+      "severity": "Critical"
+    }
+  ]
+}

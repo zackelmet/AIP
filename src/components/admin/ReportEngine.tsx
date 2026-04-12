@@ -23,6 +23,9 @@ const emptyFinding = (): Finding => ({
 });
 
 export default function ReportEngine() {
+  const [reportType, setReportType] = useState<"external" | "webapp">(
+    "external",
+  );
   const [clientName, setClientName] = useState("");
   const [projectTitle, setProjectTitle] = useState("");
   const [target, setTarget] = useState("");
@@ -104,6 +107,7 @@ export default function ReportEngine() {
     if (validationErrors.length > 0) return;
 
     const payload = {
+      reportType,
       clientName: clientName.trim(),
       projectTitle: projectTitle.trim(),
       target: target.trim() || undefined,
@@ -138,6 +142,7 @@ export default function ReportEngine() {
       setClientName("");
       setProjectTitle("");
       setTarget("");
+      setReportType("external");
       setExecutiveSummary("");
       setDetailedAnalysis("");
       setFindings([emptyFinding()]);
@@ -200,6 +205,19 @@ export default function ReportEngine() {
         <section className="neon-card p-6 space-y-4">
           <h2 className="text-xl text-[var(--text)]">Engagement Details</h2>
           <div className="grid md:grid-cols-3 gap-4">
+            <label className="space-y-1.5">
+              <span className="text-sm text-gray-400">Report Type *</span>
+              <select
+                value={reportType}
+                onChange={(event) =>
+                  setReportType(event.target.value as "external" | "webapp")
+                }
+                className={inputClassName}
+              >
+                <option value="external">External Pentest</option>
+                <option value="webapp">WebApp Pentest</option>
+              </select>
+            </label>
             <label className="space-y-1.5">
               <span className="text-sm text-gray-400">Client Name *</span>
               <input
