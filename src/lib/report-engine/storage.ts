@@ -85,3 +85,29 @@ export async function downloadReportPdf(storagePath: string) {
   const [bytes] = await file.download();
   return bytes;
 }
+
+export async function getReportSignedUrl(params: {
+  storagePath: string;
+  fileName: string;
+  expiresInMinutes?: number;
+}) {
+  const bucket = adminStorage.bucket();
+  const file = bucket.file(params.storagePath);
+  const [exists] = await file.exists();
+  if (!exists) return null;
+
+  const expiresInMinutes = params.expiresInMinutes ?? 15;
+  const expiresAt = Date.now() + expiresInMinutes * 60 * 1000;
+
+  const [url] = await file.getSignedUrl({
+    action: "read",
+    expires: expiresAt,
+    responseDisposition: `inline; filename="${params.fileName}"`,
+    responseType: "application/pdf",
+  });
+
+  return {
+    url,
+    expiresAt,
+  };
+}

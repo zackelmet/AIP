@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdmin } from "@/lib/auth/verifyAuth";
 import { buildReportPdf } from "@/lib/report-engine/pdf-template";
-import { saveReportPdf } from "@/lib/report-engine/storage";
+import { getReportSignedUrl, saveReportPdf } from "@/lib/report-engine/storage";
 import { ReportPayload, ReportFinding } from "@/lib/report-engine/types";
 
 export const runtime = "nodejs";
@@ -69,6 +69,17 @@ function validatePayload(body: any) {
     });
   }
 
+  if (
+    body.reportType &&
+    body.reportType !== "external" &&
+    body.reportType !== "webapp"
+  ) {
+    errors.push({
+      path: "reportType",
+      message: "reportType must be either 'external' or 'webapp'",
+    });
+  }
+
   if (!Array.isArray(body.findings) || body.findings.length === 0) {
     errors.push({
       path: "findings",
@@ -101,6 +112,7 @@ export async function POST(request: NextRequest) {
     }
 
     const payload: ReportPayload = {
+      reportType: body.reportType === "webapp" ? "webapp" : "external",
       clientName: body.clientName.trim(),
       projectTitle: body.projectTitle.trim(),
       target: body.target?.trim() || undefined,
@@ -143,11 +155,19 @@ export async function POST(request: NextRequest) {
       ownerUid: adminToken.uid,
     });
 
+    const signed = await getReportSignedUrl({
+      storagePath: saved.storagePath,
+      fileName: saved.fileName,
+      expiresInMinutes: 15,
+    });
+
     return NextResponse.json({
       status: "success",
       reportId: saved.reportId,
       fileName: saved.fileName,
       accessUrl: `/api/admin/report-engine/reports/${saved.reportId}`,
+      signedUrl: signed?.url ?? null,
+      signedUrlExpiresAt: signed?.expiresAt ?? null,
     });
   } catch (error) {
     console.error("Report submit failed:", error);
