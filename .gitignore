@@ -41,6 +41,7 @@ gcp/keys/*.json
 gemini.md
 .gemini/
 .env.smoke
+google_apps_script_endpoint.local.js
 
 # Firebase admin/migration scripts (local ops only)
 scripts/migratePentestStatuses.js

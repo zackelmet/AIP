@@ -1,10 +1,83 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHmac } from "node:crypto";
 import { verifyAdmin } from "@/lib/auth/verifyAuth";
 import { buildReportPdf } from "@/lib/report-engine/pdf-template";
 import { getReportSignedUrl, saveReportPdf } from "@/lib/report-engine/storage";
 import { ReportPayload, ReportFinding } from "@/lib/report-engine/types";
 
 export const runtime = "nodejs";
+
+type AppsScriptResponse = {
+  status: "success" | "error";
+  reportId?: string;
+  fileName?: string;
+  driveDocUrl?: string | null;
+  pdfSignedUrl?: string | null;
+  pdfSignedUrlExpiresAt?: number | null;
+  docxSignedUrl?: string | null;
+  docxSignedUrlExpiresAt?: number | null;
+  message?: string;
+};
+
+async function submitToAppsScript(params: {
+  payload: ReportPayload;
+  requesterUid: string;
+  requesterEmail?: string;
+}) {
+  const endpointUrl = process.env.APPS_SCRIPT_REPORT_JOB_URL;
+  const signingSecret = process.env.APPS_SCRIPT_JOB_SIGNING_SECRET;
+
+  if (!endpointUrl || !signingSecret) return null;
+
+  const job = {
+    jobId: `job-${Date.now()}`,
+    requestedByUid: params.requesterUid,
+    requestedByEmail: params.requesterEmail || "",
+    reportType: params.payload.reportType || "external",
+    clientName: params.payload.clientName,
+    projectTitle: params.payload.projectTitle,
+    target: params.payload.target || "",
+    completedDate: params.payload.completedDate || "",
+    tester: params.payload.tester || "",
+    version: params.payload.version || "",
+    notes: params.payload.notes || "",
+    executiveSummary: params.payload.executiveSummary || "",
+    purpose: params.payload.purpose || "",
+    detailedAnalysis: params.payload.detailedAnalysis || "",
+    scopeTargets: params.payload.scopeTargets || [],
+    findings: params.payload.findings,
+  };
+
+  const timestamp = Date.now();
+  const signature = createHmac("sha256", signingSecret)
+    .update(`${timestamp}.${JSON.stringify(job)}`)
+    .digest("hex");
+
+  const envelope = {
+    job,
+    meta: {
+      timestamp,
+      signature,
+      requestedByUid: params.requesterUid,
+      requestedByEmail: params.requesterEmail || "",
+    },
+  };
+
+  const response = await fetch(endpointUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(envelope),
+  });
+
+  const data = (await response.json().catch(() => ({}))) as AppsScriptResponse;
+  if (!response.ok || data.status !== "success") {
+    throw new Error(
+      data.message || `Apps Script request failed (${response.status})`,
+    );
+  }
+
+  return data;
+}
 
 function validateFinding(finding: Partial<ReportFinding>, index: number) {
   const errors: Array<{ path: string; message: string }> = [];
@@ -147,6 +220,27 @@ export async function POST(request: NextRequest) {
           : undefined,
       })),
     };
+
+    const appsScriptResult = await submitToAppsScript({
+      payload,
+      requesterUid: adminToken.uid,
+      requesterEmail: adminToken.email,
+    });
+
+    if (appsScriptResult) {
+      return NextResponse.json({
+        status: "success",
+        provider: "apps-script",
+        reportId: appsScriptResult.reportId || null,
+        fileName: appsScriptResult.fileName || null,
+        accessUrl: appsScriptResult.pdfSignedUrl || null,
+        signedUrl: appsScriptResult.pdfSignedUrl || null,
+        signedUrlExpiresAt: appsScriptResult.pdfSignedUrlExpiresAt || null,
+        docxSignedUrl: appsScriptResult.docxSignedUrl || null,
+        docxSignedUrlExpiresAt: appsScriptResult.docxSignedUrlExpiresAt || null,
+        driveDocUrl: appsScriptResult.driveDocUrl || null,
+      });
+    }
 
     const pdfBytes = await buildReportPdf(payload);
     const saved = await saveReportPdf({
