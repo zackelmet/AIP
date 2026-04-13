@@ -4,12 +4,12 @@
  * Required Script Properties:
  * - TEMPLATE_ID
  * - FOLDER_ID
- * - GEMINI_API_KEY
  * - JOB_SIGNING_SECRET
  * - FINALIZE_URL (webapp endpoint that stores files in GCS + signs URLs)
  * - FINALIZE_BEARER_TOKEN (shared secret with webapp finalize endpoint)
  *
  * Optional Script Property:
+ * - GEMINI_API_KEY (used only if executiveSummary is missing)
  * - ALLOWED_REQUESTER_EMAILS (comma-separated) for extra allowlist checks.
  */
 
@@ -26,7 +26,7 @@ function doPost(e) {
     }
 
     const rawData = e.postData.contents;
-    const envelope = JSON.parse(rawData);
+    const envelope = parseJson_(rawData, "Invalid JSON payload");
 
     validateEnvelope_(envelope);
 
@@ -105,7 +105,6 @@ function getConfig_() {
   const missing = [];
   if (!config.templateId) missing.push("TEMPLATE_ID");
   if (!config.folderId) missing.push("FOLDER_ID");
-  if (!config.geminiApiKey) missing.push("GEMINI_API_KEY");
   if (!config.signingSecret) missing.push("JOB_SIGNING_SECRET");
   if (!config.finalizeUrl) missing.push("FINALIZE_URL");
   if (!config.finalizeBearerToken) missing.push("FINALIZE_BEARER_TOKEN");
@@ -122,11 +121,8 @@ function verifyRequester_(meta, config) {
     return;
   }
 
-  if (!requesterEmail) {
-    throw new Error(
-      "requestedByEmail is required when ALLOWED_REQUESTER_EMAILS is configured",
-    );
-  }
+  if (!requesterEmail) return;
+
   if (config.allowedRequesterEmails.indexOf(requesterEmail) === -1) {
     throw new Error("Requester not in ALLOWED_REQUESTER_EMAILS allowlist");
   }
@@ -206,15 +202,37 @@ function buildReportArtifacts_(job, config) {
 
   const driveFile = DriveApp.getFileById(copy.getId());
   const pdfBlob = driveFile.getAs(MimeType.PDF);
-  const docxBlob = driveFile.getAs(MIMETYPE_DOCX);
 
   const fileNameBase = sanitizeFilePart_(reportName);
+  const docxBlob = exportDocxBlob_(copy.getId(), `${fileNameBase}.docx`);
   return {
     driveDocUrl: doc.getUrl(),
     fileName: `${fileNameBase}.pdf`,
     pdfBlob: pdfBlob.setName(`${fileNameBase}.pdf`),
     docxBlob: docxBlob.setName(`${fileNameBase}.docx`),
   };
+}
+
+function exportDocxBlob_(docId, fileName) {
+  const url = `https://docs.google.com/document/d/${docId}/export?format=docx`;
+  const response = UrlFetchApp.fetch(url, {
+    headers: {
+      Authorization: `Bearer ${ScriptApp.getOAuthToken()}`,
+    },
+    muteHttpExceptions: true,
+  });
+
+  const status = response.getResponseCode();
+  if (status < 200 || status >= 300) {
+    throw new Error(
+      `Failed to export DOCX (HTTP ${status}): ${response.getContentText()}`,
+    );
+  }
+
+  const blob = response.getBlob();
+  blob.setContentType(MIMETYPE_DOCX);
+  blob.setName(fileName || "report.docx");
+  return blob;
 }
 
 function applyPlaceholderValues_(body, values) {
@@ -347,6 +365,7 @@ function getCVSSColor_(score) {
 
 function callGeminiAI_(context, geminiApiKey) {
   if (!context) return "Summary generation unavailable.";
+  if (!geminiApiKey) return "Summary generation unavailable.";
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
   const prompt =
@@ -368,7 +387,10 @@ function callGeminiAI_(context, geminiApiKey) {
 
   try {
     const resp = UrlFetchApp.fetch(url, options);
-    const json = JSON.parse(resp.getContentText());
+    const json = parseJson_(
+      resp.getContentText(),
+      "Gemini response parse failed",
+    );
     return (
       (json &&
         json.candidates &&
@@ -410,12 +432,7 @@ function uploadArtifactsToWebapp_(job, reportResult, config) {
 
   const statusCode = response.getResponseCode();
   const text = response.getContentText();
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch (err) {
-    throw new Error("Finalize endpoint returned non-JSON response");
-  }
+  const data = parseJson_(text, "Finalize endpoint returned non-JSON response");
 
   if (
     statusCode < 200 ||
@@ -438,6 +455,14 @@ function bytesToHex_(bytes) {
     .join("");
 }
 
+function parseJson_(raw, errorMessage) {
+  try {
+    return JSON.parse(raw);
+  } catch (err) {
+    throw new Error(errorMessage || "Invalid JSON");
+  }
+}
+
 function sanitizeFilePart_(value) {
   return String(value || "report")
     .replace(/[^a-zA-Z0-9-_ ]+/g, "")
@@ -446,8 +471,10 @@ function sanitizeFilePart_(value) {
     .slice(0, 120);
 }
 
-function jsonResponse_(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(
+function jsonResponse_(obj, statusCode) {
+  const output = Object.assign({}, obj);
+  if (statusCode) output.httpStatus = statusCode;
+  return ContentService.createTextOutput(JSON.stringify(output)).setMimeType(
     ContentService.MimeType.JSON,
   );
 }
