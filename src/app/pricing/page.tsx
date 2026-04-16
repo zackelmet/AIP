@@ -64,7 +64,7 @@ const PRODUCTS: Product[] = [
       "Compliance ready reports",
       "Authentication & authorization testing",
       "GRC platform integration (Drata, Vanta)",
-      "Results within 24 hours",
+      "Results within 48 hours",
     ],
   },
 ];
@@ -227,7 +227,7 @@ function PricingPageInner() {
               },
               {
                 q: "How fast do I get results?",
-                a: "Most scans complete within 24 hours. You'll receive a compliance-ready report with detailed findings and remediation guidance.",
+                a: "Most scans complete within 48 hours. You'll receive a compliance-ready report with detailed findings and remediation guidance.",
               },
             ].map(({ q, a }) => (
               <div

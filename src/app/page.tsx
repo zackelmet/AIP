@@ -49,7 +49,7 @@ const PRICING_TIERS: PricingTier[] = [
       "Firewall & gateway testing",
       "GRC platform integration (Drata, Vanta)",
       "Remediation guidance",
-      "Results within 24 hours",
+      "Results within 48 hours",
     ],
   },
   {
@@ -70,7 +70,7 @@ const PRICING_TIERS: PricingTier[] = [
       "Up to 10 API endpoints",
       "Authentication & authorization testing",
       "GRC platform integration (Drata, Vanta)",
-      "Results within 24 hours",
+      "Results within 48 hours",
     ],
   },
   {
@@ -90,7 +90,7 @@ const PRICING_TIERS: PricingTier[] = [
       "Powered by Anthropic Claude agents",
       "Authentication & authorization testing",
       "GRC platform integration (Drata, Vanta)",
-      "Results within 24 hours",
+      "Results within 48 hours",
     ],
   },
 ];
@@ -546,7 +546,7 @@ const features = [
     icon: faBolt,
     title: "Fast Results",
     description:
-      "Complete comprehensive security assessments delivered within 24 hours of target submission.",
+      "Complete comprehensive security assessments delivered within 48 hours of target submission.",
   },
   {
     icon: faChartLine,
