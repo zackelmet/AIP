@@ -33,12 +33,13 @@ export async function saveReportPdf(params: {
   const client = sanitizePathPart(params.payload.clientName || "client");
   const project = sanitizePathPart(params.payload.projectTitle || "report");
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const fileName = `${timestamp}-${project}.pdf`;
+  const fileName = `${timestamp}-${project}.docx`;
   const storagePath = `reports/${client}/${fileName}`;
 
   const file = bucket.file(storagePath);
   await file.save(Buffer.from(params.pdfBytes), {
-    contentType: "application/pdf",
+    contentType:
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     resumable: false,
     metadata: {
       metadata: {
@@ -102,8 +103,9 @@ export async function getReportSignedUrl(params: {
   const [url] = await file.getSignedUrl({
     action: "read",
     expires: expiresAt,
-    responseDisposition: `inline; filename="${params.fileName}"`,
-    responseType: "application/pdf",
+    responseDisposition: `attachment; filename="${params.fileName}"`,
+    responseType:
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   });
 
   return {
