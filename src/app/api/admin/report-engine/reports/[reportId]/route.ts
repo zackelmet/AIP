@@ -49,8 +49,8 @@ export async function GET(
   return new NextResponse(new Uint8Array(fileBytes), {
     status: 200,
     headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="${report.fileName}"`,
+      "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "Content-Disposition": `attachment; filename="${report.fileName}"`,
       "Cache-Control": "private, no-store",
     },
   });

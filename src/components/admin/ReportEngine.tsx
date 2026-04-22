@@ -32,12 +32,13 @@ export default function ReportEngine() {
   const [executiveSummary, setExecutiveSummary] = useState("");
   const [detailedAnalysis, setDetailedAnalysis] = useState("");
   const [findings, setFindings] = useState<Finding[]>([emptyFinding()]);
-  const [errors, setErrors] = useState<string[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<
     "idle" | "success" | "error"
   >("idle");
   const [generatedReportUrl, setGeneratedReportUrl] = useState("");
+  const [downloadFileName, setDownloadFileName] = useState("");
 
   const addFinding = () => setFindings([...findings, emptyFinding()]);
 
@@ -56,45 +57,26 @@ export default function ReportEngine() {
     setFindings(updated);
   };
 
-  const validate = (): string[] => {
-    const validationErrors: string[] = [];
+  const validate = (): Record<string, string> => {
+    const errs: Record<string, string> = {};
 
-    if (!clientName.trim()) validationErrors.push("Client Name is required.");
-    if (!projectTitle.trim())
-      validationErrors.push("Project Title is required.");
+    if (!clientName.trim()) errs["clientName"] = "Required";
+    if (!projectTitle.trim()) errs["projectTitle"] = "Required";
 
     findings.forEach((finding, index) => {
-      const number = index + 1;
-      if (!finding.title.trim()) {
-        validationErrors.push(`Finding #${number}: Title is required.`);
-      }
-      if (!finding.description.trim()) {
-        validationErrors.push(`Finding #${number}: Description is required.`);
-      }
-      if (!finding.poc.trim()) {
-        validationErrors.push(
-          `Finding #${number}: Proof of Concept is required.`,
-        );
-      }
-      if (!finding.impact.trim()) {
-        validationErrors.push(`Finding #${number}: Impact is required.`);
-      }
-      if (!finding.remediation.trim()) {
-        validationErrors.push(`Finding #${number}: Remediation is required.`);
-      }
-      if (!finding.cvssValue.trim()) {
-        validationErrors.push(`Finding #${number}: CVSS Value is required.`);
-      }
-
+      if (!finding.title.trim()) errs[`findings.${index}.title`] = "Required";
+      if (!finding.description.trim()) errs[`findings.${index}.description`] = "Required";
+      if (!finding.poc.trim()) errs[`findings.${index}.poc`] = "Required";
+      if (!finding.impact.trim()) errs[`findings.${index}.impact`] = "Required";
+      if (!finding.remediation.trim()) errs[`findings.${index}.remediation`] = "Required";
+      if (!finding.cvssValue.trim()) errs[`findings.${index}.cvssValue`] = "Required";
       const cvss = Number.parseFloat(finding.cvss);
       if (Number.isNaN(cvss) || cvss < 0 || cvss > 10) {
-        validationErrors.push(
-          `Finding #${number}: CVSS Score must be a number between 0 and 10.`,
-        );
+        errs[`findings.${index}.cvss`] = "Must be 0–10";
       }
     });
 
-    return validationErrors;
+    return errs;
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -103,8 +85,8 @@ export default function ReportEngine() {
     setGeneratedReportUrl("");
 
     const validationErrors = validate();
-    setErrors(validationErrors);
-    if (validationErrors.length > 0) return;
+    setFieldErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
 
     const payload = {
       reportType,
@@ -138,7 +120,8 @@ export default function ReportEngine() {
       }
 
       setSubmitStatus("success");
-      setGeneratedReportUrl(data.accessUrl || "");
+      setGeneratedReportUrl(data.signedUrl || data.accessUrl || "");
+      setDownloadFileName(data.fileName || "report.docx");
       setClientName("");
       setProjectTitle("");
       setTarget("");
@@ -146,7 +129,7 @@ export default function ReportEngine() {
       setExecutiveSummary("");
       setDetailedAnalysis("");
       setFindings([emptyFinding()]);
-      setErrors([]);
+      setFieldErrors({});
     } catch {
       setSubmitStatus("error");
     } finally {
@@ -156,26 +139,29 @@ export default function ReportEngine() {
 
   const inputClassName =
     "w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#34D399]/40 focus:border-[#34D399]/40 transition";
+  const errorInputClassName =
+    "w-full rounded-lg border border-red-500/60 bg-red-500/5 px-4 py-2.5 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500/40 focus:border-red-500/60 transition";
+  const cx = (key: string) =>
+    fieldErrors[key] ? errorInputClassName : inputClassName;
+  const fe = (key: string) =>
+    fieldErrors[key] ? (
+      <p className="text-xs text-red-400 mt-1">{fieldErrors[key]}</p>
+    ) : null;
+
+  const hasErrors = Object.keys(fieldErrors).length > 0;
 
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-light text-white mb-2">Report Engine</h1>
         <p className="text-gray-400">
-          Generate branded pentest PDF reports from structured findings.
+          Generate branded pentest DOCX reports from structured findings.
         </p>
       </div>
 
-      {errors.length > 0 && (
-        <div className="neon-card p-5 border border-red-500/30 bg-red-500/10 space-y-2">
-          <p className="text-red-400 text-xs uppercase tracking-widest">
-            Please fix the following
-          </p>
-          <ul className="list-disc list-inside text-sm text-red-300 space-y-0.5">
-            {errors.map((error, index) => (
-              <li key={index}>{error}</li>
-            ))}
-          </ul>
+      {hasErrors && (
+        <div className="neon-card p-4 border border-red-500/30 bg-red-500/10">
+          <p className="text-red-400 text-sm">Please fix the highlighted fields before generating.</p>
         </div>
       )}
 
@@ -185,11 +171,10 @@ export default function ReportEngine() {
           {generatedReportUrl && (
             <a
               href={generatedReportUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              download={downloadFileName || "report.docx"}
               className="px-4 py-2 rounded-md bg-[#34D399] text-[#041018] hover:bg-[#10b981] transition-colors"
             >
-              Open PDF
+              Download Report
             </a>
           )}
         </div>
@@ -218,24 +203,26 @@ export default function ReportEngine() {
                 <option value="webapp">WebApp Pentest</option>
               </select>
             </label>
-            <label className="space-y-1.5">
+            <div className="space-y-1.5">
               <span className="text-sm text-gray-400">Client Name *</span>
               <input
                 value={clientName}
                 onChange={(event) => setClientName(event.target.value)}
                 placeholder="e.g. Acme Corp"
-                className={inputClassName}
+                className={cx("clientName")}
               />
-            </label>
-            <label className="space-y-1.5">
+              {fe("clientName")}
+            </div>
+            <div className="space-y-1.5">
               <span className="text-sm text-gray-400">Project Title *</span>
               <input
                 value={projectTitle}
                 onChange={(event) => setProjectTitle(event.target.value)}
                 placeholder="e.g. External Pentest Q2"
-                className={inputClassName}
+                className={cx("projectTitle")}
               />
-            </label>
+              {fe("projectTitle")}
+            </div>
             <label className="space-y-1.5">
               <span className="text-sm text-gray-400">Target (optional)</span>
               <input
@@ -307,17 +294,18 @@ export default function ReportEngine() {
               </div>
 
               <div className="grid md:grid-cols-[1fr_160px] gap-4">
-                <label className="space-y-1.5">
+                <div className="space-y-1.5">
                   <span className="text-sm text-gray-400">Title *</span>
                   <input
                     value={finding.title}
                     onChange={(event) =>
                       updateFinding(index, "title", event.target.value)
                     }
-                    className={inputClassName}
+                    className={cx(`findings.${index}.title`)}
                   />
-                </label>
-                <label className="space-y-1.5">
+                  {fe(`findings.${index}.title`)}
+                </div>
+                <div className="space-y-1.5">
                   <span className="text-sm text-gray-400">CVSS Score *</span>
                   <input
                     type="number"
@@ -328,25 +316,27 @@ export default function ReportEngine() {
                     onChange={(event) =>
                       updateFinding(index, "cvss", event.target.value)
                     }
-                    className={inputClassName}
+                    className={cx(`findings.${index}.cvss`)}
                   />
-                </label>
+                  {fe(`findings.${index}.cvss`)}
+                </div>
               </div>
 
-              <label className="space-y-1.5 block">
+              <div className="space-y-1.5">
                 <span className="text-sm text-gray-400">CVSS Value *</span>
                 <input
                   value={finding.cvssValue}
                   onChange={(event) =>
                     updateFinding(index, "cvssValue", event.target.value)
                   }
-                  placeholder="CVSS:3.1/..."
-                  className={inputClassName}
+                  placeholder="CVSS:3.1/AV:N/AC:L/..."
+                  className={cx(`findings.${index}.cvssValue`)}
                 />
-              </label>
+                {fe(`findings.${index}.cvssValue`)}
+              </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-                <label className="space-y-1.5 block">
+                <div className="space-y-1.5">
                   <span className="text-sm text-gray-400">Description *</span>
                   <textarea
                     rows={3}
@@ -354,26 +344,26 @@ export default function ReportEngine() {
                     onChange={(event) =>
                       updateFinding(index, "description", event.target.value)
                     }
-                    className={`${inputClassName} resize-y`}
+                    className={`${cx(`findings.${index}.description`)} resize-y`}
                   />
-                </label>
-                <label className="space-y-1.5 block">
-                  <span className="text-sm text-gray-400">
-                    Proof of Concept *
-                  </span>
+                  {fe(`findings.${index}.description`)}
+                </div>
+                <div className="space-y-1.5">
+                  <span className="text-sm text-gray-400">Proof of Concept *</span>
                   <textarea
                     rows={3}
                     value={finding.poc}
                     onChange={(event) =>
                       updateFinding(index, "poc", event.target.value)
                     }
-                    className={`${inputClassName} resize-y`}
+                    className={`${cx(`findings.${index}.poc`)} resize-y`}
                   />
-                </label>
+                  {fe(`findings.${index}.poc`)}
+                </div>
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-                <label className="space-y-1.5 block">
+                <div className="space-y-1.5">
                   <span className="text-sm text-gray-400">Impact *</span>
                   <textarea
                     rows={3}
@@ -381,10 +371,11 @@ export default function ReportEngine() {
                     onChange={(event) =>
                       updateFinding(index, "impact", event.target.value)
                     }
-                    className={`${inputClassName} resize-y`}
+                    className={`${cx(`findings.${index}.impact`)} resize-y`}
                   />
-                </label>
-                <label className="space-y-1.5 block">
+                  {fe(`findings.${index}.impact`)}
+                </div>
+                <div className="space-y-1.5">
                   <span className="text-sm text-gray-400">Remediation *</span>
                   <textarea
                     rows={3}
@@ -392,9 +383,10 @@ export default function ReportEngine() {
                     onChange={(event) =>
                       updateFinding(index, "remediation", event.target.value)
                     }
-                    className={`${inputClassName} resize-y`}
+                    className={`${cx(`findings.${index}.remediation`)} resize-y`}
                   />
-                </label>
+                  {fe(`findings.${index}.remediation`)}
+                </div>
               </div>
             </div>
           ))}
