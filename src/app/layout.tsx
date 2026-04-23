@@ -31,8 +31,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/og-image.png",
-        width: 1150,
-        height: 1102,
+        width: 1200,
+        height: 630,
         alt: "Affordable Pentesting",
       },
     ],
