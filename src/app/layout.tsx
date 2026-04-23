@@ -30,7 +30,9 @@ export const metadata: Metadata = {
     siteName: "Affordable Pentesting",
     images: [
       {
-        url: "/brain.png",
+        url: "/og-image.png",
+        width: 1150,
+        height: 1102,
         alt: "Affordable Pentesting",
       },
     ],
@@ -41,7 +43,7 @@ export const metadata: Metadata = {
     title: "Affordable Pentesting - Penetration Testing as a Service",
     description:
       "AI-powered automated pentests and expert-led manual penetration testing.",
-    images: ["/brain.png"],
+    images: ["/og-image.png"],
   },
   icons: {
     icon: [
