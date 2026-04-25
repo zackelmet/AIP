@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
+import { parseCSVFindings } from "@/lib/findings/parseFindingsBlock";
 
 interface Finding {
   title: string;
@@ -39,6 +40,45 @@ export default function ReportEngine() {
   >("idle");
   const [generatedReportUrl, setGeneratedReportUrl] = useState("");
   const [downloadFileName, setDownloadFileName] = useState("");
+  const [csvImportError, setCsvImportError] = useState<string | null>(null);
+  const csvInputRef = useRef<HTMLInputElement>(null);
+
+  const RISK_TO_CVSS: Record<string, number> = {
+    critical: 9.0,
+    high: 7.5,
+    medium: 5.0,
+    low: 2.5,
+    info: 0.0,
+  };
+
+  const handleCSVImport = (file: File) => {
+    setCsvImportError(null);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string;
+      const parsed = parseCSVFindings(text);
+      if (parsed.length === 0) {
+        setCsvImportError("No findings found. Ensure the CSV has a header row with a 'Title' column.");
+        return;
+      }
+      const mapped: Finding[] = parsed.map((f) => ({
+        title: f.title,
+        description: f.description,
+        poc: f.evidence,
+        impact: f.stepsToReproduce, // Impact column maps here
+        remediation: f.remediation,
+        cvss: String(RISK_TO_CVSS[f.severity] ?? 5.0),
+        cvssValue: f.severity.charAt(0).toUpperCase() + f.severity.slice(1),
+      }));
+      setFindings((prev) => {
+        // Replace the single empty placeholder, otherwise append
+        const isBlank = prev.length === 1 && !prev[0].title.trim();
+        return isBlank ? mapped : [...prev, ...mapped];
+      });
+      setFieldErrors({});
+    };
+    reader.readAsText(file);
+  };
 
   const addFinding = () => setFindings([...findings, emptyFinding()]);
 
@@ -267,6 +307,25 @@ export default function ReportEngine() {
             <h2 className="text-xl text-[var(--text)]">
               Findings ({findings.length})
             </h2>
+          <div className="flex items-center gap-3">
+            <input
+              ref={csvInputRef}
+              type="file"
+              accept=".csv,text/csv"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleCSVImport(file);
+                e.target.value = "";
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => csvInputRef.current?.click()}
+              className="rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-gray-300 px-4 py-2 text-sm transition-colors"
+            >
+              Import CSV
+            </button>
             <button
               type="button"
               onClick={addFinding}
@@ -275,6 +334,13 @@ export default function ReportEngine() {
               Add Finding
             </button>
           </div>
+          </div>
+
+          {csvImportError && (
+            <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+              {csvImportError}
+            </div>
+          )}
 
           {findings.map((finding, index) => (
             <div key={index} className="neon-card p-6 space-y-4">
