@@ -1,4 +1,7 @@
-import { parseFindingsBlock } from "@/lib/findings/parseFindingsBlock";
+import {
+  parseFindingsBlock,
+  parseCSVFindings,
+} from "@/lib/findings/parseFindingsBlock";
 
 describe("parseFindingsBlock", () => {
   it("parses a single finding", () => {
@@ -69,5 +72,59 @@ Description: XSS in search input
     const input = `Title: Finding One\nSeverity: Low\nTarget: host1\n===\nTitle: Finding Two\nSeverity: High\nTarget: host2`;
     const results = parseFindingsBlock(input);
     expect(results).toHaveLength(2);
+  });
+});
+
+describe("parseCSVFindings", () => {
+  const csvSample = [
+    `Title,Risk Level,Description,Proof of Concept,Impact,Remediation`,
+    `"SQL Injection","High","Login form is vulnerable","' OR 1=1--","Full DB access","Use parameterised queries"`,
+    `"Reflected XSS","Medium","Search input not sanitised","<script>alert(1)</script>","Session hijacking","Encode output"`,
+  ].join("\n");
+
+  it("parses header row and data rows", () => {
+    const results = parseCSVFindings(csvSample);
+    expect(results).toHaveLength(2);
+  });
+
+  it("maps Risk Level to severity correctly", () => {
+    const results = parseCSVFindings(csvSample);
+    expect(results[0].severity).toBe("high");
+    expect(results[1].severity).toBe("medium");
+  });
+
+  it("maps Description and PoC fields", () => {
+    const results = parseCSVFindings(csvSample);
+    expect(results[0].description).toContain("vulnerable");
+    expect(results[0].evidence).toContain("OR 1=1");
+  });
+
+  it("maps Remediation field", () => {
+    const results = parseCSVFindings(csvSample);
+    expect(results[0].remediation).toContain("parameterised");
+  });
+
+  it("maps Impact into stepsToReproduce", () => {
+    const results = parseCSVFindings(csvSample);
+    expect(results[0].stepsToReproduce).toContain("Full DB access");
+  });
+
+  it("handles quoted fields containing commas", () => {
+    const csv = `Title,Risk Level,Description\n"Finding, with comma","Critical","Desc"`;
+    const [f] = parseCSVFindings(csv);
+    expect(f.title).toBe("Finding, with comma");
+    expect(f.severity).toBe("critical");
+  });
+
+  it("returns empty array for CSV with no data rows", () => {
+    const csv = `Title,Risk Level,Description\n`;
+    expect(parseCSVFindings(csv)).toHaveLength(0);
+  });
+
+  it("skips rows with no Title", () => {
+    const csv = `Title,Risk Level\n"",High\n"Real Finding",Medium`;
+    const results = parseCSVFindings(csv);
+    expect(results).toHaveLength(1);
+    expect(results[0].title).toBe("Real Finding");
   });
 });

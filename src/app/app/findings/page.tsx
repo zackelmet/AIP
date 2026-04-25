@@ -17,6 +17,8 @@ import {
   faEdit,
   faTrash,
   faSpinner,
+  faUpload,
+  faFileAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useFindings } from "@/lib/hooks/useFindings";
@@ -25,6 +27,7 @@ import { auth } from "@/lib/firebase/firebaseClient";
 import { Severity, FindingStatus } from "@/lib/types/pentest";
 import {
   parseFindingsBlock,
+  parseCSVFindings,
   type ParsedFinding,
 } from "@/lib/findings/parseFindingsBlock";
 
@@ -90,7 +93,9 @@ export default function FindingsPage() {
 
   // Paste-block mode
   const [inputMode, setInputMode] = useState<"manual" | "paste">("manual");
+  const [pasteMode, setPasteMode] = useState<"text" | "csv">("text");
   const [pasteBlock, setPasteBlock] = useState("");
+  const [csvFileName, setCsvFileName] = useState<string | null>(null);
   const [parsedFindings, setParsedFindings] = useState<ParsedFinding[] | null>(
     null,
   );
@@ -169,7 +174,9 @@ export default function FindingsPage() {
     setRemediation("");
     // reset paste mode
     setInputMode("manual");
+    setPasteMode("text");
     setPasteBlock("");
+    setCsvFileName(null);
     setParsedFindings(null);
     setBulkError(null);
   };
@@ -588,58 +595,126 @@ export default function FindingsPage() {
             {/* ── PASTE BLOCK ── */}
             {inputMode === "paste" && (
               <div className="p-6 space-y-4">
-                {/* Format hint */}
-                <div className="bg-white/5 border border-white/10 rounded-lg p-3 text-xs text-gray-400 font-mono leading-relaxed">
-                  <span className="text-[#34D399] font-semibold">
-                    Supported format
-                  </span>{" "}
-                  — label each field, separate findings with{" "}
-                  <code className="bg-white/10 px-1 rounded">---</code>:<br />
-                  <span className="text-gray-300">Title:</span> SQL Injection in
-                  Login Form
-                  <br />
-                  <span className="text-gray-300">Severity:</span> High
-                  <br />
-                  <span className="text-gray-300">Target:</span>{" "}
-                  https://example.com/login
-                  <br />
-                  <span className="text-gray-300">
-                    Affected Component:
-                  </span>{" "}
-                  /api/login
-                  <br />
-                  <span className="text-gray-300">Description:</span> The login
-                  endpoint is vulnerable…
-                  <br />
-                  <span className="text-gray-300">Evidence:</span> Payload:
-                  &apos; OR 1=1--
-                  <br />
-                  <span className="text-gray-300">Steps to Reproduce:</span> 1.
-                  Navigate to …<br />
-                  <span className="text-gray-300">Remediation:</span> Use
-                  parameterised queries
-                  <br />
-                  <span className="text-gray-500">---</span>
-                  <br />
-                  <span className="text-gray-300">Title:</span> Reflected XSS …
+
+                {/* Sub-tab: Text vs CSV */}
+                <div className="flex gap-2 bg-white/5 p-1 rounded-lg w-fit">
+                  <button
+                    type="button"
+                    onClick={() => { setPasteMode("text"); setParsedFindings(null); setBulkError(null); setCsvFileName(null); }}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                      pasteMode === "text" ? "bg-white/10 text-white" : "text-gray-500 hover:text-gray-300"
+                    }`}
+                  >
+                    <FontAwesomeIcon icon={faPaste} className="w-3 h-3" />
+                    Paste Text
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setPasteMode("csv"); setParsedFindings(null); setBulkError(null); setPasteBlock(""); }}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                      pasteMode === "csv" ? "bg-white/10 text-white" : "text-gray-500 hover:text-gray-300"
+                    }`}
+                  >
+                    <FontAwesomeIcon icon={faFileAlt} className="w-3 h-3" />
+                    Upload CSV
+                  </button>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Paste findings block
-                  </label>
-                  <textarea
-                    value={pasteBlock}
-                    onChange={(e) => {
-                      setPasteBlock(e.target.value);
-                      setParsedFindings(null);
-                      setBulkError(null);
-                    }}
-                    rows={12}
-                    placeholder="Paste your findings text here…"
-                    className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white font-mono text-sm resize-y"
-                  />
-                </div>
+                {/* ── TEXT mode ── */}
+                {pasteMode === "text" && (
+                  <>
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-3 text-xs text-gray-400 font-mono leading-relaxed">
+                      <span className="text-[#34D399] font-semibold">Supported format</span>
+                      {" "}— label each field, separate findings with{" "}
+                      <code className="bg-white/10 px-1 rounded">---</code>:<br />
+                      <span className="text-gray-300">Title:</span> SQL Injection in Login Form<br />
+                      <span className="text-gray-300">Severity:</span> High<br />
+                      <span className="text-gray-300">Target:</span> https://example.com/login<br />
+                      <span className="text-gray-300">Affected Component:</span> /api/login<br />
+                      <span className="text-gray-300">Description:</span> The login endpoint is vulnerable…<br />
+                      <span className="text-gray-300">Evidence:</span> Payload: &apos; OR 1=1--<br />
+                      <span className="text-gray-300">Remediation:</span> Use parameterised queries<br />
+                      <span className="text-gray-500">---</span><br />
+                      <span className="text-gray-300">Title:</span> Reflected XSS …
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Paste findings block</label>
+                      <textarea
+                        value={pasteBlock}
+                        onChange={(e) => { setPasteBlock(e.target.value); setParsedFindings(null); setBulkError(null); }}
+                        rows={12}
+                        placeholder="Paste your findings text here…"
+                        className="w-full px-3 py-2 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#34D399] bg-white/5 text-white font-mono text-sm resize-y"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* ── CSV mode ── */}
+                {pasteMode === "csv" && (
+                  <>
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-3 text-xs text-gray-400 leading-relaxed">
+                      <span className="text-[#34D399] font-semibold">Expected CSV columns</span>
+                      {" "}(header row required, order flexible):<br />
+                      <span className="font-mono text-gray-300">
+                        Title, Risk Level, Description, Proof of Concept, Impact, Remediation
+                      </span><br />
+                      <span className="text-gray-500">Optional: Target, Affected Component</span>
+                    </div>
+
+                    {!csvFileName ? (
+                      <label className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-white/20 rounded-xl cursor-pointer hover:border-[#34D399]/50 hover:bg-white/5 transition-colors group">
+                        <FontAwesomeIcon icon={faUpload} className="w-8 h-8 text-gray-600 group-hover:text-[#34D399] transition-colors mb-2" />
+                        <span className="text-sm text-gray-400 group-hover:text-gray-300">Click to upload CSV file</span>
+                        <span className="text-xs text-gray-600 mt-1">.csv files only</span>
+                        <input
+                          type="file"
+                          accept=".csv,text/csv"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            setCsvFileName(file.name);
+                            setParsedFindings(null);
+                            setBulkError(null);
+                            const reader = new FileReader();
+                            reader.onload = (ev) => {
+                              const text = ev.target?.result as string;
+                              const results = parseCSVFindings(text);
+                              if (results.length === 0) {
+                                setBulkError("No findings found in CSV. Check that the file has a header row with a 'Title' column.");
+                                setCsvFileName(null);
+                              } else {
+                                setParsedFindings(results);
+                              }
+                            };
+                            reader.readAsText(file);
+                            // reset input so same file can be re-uploaded
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
+                    ) : (
+                      <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-lg px-4 py-3">
+                        <FontAwesomeIcon icon={faFileAlt} className="w-5 h-5 text-[#34D399]" />
+                        <span className="text-sm text-white font-medium truncate flex-1">{csvFileName}</span>
+                        <button
+                          type="button"
+                          onClick={() => { setCsvFileName(null); setParsedFindings(null); setBulkError(null); }}
+                          className="text-gray-500 hover:text-red-400 transition-colors text-xs"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* ── PASTE BLOCK shared: error + preview + action bar ── */}
+            {inputMode === "paste" && (
+              <div className="px-6 pb-6 space-y-4">
 
                 {bulkError && (
                   <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
@@ -709,23 +784,22 @@ export default function FindingsPage() {
                 <div className="flex justify-end gap-3 pt-2 border-t border-white/10">
                   <button
                     type="button"
-                    onClick={() => {
-                      setShowModal(false);
-                      resetForm();
-                    }}
+                    onClick={() => { setShowModal(false); resetForm(); }}
                     className="px-4 py-2 text-gray-400 font-medium hover:bg-white/5 rounded-lg transition-colors"
                   >
                     Cancel
                   </button>
                   {!parsedFindings ? (
-                    <button
-                      type="button"
-                      onClick={handleParse}
-                      disabled={!pasteBlock.trim()}
-                      className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition-colors disabled:opacity-40"
-                    >
-                      Parse Findings
-                    </button>
+                    pasteMode === "text" && (
+                      <button
+                        type="button"
+                        onClick={handleParse}
+                        disabled={!pasteBlock.trim()}
+                        className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition-colors disabled:opacity-40"
+                      >
+                        Parse Findings
+                      </button>
+                    )
                   ) : (
                     <button
                       type="button"
@@ -734,10 +808,7 @@ export default function FindingsPage() {
                       className="inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:opacity-50"
                     >
                       {bulkSubmitting && (
-                        <FontAwesomeIcon
-                          icon={faSpinner}
-                          className="w-4 h-4 animate-spin"
-                        />
+                        <FontAwesomeIcon icon={faSpinner} className="w-4 h-4 animate-spin" />
                       )}
                       {bulkSubmitting
                         ? "Submitting…"

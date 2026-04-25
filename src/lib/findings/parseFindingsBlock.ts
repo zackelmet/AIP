@@ -1,5 +1,149 @@
 import { Severity } from "@/lib/types/pentest";
 
+// ── CSV parser ────────────────────────────────────────────────────────────────
+
+/**
+ * RFC-4180-aware CSV tokeniser.
+ * Handles quoted fields that contain commas, newlines, and escaped double-quotes.
+ */
+function parseCSVRows(raw: string): string[][] {
+  const rows: string[][] = [];
+  let field = "";
+  let inQuote = false;
+  let row: string[] = [];
+
+  for (let i = 0; i < raw.length; i++) {
+    const ch = raw[i];
+    const next = raw[i + 1];
+
+    if (inQuote) {
+      if (ch === '"' && next === '"') {
+        // Escaped quote inside a quoted field
+        field += '"';
+        i++;
+      } else if (ch === '"') {
+        inQuote = false;
+      } else {
+        field += ch;
+      }
+    } else {
+      if (ch === '"') {
+        inQuote = true;
+      } else if (ch === ",") {
+        row.push(field);
+        field = "";
+      } else if (ch === "\r" && next === "\n") {
+        row.push(field);
+        field = "";
+        rows.push(row);
+        row = [];
+        i++; // skip \n
+      } else if (ch === "\n") {
+        row.push(field);
+        field = "";
+        rows.push(row);
+        row = [];
+      } else {
+        field += ch;
+      }
+    }
+  }
+  // flush last field / row
+  if (field || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
+  return rows;
+}
+
+/**
+ * Maps CSV column headers (case-insensitive, trimmed) to column indices.
+ */
+function buildHeaderMap(headers: string[]): Record<string, number> {
+  const map: Record<string, number> = {};
+  headers.forEach((h, i) => {
+    map[h.trim().toLowerCase()] = i;
+  });
+  return map;
+}
+
+const CSV_SEVERITY_ALIASES: Record<string, string> = {
+  "risk level": "severity",
+  risk: "severity",
+};
+
+/**
+ * Parses a CSV text export into ParsedFinding[].
+ *
+ * Expected columns (case-insensitive):
+ *   Title, Risk Level | Severity, Description, Proof of Concept | Evidence | PoC,
+ *   Impact, Remediation, Target (optional), Affected Component (optional)
+ */
+export function parseCSVFindings(csvText: string): ParsedFinding[] {
+  const rows = parseCSVRows(csvText.trim());
+  if (rows.length < 2) return [];
+
+  const rawHeaders = rows[0];
+  // Normalise header names: map aliases like "Risk Level" → "severity"
+  const normHeaders = rawHeaders.map((h) => {
+    const lower = h.trim().toLowerCase();
+    return CSV_SEVERITY_ALIASES[lower] ?? lower;
+  });
+  const hMap = buildHeaderMap(normHeaders);
+
+  const col = (row: string[], ...keys: string[]): string => {
+    for (const k of keys) {
+      const idx = hMap[k.toLowerCase()];
+      if (idx !== undefined && row[idx] !== undefined) return row[idx].trim();
+    }
+    return "";
+  };
+
+  const results: ParsedFinding[] = [];
+
+  for (let r = 1; r < rows.length; r++) {
+    const row = rows[r];
+    if (row.every((c) => !c.trim())) continue; // skip blank rows
+
+    const title = col(row, "title");
+    if (!title) continue;
+
+    const severityRaw = col(row, "severity", "risk level", "risk");
+    const description = col(row, "description", "summary", "detail");
+    const evidence = col(
+      row,
+      "proof of concept",
+      "poc",
+      "evidence",
+      "payload",
+    );
+    const impact = col(row, "impact");
+    const remediation = col(row, "remediation", "fix", "recommendation");
+    const target = col(row, "target", "url", "host", "endpoint");
+    const affectedComponent = col(
+      row,
+      "affected component",
+      "component",
+      "parameter",
+    );
+
+    results.push({
+      title,
+      severity: normalizeSeverity(severityRaw),
+      target: target || "—",
+      affectedComponent,
+      description,
+      evidence,
+      // Surface "Impact" in the steps field since there's no dedicated impact field
+      stepsToReproduce: impact,
+      remediation,
+    });
+  }
+
+  return results;
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 export interface ParsedFinding {
   title: string;
   severity: Severity;
