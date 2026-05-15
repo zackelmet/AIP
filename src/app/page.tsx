@@ -365,6 +365,82 @@ export default function Home() {
       </section>
       */}
 
+      {/* Sample Report Section */}
+      <section id="sample-report" className="py-20 bg-[#060e16] scroll-mt-20">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-10">
+            <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest mb-3">
+              See What You Get
+            </p>
+            <h2 className="text-4xl lg:text-5xl font-light mb-4">
+              Sample <span className="text-[#34D399]">Pentest Report</span>
+            </h2>
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+              Every engagement delivers a structured, audit-ready report like
+              the one below — packed with findings, risk ratings, and
+              remediation guidance.
+            </p>
+          </div>
+
+          {/* PDF Viewer */}
+          <div className="rounded-xl overflow-hidden border border-white/10 shadow-2xl shadow-black/40 mb-8">
+            <iframe
+              src="/templates/AIP Sample Report - External Pentest.docx.pdf"
+              className="w-full"
+              style={{ height: "780px" }}
+              title="AIP Sample Pentest Report"
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
+              href="/templates/AIP Sample Report - External Pentest.docx.pdf"
+              download="AIP Sample Pentest Report.pdf"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors text-base"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
+                />
+              </svg>
+              Download Sample Report
+            </a>
+            <a
+              href="/templates/AIP Sample Report - External Pentest.docx.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white/5 hover:bg-white/10 text-white font-normal rounded-lg border border-white/20 transition-colors text-base"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
+              </svg>
+              Open in New Tab
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Pricing Section */}
       <section id="pricing" className="py-20 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
