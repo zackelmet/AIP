@@ -34,6 +34,14 @@ function resolveTemplatePath(reportType: string): string {
     );
     if (fs.existsSync(webappPath)) return webappPath;
   }
+  // Prefer the new branded engine template if present
+  const brandedPath = path.join(
+    process.cwd(),
+    "public",
+    "templates",
+    "AIP Pentest Report - Engine Template .docx",
+  );
+  if (fs.existsSync(brandedPath)) return brandedPath;
   return path.join(
     process.cwd(),
     "public",
@@ -69,6 +77,17 @@ export function buildReportDocx(payload: ReportPayload): Buffer {
       ? [payload.target]
       : ["Not provided"];
 
+  // Severity summary counts
+  const severityCounts = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
+  for (const f of payload.findings) {
+    const sev = normalizeSeverity(f.severity, f.cvss).toLowerCase();
+    if (sev === "critical") severityCounts.critical++;
+    else if (sev === "high") severityCounts.high++;
+    else if (sev === "medium") severityCounts.medium++;
+    else if (sev === "low") severityCounts.low++;
+    else severityCounts.info++;
+  }
+
   const findings = payload.findings.map((finding, index) => ({
     index: String(index + 1).padStart(2, "0"),
     title: finding.title,
@@ -97,7 +116,11 @@ export function buildReportDocx(payload: ReportPayload): Buffer {
     TESTER_NAME: payload.tester ?? "AIP",
     REPORT_NOTES: payload.notes ?? `Penetration Test for ${payload.clientName}`,
 
-    // Executive summary
+    // Attestation
+    CLIENT_NAME: payload.clientName,
+
+    // Executive summary (both old and new template placeholder names)
+    EXECUTIVE_SUMMARY: payload.executiveSummary ?? "",
     EXECUTIVE_SUMMARY_PARAGRAPH_1: payload.executiveSummary ?? "",
     EXECUTIVE_SUMMARY_PARAGRAPH_2: payload.detailedAnalysis ?? "",
 
@@ -107,6 +130,13 @@ export function buildReportDocx(payload: ReportPayload): Buffer {
 
     // Scope — single joined string for {{SCOPE_TARGET}} placeholder
     SCOPE_TARGET: scopeTargets.join("\n"),
+
+    // Findings Summary severity counts
+    CRITICAL_COUNT: String(severityCounts.critical),
+    HIGH_COUNT: String(severityCounts.high),
+    MEDIUM_COUNT: String(severityCounts.medium),
+    LOW_COUNT: String(severityCounts.low),
+    INFO_COUNT: String(severityCounts.info),
 
     // Findings loop — {{#findings}}...{{/findings}}
     findings,
