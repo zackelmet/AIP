@@ -72,11 +72,12 @@ function validatePayload(body: any) {
   if (
     body.reportType &&
     body.reportType !== "external" &&
-    body.reportType !== "webapp"
+    body.reportType !== "webapp" &&
+    body.reportType !== "msp"
   ) {
     errors.push({
       path: "reportType",
-      message: "reportType must be either 'external' or 'webapp'",
+      message: "reportType must be 'external', 'webapp', or 'msp'",
     });
   }
 
@@ -112,7 +113,9 @@ export async function POST(request: NextRequest) {
     }
 
     const payload: ReportPayload = {
-      reportType: body.reportType === "webapp" ? "webapp" : "external",
+      reportType: ["external", "webapp", "msp"].includes(body.reportType)
+        ? body.reportType
+        : "external",
       clientName: body.clientName.trim(),
       projectTitle: body.projectTitle.trim(),
       target: body.target?.trim() || undefined,

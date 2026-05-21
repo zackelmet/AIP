@@ -11,7 +11,7 @@ export interface ReportFinding {
 }
 
 export interface ReportPayload {
-  reportType?: "external" | "webapp";
+  reportType?: "external" | "webapp" | "msp";
   clientName: string;
   projectTitle: string;
   target?: string;
