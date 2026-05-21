@@ -24,6 +24,15 @@ function normalizeSeverity(value: string | undefined, cvss: number): Severity {
 }
 
 function resolveTemplatePath(reportType: string): string {
+  // MSP Pentesting branded template
+  if (reportType === "msp") {
+    return path.join(
+      process.cwd(),
+      "public",
+      "templates",
+      "MSP Pentesting - Engine Template.docx",
+    );
+  }
   // If a webapp template exists, use it; otherwise fall back to external
   if (reportType === "webapp") {
     const webappPath = path.join(

@@ -24,7 +24,7 @@ const emptyFinding = (): Finding => ({
 });
 
 export default function ReportEngine() {
-  const [reportType, setReportType] = useState<"external" | "webapp">(
+  const [reportType, setReportType] = useState<"external" | "webapp" | "msp">(
     "external",
   );
   const [clientName, setClientName] = useState("");
@@ -58,7 +58,9 @@ export default function ReportEngine() {
       const text = ev.target?.result as string;
       const parsed = parseCSVFindings(text);
       if (parsed.length === 0) {
-        setCsvImportError("No findings found. Ensure the CSV has a header row with a 'Title' column.");
+        setCsvImportError(
+          "No findings found. Ensure the CSV has a header row with a 'Title' column.",
+        );
         return;
       }
       const mapped: Finding[] = parsed.map((f) => ({
@@ -105,11 +107,14 @@ export default function ReportEngine() {
 
     findings.forEach((finding, index) => {
       if (!finding.title.trim()) errs[`findings.${index}.title`] = "Required";
-      if (!finding.description.trim()) errs[`findings.${index}.description`] = "Required";
+      if (!finding.description.trim())
+        errs[`findings.${index}.description`] = "Required";
       if (!finding.poc.trim()) errs[`findings.${index}.poc`] = "Required";
       if (!finding.impact.trim()) errs[`findings.${index}.impact`] = "Required";
-      if (!finding.remediation.trim()) errs[`findings.${index}.remediation`] = "Required";
-      if (!finding.cvssValue.trim()) errs[`findings.${index}.cvssValue`] = "Required";
+      if (!finding.remediation.trim())
+        errs[`findings.${index}.remediation`] = "Required";
+      if (!finding.cvssValue.trim())
+        errs[`findings.${index}.cvssValue`] = "Required";
       const cvss = Number.parseFloat(finding.cvss);
       if (Number.isNaN(cvss) || cvss < 0 || cvss > 10) {
         errs[`findings.${index}.cvss`] = "Must be 0–10";
@@ -192,16 +197,42 @@ export default function ReportEngine() {
 
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-light text-white mb-2">Report Engine</h1>
-        <p className="text-gray-400">
-          Generate branded pentest DOCX reports from structured findings.
-        </p>
+      {/* ── Top bar: title + template selector + generate button ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-light text-white mb-1">Report Engine</h1>
+          <p className="text-gray-400 text-sm">
+            Generate branded pentest DOCX reports from structured findings.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <select
+            value={reportType}
+            onChange={(event) =>
+              setReportType(event.target.value as "external" | "webapp" | "msp")
+            }
+            className="rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#34D399]/40 transition"
+          >
+            <option value="external">Affordable Pentesting</option>
+            <option value="webapp">WebApp Pentest</option>
+            <option value="msp">MSP Pentesting</option>
+          </select>
+          <button
+            type="submit"
+            form="report-engine-form"
+            disabled={submitting}
+            className="rounded-lg bg-[#34D399] hover:bg-[#10b981] disabled:opacity-50 disabled:cursor-not-allowed text-[#041018] px-6 py-2.5 text-sm font-medium transition-colors whitespace-nowrap"
+          >
+            {submitting ? "Generating…" : "Generate Report"}
+          </button>
+        </div>
       </div>
 
       {hasErrors && (
         <div className="neon-card p-4 border border-red-500/30 bg-red-500/10">
-          <p className="text-red-400 text-sm">Please fix the highlighted fields before generating.</p>
+          <p className="text-red-400 text-sm">
+            Please fix the highlighted fields before generating.
+          </p>
         </div>
       )}
 
@@ -226,23 +257,14 @@ export default function ReportEngine() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form
+        id="report-engine-form"
+        onSubmit={handleSubmit}
+        className="space-y-6"
+      >
         <section className="neon-card p-6 space-y-4">
           <h2 className="text-xl text-[var(--text)]">Engagement Details</h2>
           <div className="grid md:grid-cols-3 gap-4">
-            <label className="space-y-1.5">
-              <span className="text-sm text-gray-400">Report Type *</span>
-              <select
-                value={reportType}
-                onChange={(event) =>
-                  setReportType(event.target.value as "external" | "webapp")
-                }
-                className={inputClassName}
-              >
-                <option value="external">External Pentest</option>
-                <option value="webapp">WebApp Pentest</option>
-              </select>
-            </label>
             <div className="space-y-1.5">
               <span className="text-sm text-gray-400">Client Name *</span>
               <input
@@ -307,33 +329,33 @@ export default function ReportEngine() {
             <h2 className="text-xl text-[var(--text)]">
               Findings ({findings.length})
             </h2>
-          <div className="flex items-center gap-3">
-            <input
-              ref={csvInputRef}
-              type="file"
-              accept=".csv,text/csv"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleCSVImport(file);
-                e.target.value = "";
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => csvInputRef.current?.click()}
-              className="rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-gray-300 px-4 py-2 text-sm transition-colors"
-            >
-              Import CSV
-            </button>
-            <button
-              type="button"
-              onClick={addFinding}
-              className="rounded-lg bg-[#34D399] hover:bg-[#10b981] text-[#041018] px-4 py-2 text-sm transition-colors"
-            >
-              Add Finding
-            </button>
-          </div>
+            <div className="flex items-center gap-3">
+              <input
+                ref={csvInputRef}
+                type="file"
+                accept=".csv,text/csv"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleCSVImport(file);
+                  e.target.value = "";
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => csvInputRef.current?.click()}
+                className="rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-gray-300 px-4 py-2 text-sm transition-colors"
+              >
+                Import CSV
+              </button>
+              <button
+                type="button"
+                onClick={addFinding}
+                className="rounded-lg bg-[#34D399] hover:bg-[#10b981] text-[#041018] px-4 py-2 text-sm transition-colors"
+              >
+                Add Finding
+              </button>
+            </div>
           </div>
 
           {csvImportError && (
@@ -415,7 +437,9 @@ export default function ReportEngine() {
                   {fe(`findings.${index}.description`)}
                 </div>
                 <div className="space-y-1.5">
-                  <span className="text-sm text-gray-400">Proof of Concept *</span>
+                  <span className="text-sm text-gray-400">
+                    Proof of Concept *
+                  </span>
                   <textarea
                     rows={3}
                     value={finding.poc}
@@ -457,16 +481,6 @@ export default function ReportEngine() {
             </div>
           ))}
         </section>
-
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="rounded-lg bg-[#34D399] hover:bg-[#10b981] disabled:opacity-50 disabled:cursor-not-allowed text-[#041018] px-8 py-3 text-sm transition-colors"
-          >
-            {submitting ? "Generating..." : "Generate Report"}
-          </button>
-        </div>
       </form>
     </div>
   );
