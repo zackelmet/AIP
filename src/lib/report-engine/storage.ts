@@ -33,8 +33,10 @@ export async function saveReportPdf(params: {
   const client = sanitizePathPart(params.payload.clientName || "client");
   const project = sanitizePathPart(params.payload.projectTitle || "report");
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const fileName = `${timestamp}-${project}.docx`;
-  const storagePath = `reports/${client}/${fileName}`;
+  const storageName = `${timestamp}-${project}.docx`;
+  const displayName = `Pentest Report - ${params.payload.clientName || "Client"}.docx`;
+  const fileName = displayName;
+  const storagePath = `reports/${client}/${storageName}`;
 
   const file = bucket.file(storagePath);
   await file.save(Buffer.from(params.pdfBytes), {

@@ -6,6 +6,24 @@ import { ReportPayload } from "@/lib/report-engine/types";
 
 type Severity = "Critical" | "High" | "Medium" | "Low" | "Informational";
 
+const SEVERITY_COLORS: Record<string, string> = {
+  Critical: "C00000",
+  High: "FF0000",
+  Medium: "FFC000",
+  Low: "70AD47",
+  Informational: "4472C4",
+};
+
+function severityXml(severity: Severity): string {
+  const color = SEVERITY_COLORS[severity] ?? "000000";
+  return (
+    `<w:r>` +
+    `<w:rPr><w:color w:val="${color}"/><w:b/></w:rPr>` +
+    `<w:t>${severity}</w:t>` +
+    `</w:r>`
+  );
+}
+
 function normalizeSeverity(value: string | undefined, cvss: number): Severity {
   const normalized = (value || "").toLowerCase();
   if (
@@ -74,6 +92,8 @@ export function buildReportDocx(payload: ReportPayload): Buffer {
     delimiters: { start: "{{", end: "}}" },
     paragraphLoop: true,
     linebreaks: true,
+    // Allows {~severity_xml} raw XML injection for colored severity text
+    nullGetter: () => "",
   });
 
   const now = new Date();
@@ -97,16 +117,20 @@ export function buildReportDocx(payload: ReportPayload): Buffer {
     else severityCounts.info++;
   }
 
-  const findings = payload.findings.map((finding, index) => ({
-    index: String(index + 1).padStart(2, "0"),
-    title: finding.title,
-    description: finding.description,
-    severity: normalizeSeverity(finding.severity, finding.cvss),
-    cvss_vector: finding.cvssValue,
-    impact: finding.impact,
-    poc: finding.poc,
-    remediation: finding.remediation,
-  }));
+  const findings = payload.findings.map((finding, index) => {
+    const sev = normalizeSeverity(finding.severity, finding.cvss);
+    return {
+      index: String(index + 1).padStart(2, "0"),
+      title: finding.title,
+      description: finding.description,
+      severity: sev,
+      severity_xml: severityXml(sev),
+      cvss_vector: finding.cvssValue,
+      impact: finding.impact,
+      poc: finding.poc,
+      remediation: finding.remediation,
+    };
+  });
 
   const toc_findings = findings.map((f) => ({
     toc_index: f.index,

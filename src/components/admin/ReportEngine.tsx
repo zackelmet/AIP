@@ -312,13 +312,13 @@ export default function ReportEngine() {
             </label>
             <label className="space-y-1.5 block">
               <span className="text-sm text-gray-400">
-                Detailed Analysis (optional)
+                Finding Summary (optional)
               </span>
               <textarea
                 rows={4}
                 value={detailedAnalysis}
                 onChange={(event) => setDetailedAnalysis(event.target.value)}
-                placeholder="Raw notes, methodology details, or analyst output"
+                placeholder="Overall findings summary or additional analyst notes"
                 className={`${inputClassName} resize-y`}
               />
             </label>
