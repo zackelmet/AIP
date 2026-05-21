@@ -24,9 +24,7 @@ const emptyFinding = (): Finding => ({
 });
 
 export default function ReportEngine() {
-  const [reportType, setReportType] = useState<"external" | "webapp" | "msp">(
-    "external",
-  );
+  const [reportType, setReportType] = useState<"external" | "msp">("external");
   const [clientName, setClientName] = useState("");
   const [projectTitle, setProjectTitle] = useState("");
   const [target, setTarget] = useState("");
@@ -209,13 +207,16 @@ export default function ReportEngine() {
           <select
             value={reportType}
             onChange={(event) =>
-              setReportType(event.target.value as "external" | "webapp" | "msp")
+              setReportType(event.target.value as "external" | "msp")
             }
-            className="rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#34D399]/40 transition"
+            className="rounded-lg border border-white/20 bg-[#0a1929] px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#34D399]/40 transition cursor-pointer"
           >
-            <option value="external">Affordable Pentesting</option>
-            <option value="webapp">WebApp Pentest</option>
-            <option value="msp">MSP Pentesting</option>
+            <option value="external" className="bg-[#0a1929] text-white">
+              Affordable Pentesting
+            </option>
+            <option value="msp" className="bg-[#0a1929] text-white">
+              MSP Pentesting
+            </option>
           </select>
           <button
             type="submit"
