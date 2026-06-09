@@ -49,6 +49,8 @@ interface AdminUser {
   name: string | null;
   isAdmin: boolean;
   createdAt: string | null;
+  pentestCount: number;
+  lastPentestAt: string | null;
 }
 
 interface PentestHistoryItem {
@@ -946,7 +948,7 @@ export default function AdminDashboard() {
                     onClick={() => handleToggleUser(user.uid)}
                     className="w-full px-4 py-3 text-left flex items-center justify-between gap-3 hover:bg-white/5 transition-colors"
                   >
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="text-sm text-[var(--text)] truncate">
                         {user.email}
                       </p>
@@ -955,9 +957,27 @@ export default function AdminDashboard() {
                         {user.isAdmin ? " • Admin" : ""}
                       </p>
                     </div>
+                    <div className="hidden sm:block text-right w-20 shrink-0">
+                      <p className="text-sm font-semibold text-[var(--text)]">
+                        {user.pentestCount}
+                      </p>
+                      <p className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">
+                        Pentests
+                      </p>
+                    </div>
+                    <div className="hidden sm:block text-right w-32 shrink-0">
+                      <p className="text-xs text-[var(--text)] truncate">
+                        {user.lastPentestAt
+                          ? formatDate(user.lastPentestAt)
+                          : "—"}
+                      </p>
+                      <p className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">
+                        Last pentest
+                      </p>
+                    </div>
                     <FontAwesomeIcon
                       icon={isExpanded ? faChevronUp : faChevronDown}
-                      className="text-[var(--text-muted)]"
+                      className="text-[var(--text-muted)] shrink-0"
                     />
                   </button>
 
