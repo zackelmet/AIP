@@ -11,7 +11,8 @@ function getResend(): Resend | null {
 }
 
 const FROM =
-  process.env.EMAIL_FROM || "Affordable Pentesting <noreply@msppentesting.com>";
+  process.env.EMAIL_FROM ||
+  "Affordable Pentesting <noreply@affordablepentesting.com>";
 const ADMIN_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "zack@msppentesting.com";
 
 const TYPE_LABELS: Record<string, string> = {
