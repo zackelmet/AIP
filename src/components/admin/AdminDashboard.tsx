@@ -11,14 +11,13 @@ import {
   faChevronDown,
   faChevronUp,
   faSpinner,
-  faChartLine,
   faClock,
   faInbox,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { normalizePentestStatus } from "@/lib/pentests/status";
+import AdminAnalytics from "./AdminAnalytics";
 
 const showToast = (type: "error" | "success", message: string) => {
   import("react-hot-toast")
@@ -446,12 +445,6 @@ export default function AdminDashboard() {
             Affordable Pentesting — internal tools
           </p>
         </div>
-        <Link
-          href="/admin/analytics"
-          className="ml-auto neon-outline-btn px-4 py-2 text-sm font-semibold flex items-center gap-2"
-        >
-          <FontAwesomeIcon icon={faChartLine} /> Analytics
-        </Link>
       </div>
 
       {/* Active pentest queue — launched but not yet delivered */}
@@ -1055,6 +1048,9 @@ export default function AdminDashboard() {
           </div>
         )}
       </div>
+
+      {/* Analytics — concise stats window, bottom of the admin page */}
+      <AdminAnalytics />
     </div>
   );
 }

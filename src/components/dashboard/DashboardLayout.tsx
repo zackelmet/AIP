@@ -19,7 +19,6 @@ import {
   faList,
   faUserShield,
   faCalendarCheck,
-  faChartLine,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useUserData } from "@/lib/hooks/useUserData";
@@ -81,7 +80,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     ...(userData?.isAdmin
       ? [
           { href: "/admin", label: "Admin", icon: faUserShield },
-          { href: "/admin/analytics", label: "Analytics", icon: faChartLine },
           {
             href: "/admin/report-engine",
             label: "Report Engine",
