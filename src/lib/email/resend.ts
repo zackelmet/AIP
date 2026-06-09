@@ -158,7 +158,7 @@ function renderEmail({
 </html>`;
 }
 
-function send(to: string, subject: string, html: string) {
+function send(to: string, subject: string, html: string, text: string) {
   const resend = getResend();
   if (!resend) {
     console.warn("RESEND_API_KEY not set — skipping email:", subject);
@@ -169,8 +169,32 @@ function send(to: string, subject: string, html: string) {
     to,
     subject,
     html,
+    // A plain-text alternative alongside the HTML improves deliverability —
+    // HTML-only messages are a moderate spam signal.
+    text,
     attachments: [logoAttachment],
   });
+}
+
+/** Builds a plain-text counterpart to the HTML email for the text/plain part. */
+function renderText({
+  heading,
+  intro,
+  rows,
+  cta,
+  closing,
+}: ShellOptions): string {
+  const lines = [heading, "", intro, ""];
+  rows.forEach(([label, value]) => lines.push(`${label}: ${value}`));
+  if (cta) lines.push("", `${cta.label}: ${cta.href}`);
+  if (closing) lines.push("", closing);
+  lines.push(
+    "",
+    "—",
+    "Affordable Pentesting · Professional penetration testing",
+    "Authorized security testing only. This message was sent regarding activity on your account.",
+  );
+  return lines.join("\n");
 }
 
 function reportRejected(
@@ -216,34 +240,38 @@ export async function sendPentestLaunchedEmails({
   const sends: Promise<unknown>[] = [];
 
   if (userEmail) {
+    const clientOpts: ShellOptions = {
+      preheader: "Your engagement is now underway.",
+      heading: "Your penetration test has started",
+      intro:
+        "Your engagement is now underway. Our team has begun assessing your target, and we will email you the moment your report is ready to download.",
+      rows,
+      cta: { label: "View in dashboard", href: dashboardUrl },
+      closing:
+        "No action is required from you at this stage. If you have questions about scope or timing, simply reply to this email.",
+    };
     sends.push(
       send(
         userEmail,
         "Your penetration test has started",
-        renderEmail({
-          preheader: "Your engagement is now underway.",
-          heading: "Your penetration test has started",
-          intro:
-            "Your engagement is now underway. Our team has begun assessing your target, and we will email you the moment your report is ready to download.",
-          rows,
-          cta: { label: "View in dashboard", href: dashboardUrl },
-          closing:
-            "No action is required from you at this stage. If you have questions about scope or timing, simply reply to this email.",
-        }),
+        renderEmail(clientOpts),
+        renderText(clientOpts),
       ),
     );
   }
 
+  const adminOpts: ShellOptions = {
+    preheader: `A new ${typeLabel} engagement was launched.`,
+    heading: "New pentest launched",
+    intro: "A client just launched a new engagement. Details are below.",
+    rows: [["Client", userEmail || "Unknown"], ...rows],
+  };
   sends.push(
     send(
       ADMIN_EMAIL,
       `New pentest launched — ${target}`,
-      renderEmail({
-        preheader: `A new ${typeLabel} engagement was launched.`,
-        heading: "New pentest launched",
-        intro: "A client just launched a new engagement. Details are below.",
-        rows: [["Client", userEmail || "Unknown"], ...rows],
-      }),
+      renderEmail(adminOpts),
+      renderText(adminOpts),
     ),
   );
 
@@ -271,23 +299,26 @@ export async function sendPentestReportReadyEmail({
   const typeLabel = TYPE_LABELS[type] || type;
   const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ""}/app/dashboard`;
 
+  const reportOpts: ShellOptions = {
+    preheader: "Your report is now available to download.",
+    heading: "Your report is ready",
+    intro:
+      "Your penetration test is complete and your report is now available. Sign in to your dashboard to review the findings and download the full report.",
+    rows: [
+      ["Target", target],
+      ["Assessment", typeLabel],
+    ],
+    cta: { label: "Download your report", href: dashboardUrl },
+    closing:
+      "We recommend reviewing the findings with your technical team and prioritizing remediation by severity. If you would like to discuss the results, simply reply to this email.",
+  };
+
   try {
     await send(
       userEmail,
       "Your penetration test report is ready",
-      renderEmail({
-        preheader: "Your report is now available to download.",
-        heading: "Your report is ready",
-        intro:
-          "Your penetration test is complete and your report is now available. Sign in to your dashboard to review the findings and download the full report.",
-        rows: [
-          ["Target", target],
-          ["Assessment", typeLabel],
-        ],
-        cta: { label: "Download your report", href: dashboardUrl },
-        closing:
-          "We recommend reviewing the findings with your technical team and prioritizing remediation by severity. If you would like to discuss the results, simply reply to this email.",
-      }),
+      renderEmail(reportOpts),
+      renderText(reportOpts),
     );
   } catch (error) {
     console.error("Report-ready email failed:", error);
