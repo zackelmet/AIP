@@ -27,7 +27,8 @@ const logoAttachment = {
 
 // Brand palette (mirrors tailwind.config.ts).
 const COLORS = {
-  bg: "#0a141f",
+  bg: "#ffffff", // outer email page background
+  headerText: "#0a141f", // wordmark/footer text on the white page
   card: "#0f1f2e",
   border: "#1d3140",
   green: "#34D399",
@@ -111,7 +112,7 @@ function renderEmail({
                       <img src="cid:${LOGO_CID}" width="36" height="36" alt="Affordable Pentesting" style="display:block;border:0;" />
                     </td>
                     <td style="vertical-align:middle;">
-                      <span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:17px;font-weight:700;color:${COLORS.text};letter-spacing:0.2px;">Affordable Pentesting</span>
+                      <span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:17px;font-weight:700;color:${COLORS.headerText};letter-spacing:0.2px;">Affordable Pentesting</span>
                     </td>
                   </tr>
                 </table>
@@ -199,7 +200,6 @@ export async function sendPentestLaunchedEmails({
   userEmail,
   target,
   type,
-  pentestId,
 }: PentestEmailParams): Promise<void> {
   if (!getResend()) {
     console.warn("RESEND_API_KEY not set — skipping launch emails");
@@ -211,7 +211,6 @@ export async function sendPentestLaunchedEmails({
   const rows: Array<[string, string]> = [
     ["Target", target],
     ["Assessment", typeLabel],
-    ["Reference", pentestId],
   ];
 
   const sends: Promise<unknown>[] = [];
@@ -259,7 +258,6 @@ export async function sendPentestReportReadyEmail({
   userEmail,
   target,
   type,
-  pentestId,
 }: PentestEmailParams): Promise<void> {
   if (!userEmail) {
     console.warn("No client email — skipping report-ready email");
@@ -285,7 +283,6 @@ export async function sendPentestReportReadyEmail({
         rows: [
           ["Target", target],
           ["Assessment", typeLabel],
-          ["Reference", pentestId],
         ],
         cta: { label: "Download your report", href: dashboardUrl },
         closing:
