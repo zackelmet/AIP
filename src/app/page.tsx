@@ -95,9 +95,62 @@ const PRICING_TIERS: PricingTier[] = [
   },
 ];
 
+type Cadence = "quarterly" | "monthly";
+
+// How many pentest credits a year's bundle contains for each testing cadence.
+const CADENCE_TESTS: Record<Cadence, number> = { quarterly: 4, monthly: 12 };
+
+interface ContinuousPlan {
+  id: "external_ip" | "web_app";
+  name: string;
+  description: string;
+  oneTimePrice: number; // standard one-time per-test price
+  perTestPrice: number; // discounted per-test price (20% off)
+  priceId: string; // Stripe one-time price for the discounted per-test amount
+  features: string[];
+}
+
+// Continuous testing = a one-time bundle of pentest credits at 20% off, bought
+// at the discounted per-test price times the number of tests for the cadence
+// (quarterly = 4/yr, monthly = 12/yr). Credits land immediately; the existing
+// webhook grants `quantity` credits per checkout. Empty priceId → "Coming Soon".
+const CONTINUOUS_PLANS: ContinuousPlan[] = [
+  {
+    id: "external_ip",
+    name: "External IP — Continuous",
+    description: "A year of recurring testing for your public-facing IPs",
+    oneTimePrice: 199,
+    perTestPrice: 159,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_EXTERNAL_IP_CONTINUOUS || "",
+    features: [
+      "20% off the standard $199 per-test price",
+      "Credits land immediately — launch on your own schedule",
+      "Compliance-ready reports (SOC 2, HIPAA, PCI DSS, ISO 27001, NIST)",
+      "Powered by Anthropic Claude agents",
+      "Results within 48 hours of each launch",
+    ],
+  },
+  {
+    id: "web_app",
+    name: "Web App — Continuous",
+    description: "A year of recurring testing for your web apps & APIs",
+    oneTimePrice: 500,
+    perTestPrice: 400,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_WEB_APP_CONTINUOUS || "",
+    features: [
+      "20% off the standard $500 per-test price",
+      "Credits land immediately — launch on your own schedule",
+      "Up to 3 user roles, 20 pages & 10 API endpoints per test",
+      "Compliance-ready reports (SOC 2, HIPAA, PCI DSS, ISO 27001, NIST)",
+      "Powered by Anthropic Claude agents",
+    ],
+  },
+];
+
 export default function Home() {
   const { currentUser } = useAuth();
   const [loadingCheckout, setLoadingCheckout] = useState<string | null>(null);
+  const [cadence, setCadence] = useState<Cadence>("quarterly");
 
   const handleStartPentest = () => {
     if (!currentUser) {
@@ -139,6 +192,49 @@ export default function Home() {
     } catch (error: any) {
       console.error("Checkout error:", error);
       const { default: toast } = await import("react-hot-toast");
+      toast.error(error.message || "Failed to start checkout");
+    } finally {
+      setLoadingCheckout(null);
+    }
+  };
+
+  const handleBuyBundle = async (plan: ContinuousPlan) => {
+    if (!plan.priceId) {
+      toast.error("This plan isn't available yet — please check back soon.");
+      return;
+    }
+    if (!currentUser) {
+      window.location.href = `/login?returnUrl=${encodeURIComponent("/#continuous")}`;
+      return;
+    }
+
+    const quantity = CADENCE_TESTS[cadence];
+    const checkoutId = `${plan.id}_${cadence}`;
+    setLoadingCheckout(checkoutId);
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          priceId: plan.priceId,
+          mode: "payment",
+          quantity,
+          userId: currentUser.uid,
+          email: currentUser.email,
+          // Webhook grants `quantity` credits of this type on completion.
+          metadata: { pentestType: plan.id, continuousCadence: cadence },
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(data.error || "Failed to create checkout session");
+
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error: any) {
+      console.error("Bundle checkout error:", error);
       toast.error(error.message || "Failed to start checkout");
     } finally {
       setLoadingCheckout(null);
@@ -465,6 +561,113 @@ export default function Home() {
               />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Continuous Testing Section */}
+      <section id="continuous" className="py-20 bg-[#060e16] scroll-mt-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest mb-3">
+              Stay Secure Year-Round
+            </p>
+            <h2 className="text-4xl lg:text-5xl font-light mb-4">
+              Continuous <span className="text-[#34D399]">Testing</span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              Buy a year of pentests up front and save 20%. Credits land
+              instantly &mdash; launch a fresh test each month or quarter as
+              your attack surface changes.
+            </p>
+          </div>
+
+          {/* Cadence toggle */}
+          <div className="flex items-center justify-center mb-10">
+            <div className="inline-flex rounded-lg border border-white/15 bg-white/5 p-1">
+              {(["quarterly", "monthly"] as Cadence[]).map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setCadence(c)}
+                  className={`px-6 py-2 rounded-md text-sm font-normal transition-colors ${
+                    cadence === c
+                      ? "bg-[#34D399] text-[#041018]"
+                      : "text-gray-300 hover:text-white"
+                  }`}
+                >
+                  {c === "quarterly"
+                    ? "Quarterly · 4 tests/yr"
+                    : "Monthly · 12 tests/yr"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {CONTINUOUS_PLANS.map((plan) => {
+              const tests = CADENCE_TESTS[cadence];
+              const total = plan.perTestPrice * tests;
+              const checkoutId = `${plan.id}_${cadence}`;
+              const available = Boolean(plan.priceId);
+              return (
+                <div
+                  key={plan.id}
+                  className="relative bg-white/5 rounded-xl p-8 border-2 border-white/10 hover:border-[#34D399]/40 transition-all"
+                >
+                  <div className="mb-6">
+                    <h3 className="text-2xl font-light mb-2">{plan.name}</h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      {plan.description}
+                    </p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-5xl font-light text-white">
+                        ${total.toLocaleString()}
+                      </span>
+                      <span className="text-gray-400">/ {tests} tests</span>
+                    </div>
+                    <p className="text-[#34D399] text-xs mt-2">
+                      ${plan.perTestPrice}/test · 20% off the $
+                      {plan.oneTimePrice} standard price
+                    </p>
+                  </div>
+
+                  <ul className="space-y-3 mb-8">
+                    {plan.features.map((feature, idx) => (
+                      <li
+                        key={idx}
+                        className="flex items-start gap-3 text-gray-300"
+                      >
+                        <FontAwesomeIcon
+                          icon={faCircleCheck}
+                          className="text-[#34D399] mt-1 flex-shrink-0"
+                        />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    onClick={() => handleBuyBundle(plan)}
+                    disabled={!available || loadingCheckout === checkoutId}
+                    className="w-full py-4 rounded-lg font-normal text-lg transition-colors bg-[#34D399] hover:bg-[#10b981] text-[#041018] disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loadingCheckout === checkoutId
+                      ? "Processing..."
+                      : !available
+                        ? "Coming Soon"
+                        : currentUser
+                          ? `Buy ${tests} tests`
+                          : "Sign In to Buy"}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+
+          <p className="text-center text-gray-500 text-xs mt-8 max-w-2xl mx-auto">
+            One-time purchase &mdash; {CADENCE_TESTS[cadence]} pentest credits
+            added to your account immediately. Launch each test whenever you
+            like.
+          </p>
         </div>
       </section>
 
