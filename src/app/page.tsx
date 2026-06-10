@@ -611,7 +611,7 @@ export default function Home() {
               return (
                 <div
                   key={plan.id}
-                  className="relative bg-white/5 rounded-xl p-8 border-2 border-white/10 hover:border-[#34D399]/40 transition-all"
+                  className="relative flex flex-col h-full bg-white/5 rounded-xl p-8 border-2 border-white/10 hover:border-[#34D399]/40 transition-all"
                 >
                   <div className="mb-6">
                     <h3 className="text-2xl font-light mb-2">{plan.name}</h3>
@@ -648,7 +648,7 @@ export default function Home() {
                   <button
                     onClick={() => handleBuyBundle(plan)}
                     disabled={!available || loadingCheckout === checkoutId}
-                    className="w-full py-4 rounded-lg font-normal text-lg transition-colors bg-[#34D399] hover:bg-[#10b981] text-[#041018] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="mt-auto w-full py-4 rounded-lg font-normal text-lg transition-colors bg-[#34D399] hover:bg-[#10b981] text-[#041018] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loadingCheckout === checkoutId
                       ? "Processing..."
@@ -868,7 +868,7 @@ function PricingCard({
 }: PricingCardProps) {
   return (
     <div
-      className={`relative bg-white/5 rounded-xl p-8 border-2 transition-all hover:scale-[1.02] ${
+      className={`relative flex flex-col h-full bg-white/5 rounded-xl p-8 border-2 transition-all hover:scale-[1.02] ${
         tier.popular
           ? "border-[#34D399] shadow-lg shadow-[#34D399]/20"
           : "border-white/10"
@@ -908,7 +908,7 @@ function PricingCard({
       <button
         onClick={() => onSelect()}
         disabled={loading}
-        className={`w-full py-4 rounded-lg font-bold text-lg transition-colors ${
+        className={`mt-auto w-full py-4 rounded-lg font-bold text-lg transition-colors ${
           tier.popular
             ? "bg-[#34D399] hover:bg-[#10b981] text-[#041018]"
             : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
