@@ -261,10 +261,10 @@ export default function Home() {
                 href: "https://www.affordablepentesting.com/environments/web-app-pentesting",
               },
               {
-                name: "Internal",
-                img: "/environments/internal.png",
-                desc: "Test insider-threat scenarios, lateral movement, and privilege escalation paths.",
-                href: "https://www.affordablepentesting.com/environments/internal-pentesting",
+                name: "M365 Tenants",
+                img: "/environments/m365.svg",
+                desc: "Assess Entra ID, conditional access, OAuth consent, and exposure across your Microsoft 365 tenant.",
+                href: "https://www.affordablepentesting.com/environments/m365-pentesting",
               },
               {
                 name: "Cloud",

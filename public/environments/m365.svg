@@ -1,0 +1,40 @@
+<svg width="500" height="500" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="m365tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7defd9"/>
+      <stop offset="0.5" stop-color="#34D399"/>
+      <stop offset="1" stop-color="#10b981"/>
+    </linearGradient>
+    <linearGradient id="m365side" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0e9b6e"/>
+      <stop offset="1" stop-color="#0a7d59"/>
+    </linearGradient>
+    <linearGradient id="m365sheen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#7defd9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 2x2 tile grid (Microsoft 365 motif), each tile extruded for a 3D look -->
+  <g>
+    <!-- top-left -->
+    <rect x="60" y="76" width="170" height="170" rx="30" fill="url(#m365side)"/>
+    <rect x="60" y="60" width="170" height="170" rx="30" fill="url(#m365tile)"/>
+    <rect x="80" y="80" width="64" height="20" rx="10" fill="url(#m365sheen)" opacity="0.55"/>
+
+    <!-- top-right -->
+    <rect x="270" y="76" width="170" height="170" rx="30" fill="url(#m365side)"/>
+    <rect x="270" y="60" width="170" height="170" rx="30" fill="url(#m365tile)"/>
+    <rect x="290" y="80" width="64" height="20" rx="10" fill="url(#m365sheen)" opacity="0.55"/>
+
+    <!-- bottom-left -->
+    <rect x="60" y="286" width="170" height="170" rx="30" fill="url(#m365side)"/>
+    <rect x="60" y="270" width="170" height="170" rx="30" fill="url(#m365tile)"/>
+    <rect x="80" y="290" width="64" height="20" rx="10" fill="url(#m365sheen)" opacity="0.55"/>
+
+    <!-- bottom-right -->
+    <rect x="270" y="286" width="170" height="170" rx="30" fill="url(#m365side)"/>
+    <rect x="270" y="270" width="170" height="170" rx="30" fill="url(#m365tile)"/>
+    <rect x="290" y="290" width="64" height="20" rx="10" fill="url(#m365sheen)" opacity="0.55"/>
+  </g>
+</svg>
