@@ -20,6 +20,7 @@ import {
   faUserShield,
   faCalendarCheck,
   faFilePdf,
+  faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useUserData } from "@/lib/hooks/useUserData";
@@ -90,6 +91,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             href: "/admin/quick-report",
             label: "Report Engine v2",
             icon: faFilePdf,
+          },
+          {
+            href: "/admin/feedback",
+            label: "Feedback",
+            icon: faStar,
           },
         ]
       : []),
