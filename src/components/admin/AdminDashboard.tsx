@@ -18,6 +18,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { normalizePentestStatus } from "@/lib/pentests/status";
 import AdminAnalytics from "./AdminAnalytics";
+import FeedbackWindow from "./FeedbackWindow";
 
 const showToast = (type: "error" | "success", message: string) => {
   import("react-hot-toast")
@@ -883,6 +884,8 @@ export default function AdminDashboard() {
           </div>
         )}
       </div>
+
+      <FeedbackWindow />
 
       <div className="neon-card p-5 space-y-4 max-w-4xl">
         <div className="flex items-center justify-between gap-3">

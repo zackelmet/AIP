@@ -445,7 +445,7 @@ export default function SchedulingPage() {
           </div>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="flex-shrink-0 flex items-center gap-2 px-5 py-3 bg-[#34D399] hover:bg-[#10b981] text-white font-semibold rounded-lg transition-colors"
+            className="flex-shrink-0 flex items-center gap-2 px-5 py-3 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-semibold rounded-lg transition-colors"
           >
             <FontAwesomeIcon
               icon={showForm ? faXmark : faPlus}
@@ -833,7 +833,7 @@ export default function SchedulingPage() {
               disabled={
                 submitting || !pentestType || !targetUrl || !hasPermission
               }
-              className="w-full py-4 bg-[#34D399] hover:bg-[#10b981] text-white font-bold rounded-lg text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-4 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-bold rounded-lg text-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? "Creating…" : "Create Schedule"}
             </button>
@@ -921,7 +921,7 @@ export default function SchedulingPage() {
               </p>
               <button
                 onClick={() => setShowForm(true)}
-                className="inline-block px-8 py-3 bg-[#34D399] hover:bg-[#10b981] text-white font-semibold rounded-lg transition-colors"
+                className="inline-block px-8 py-3 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-semibold rounded-lg transition-colors"
               >
                 Create Your First Schedule
               </button>

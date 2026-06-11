@@ -148,7 +148,7 @@ export default function ManualTestsPage() {
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-[#041018] font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
           >
             <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
             New Manual Test
@@ -210,7 +210,7 @@ export default function ManualTestsPage() {
               </p>
               <button
                 onClick={() => setShowModal(true)}
-                className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
+                className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-[#041018] font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
               >
                 <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
                 Log Manual Test
@@ -391,7 +391,7 @@ export default function ManualTestsPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:opacity-50"
+                  className="px-4 py-2 bg-[#34D399] text-[#041018] font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:opacity-50"
                 >
                   {submitting ? "Starting..." : "Start Test"}
                 </button>

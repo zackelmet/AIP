@@ -243,7 +243,7 @@ export default function FindingsPage() {
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-[#041018] font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
           >
             <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
             Add Finding
@@ -351,7 +351,7 @@ export default function FindingsPage() {
               </p>
               <button
                 onClick={() => setShowModal(true)}
-                className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
+                className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-[#041018] font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
               >
                 <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
                 Add Finding
@@ -431,7 +431,7 @@ export default function FindingsPage() {
                   }}
                   className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     inputMode === "manual"
-                      ? "bg-[#34D399] text-white"
+                      ? "bg-[#34D399] text-[#041018]"
                       : "bg-white/5 text-gray-400 hover:bg-white/10"
                   }`}
                 >
@@ -447,7 +447,7 @@ export default function FindingsPage() {
                   }}
                   className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     inputMode === "paste"
-                      ? "bg-[#34D399] text-white"
+                      ? "bg-[#34D399] text-[#041018]"
                       : "bg-white/5 text-gray-400 hover:bg-white/10"
                   }`}
                 >
@@ -584,7 +584,7 @@ export default function FindingsPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-4 py-2 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:opacity-50"
+                    className="px-4 py-2 bg-[#34D399] text-[#041018] font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:opacity-50"
                   >
                     {submitting ? "Adding..." : "Add Finding"}
                   </button>
@@ -805,7 +805,7 @@ export default function FindingsPage() {
                       type="button"
                       onClick={handleBulkSubmit}
                       disabled={bulkSubmitting || parsedFindings.length === 0}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-[#34D399] text-[#041018] font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:opacity-50"
                     >
                       {bulkSubmitting && (
                         <FontAwesomeIcon icon={faSpinner} className="w-4 h-4 animate-spin" />

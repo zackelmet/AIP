@@ -295,7 +295,7 @@ export default function TargetsPage() {
               <button
                 type="submit"
                 disabled={saving || !currentUser || !formState.addresses.trim()}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:bg-gray-700 disabled:text-gray-500"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#34D399] text-[#041018] font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:bg-gray-700 disabled:text-gray-500"
               >
                 <FontAwesomeIcon icon={faPlus} />
                 {saving ? "Saving target…" : "Save target"}
@@ -472,7 +472,7 @@ export default function TargetsPage() {
                 <button
                   type="submit"
                   disabled={editLoading}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#34D399] text-[#041018] font-semibold rounded-lg hover:bg-[#10b981] transition-colors disabled:opacity-50"
                 >
                   {editLoading ? "Saving…" : "Save changes"}
                 </button>

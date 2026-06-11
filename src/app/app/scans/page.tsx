@@ -356,7 +356,7 @@ export default function ScansPage() {
                 </p>
                 <a
                   href="/#pricing"
-                  className="inline-block px-6 py-3 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
+                  className="inline-block px-6 py-3 bg-[#34D399] text-[#041018] font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
                 >
                   <FontAwesomeIcon icon={faRocket} className="mr-2" />
                   Upgrade Now
@@ -658,7 +658,7 @@ export default function ScansPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full px-5 py-3 bg-[#34D399] text-white font-semibold rounded-lg hover:bg-[#10b981] transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full px-5 py-3 bg-[#34D399] text-[#041018] font-semibold rounded-lg hover:bg-[#10b981] transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     <FontAwesomeIcon icon={faRocket} />
                     {submitting ? "Launching..." : "Launch Scan"}

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCircleCheck,
   faGlobe,
   faServer,
   faArrowsRotate,
@@ -66,34 +65,25 @@ export default function ContinuousTesting() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-[#0a141f] to-[#0a141f]/80 border border-[#34D399]/30 rounded-xl p-6 lg:p-8 shadow-lg">
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <FontAwesomeIcon
-              icon={faArrowsRotate}
-              className="text-[#34D399] text-sm"
-            />
-            <span className="text-[#34D399] text-xs font-normal uppercase tracking-widest">
-              Stay Secure Year-Round
-            </span>
-          </div>
-          <h2 className="text-2xl font-light text-white mb-1">
-            Continuous <span className="text-[#34D399]">Testing</span>
+    <div className="bg-gradient-to-br from-[#0a141f] to-[#0a141f]/80 border border-[#34D399]/30 rounded-xl p-5 shadow-lg">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-2">
+          <FontAwesomeIcon icon={faArrowsRotate} className="text-[#34D399]" />
+          <h2 className="text-lg font-semibold text-white">
+            Continuous Testing
           </h2>
-          <p className="text-gray-400 text-sm max-w-xl">
-            Buy a year of pentests up front and save 20%. Credits land instantly
-            — launch a fresh test each month or quarter.
-          </p>
+          <span className="text-gray-400 text-sm hidden sm:inline">
+            · buy a year up front, save 20%
+          </span>
         </div>
 
         {/* Cadence toggle */}
-        <div className="inline-flex rounded-lg border border-white/15 bg-white/5 p-1 flex-shrink-0">
+        <div className="inline-flex rounded-lg border border-white/15 bg-white/5 p-0.5">
           {(["quarterly", "monthly"] as Cadence[]).map((c) => (
             <button
               key={c}
               onClick={() => setCadence(c)}
-              className={`px-4 py-2 rounded-md text-sm font-normal transition-colors ${
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 cadence === c
                   ? "bg-[#34D399] text-[#041018]"
                   : "text-gray-300 hover:text-white"
@@ -105,7 +95,7 @@ export default function ContinuousTesting() {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid sm:grid-cols-2 gap-4">
         {CONTINUOUS_PLANS.map((plan) => {
           const tests = CADENCE_TESTS[cadence];
           const total = plan.perTestPrice * tests;
@@ -114,66 +104,37 @@ export default function ContinuousTesting() {
           return (
             <div
               key={plan.id}
-              className="relative flex flex-col h-full bg-white/5 rounded-xl p-6 border border-white/10 hover:border-[#34D399]/40 transition-all"
+              className="flex items-center gap-4 bg-white/5 rounded-lg p-4 border border-white/10 hover:border-[#34D399]/40 transition-all"
             >
-              <div className="mb-5">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2.5 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
-                    <FontAwesomeIcon
-                      icon={plan.id === "web_app" ? faGlobe : faServer}
-                      className="text-xl text-[#34D399]"
-                    />
-                  </div>
-                  <h3 className="text-xl font-light text-white">{plan.name}</h3>
-                </div>
-                <p className="text-gray-400 text-sm mb-4">{plan.description}</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-light text-white">
-                    ${total.toLocaleString()}
-                  </span>
-                  <span className="text-gray-400 text-sm">/ {tests} tests</span>
-                </div>
-                <p className="text-[#34D399] text-xs mt-2">
-                  ${plan.perTestPrice}/test · 20% off the ${plan.oneTimePrice}{" "}
-                  standard price
+              <div className="p-2.5 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40 flex-shrink-0">
+                <FontAwesomeIcon
+                  icon={plan.id === "web_app" ? faGlobe : faServer}
+                  className="text-lg text-[#34D399]"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate">
+                  {plan.id === "web_app" ? "Web App" : "External IP"}
+                </p>
+                <p className="text-[#34D399] text-xs">
+                  ${total.toLocaleString()} / {tests} tests · 20% off
                 </p>
               </div>
-
-              <ul className="space-y-2.5 mb-6">
-                {plan.features.map((feature, idx) => (
-                  <li
-                    key={idx}
-                    className="flex items-start gap-2.5 text-gray-300 text-sm"
-                  >
-                    <FontAwesomeIcon
-                      icon={faCircleCheck}
-                      className="text-[#34D399] mt-0.5 flex-shrink-0"
-                    />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
               <button
                 onClick={() => handleBuyBundle(plan)}
                 disabled={!available || loadingCheckout === checkoutId}
-                className="mt-auto w-full py-3.5 rounded-lg font-medium text-base transition-colors bg-[#34D399] hover:bg-[#10b981] text-[#041018] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-[#34D399] hover:bg-[#10b981] text-[#041018] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loadingCheckout === checkoutId
-                  ? "Processing..."
+                  ? "…"
                   : !available
-                    ? "Coming Soon"
-                    : `Buy ${tests} tests`}
+                    ? "Soon"
+                    : "Buy"}
               </button>
             </div>
           );
         })}
       </div>
-
-      <p className="text-center text-gray-500 text-xs mt-6">
-        One-time purchase — {CADENCE_TESTS[cadence]} pentest credits added to
-        your account immediately. Launch each test whenever you like.
-      </p>
     </div>
   );
 }
