@@ -50,6 +50,8 @@ interface ShellOptions {
   rows: Array<[string, string]>;
   cta?: { label: string; href: string };
   closing?: string;
+  // A lighter-weight secondary link rendered below the closing (e.g. "Rate us").
+  secondaryCta?: { lead?: string; label: string; href: string };
 }
 
 /**
@@ -63,6 +65,7 @@ function renderEmail({
   rows,
   cta,
   closing,
+  secondaryCta,
 }: ShellOptions): string {
   const detailRows = rows
     .map(
@@ -87,6 +90,15 @@ function renderEmail({
     ? `
       <tr>
         <td style="padding:20px 0 0;font-size:13px;line-height:1.7;color:${COLORS.muted};">${closing}</td>
+      </tr>`
+    : "";
+
+  const secondaryBlock = secondaryCta
+    ? `
+      <tr>
+        <td style="padding:18px 0 0;font-size:13px;line-height:1.7;color:${COLORS.muted};">
+          ${secondaryCta.lead ? `${secondaryCta.lead} ` : ""}<a href="${secondaryCta.href}" style="color:${COLORS.green};text-decoration:none;font-weight:600;">${secondaryCta.label} &rarr;</a>
+        </td>
       </tr>`
     : "";
 
@@ -140,6 +152,7 @@ function renderEmail({
                   </tr>
                   ${ctaBlock}
                   ${closingBlock}
+                  ${secondaryBlock}
                 </table>
               </td>
             </tr>
@@ -183,11 +196,17 @@ function renderText({
   rows,
   cta,
   closing,
+  secondaryCta,
 }: ShellOptions): string {
   const lines = [heading, "", intro, ""];
   rows.forEach(([label, value]) => lines.push(`${label}: ${value}`));
   if (cta) lines.push("", `${cta.label}: ${cta.href}`);
   if (closing) lines.push("", closing);
+  if (secondaryCta)
+    lines.push(
+      "",
+      `${secondaryCta.lead ? `${secondaryCta.lead} ` : ""}${secondaryCta.label}: ${secondaryCta.href}`,
+    );
   lines.push(
     "",
     "—",
@@ -297,7 +316,13 @@ export async function sendPentestReportReadyEmail({
   }
 
   const typeLabel = TYPE_LABELS[type] || type;
-  const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ""}/app/dashboard`;
+  const site = process.env.NEXT_PUBLIC_SITE_URL || "";
+  const dashboardUrl = `${site}/app/dashboard`;
+  const rateUsUrl = `${site}/rate-us?${new URLSearchParams({
+    e: userEmail,
+    t: target,
+    ty: type,
+  }).toString()}`;
 
   const reportOpts: ShellOptions = {
     preheader: "Your report is now available to download.",
@@ -311,6 +336,11 @@ export async function sendPentestReportReadyEmail({
     cta: { label: "Download your report", href: dashboardUrl },
     closing:
       "We recommend reviewing the findings with your technical team and prioritizing remediation by severity. If you would like to discuss the results, simply reply to this email.",
+    secondaryCta: {
+      lead: "Enjoyed working with us?",
+      label: "Rate your experience",
+      href: rateUsUrl,
+    },
   };
 
   try {
