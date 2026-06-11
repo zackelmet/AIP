@@ -19,6 +19,7 @@ import { useUserData } from "@/lib/hooks/useUserData";
 import { useUserScans } from "@/lib/hooks/useUserScans";
 import { useAuth } from "@/lib/context/AuthContext";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import ContinuousTesting from "@/components/dashboard/ContinuousTesting";
 import toast from "react-hot-toast";
 
 export default function DashboardPage() {
@@ -328,6 +329,9 @@ function DashboardInner({
             </div>
           </div>
         </div>
+
+        {/* Continuous Testing — discounted yearly bundles */}
+        <ContinuousTesting />
 
         {/* No credits banner */}
         {credits.web_app === 0 &&
