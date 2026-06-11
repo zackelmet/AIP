@@ -499,7 +499,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Simple, Transparent{" "}
+              Simple{" "}
               <span className="text-[#34D399]">Pricing</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
