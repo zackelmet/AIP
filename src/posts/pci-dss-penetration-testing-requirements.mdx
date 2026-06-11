@@ -1,0 +1,58 @@
+---
+title: "PCI DSS Penetration Testing Requirements (v4.0)"
+date: "2026-06-11"
+description: "PCI DSS explicitly requires penetration testing. Here's what Requirement 11.4 mandates under PCI DSS v4.0 — internal and external tests, segmentation checks, frequency, and scope."
+image: "/blog/og-default.png"
+keywords: "pci dss penetration testing requirements, pci dss 11.4, pci penetration testing, pci compliance pentest"
+---
+
+Unlike SOC 2 and HIPAA, PCI DSS is unambiguous: **penetration testing is explicitly required.** If your organization stores, processes, or transmits cardholder data, you must perform regular penetration tests. This guide explains exactly what PCI DSS v4.0 requires.
+
+## Where penetration testing lives in PCI DSS
+
+Penetration testing requirements are defined in **Requirement 11.4** of PCI DSS v4.0 (these were Requirement 11.3 in v3.2.1). The requirement breaks down into several specific obligations:
+
+- **11.4.1** — A defined penetration testing methodology must be documented and followed (based on an industry-accepted approach such as NIST SP 800-115).
+- **11.4.2** — **Internal** penetration testing performed at least once every 12 months and after any significant change.
+- **11.4.3** — **External** penetration testing performed at least once every 12 months and after any significant change.
+- **11.4.4** — Vulnerabilities found during testing must be **corrected and retested** to verify the fixes.
+- **11.4.5 / 11.4.6** — If you use **network segmentation** to reduce scope, you must test that the segmentation controls are effective (at least every 12 months for merchants; more frequently for service providers).
+
+## What "significant change" means
+
+Beyond the annual cadence, PCI requires a new penetration test after any **significant change** to your environment — for example, a new system component, a major infrastructure upgrade, a network topology change, or a new web application added to the cardholder data environment (CDE). Don't wait for the yearly date if you've materially changed scope.
+
+## What's in scope
+
+A PCI penetration test must cover the **cardholder data environment (CDE)** and any systems that could impact its security, from both:
+
+- **Outside the network** (external testing of internet-facing systems), and
+- **Inside the network** (internal testing simulating a foothold within your environment).
+
+It must test at both the **network layer** and the **application layer**, including the web applications and APIs that handle payment data.
+
+## Frequency summary
+
+| Requirement | What | Frequency |
+|---|---|---|
+| 11.4.2 | Internal pentest | Annually + after significant change |
+| 11.4.3 | External pentest | Annually + after significant change |
+| 11.4.4 | Remediate + retest findings | After each test |
+| 11.4.5/6 | Segmentation testing | Annually (merchants) / every 6 months (service providers) |
+
+## How to prepare for a PCI penetration test
+
+- **Define your CDE precisely.** Accurate scope is the foundation of a defensible test.
+- **Use a documented, standards-based methodology** (NIST SP 800-115, PTES) so your QSA accepts the work.
+- **Plan for remediation and retesting** — 11.4.4 requires you to fix and re-verify, so build in time.
+- **Keep thorough evidence** — methodology, scope, findings, remediation, and retest results for your assessor.
+
+## Meet Requirement 11.4 affordably
+
+PCI's annual internal *and* external testing requirement can get expensive with a traditional consultancy. [Affordable Pentesting](/#pricing) delivers AI-driven, human-validated internal and external penetration testing with **PCI-aligned, audit-ready reports** mapped to NIST SP 800-115 and PTES, plus remediation retesting — typically within 48 hours.
+
+[See pricing](/#pricing) or [start your PCI pentest](/login).
+
+*Related: [SOC 2 Penetration Testing Requirements](/blog/soc-2-penetration-testing-requirements) · [HIPAA Penetration Testing Requirements](/blog/hipaa-penetration-testing-requirements)*
+
+> This article summarizes PCI DSS v4.0 requirements for general guidance and is not a substitute for advice from a Qualified Security Assessor (QSA).

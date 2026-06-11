@@ -1,0 +1,50 @@
+---
+title: "HIPAA Penetration Testing Requirements: A Practical Guide"
+date: "2026-06-11"
+description: "Does HIPAA require penetration testing? How pentesting fits the HIPAA Security Rule's risk analysis and evaluation requirements, and what healthcare organizations should do."
+image: "/blog/og-default.png"
+keywords: "hipaa penetration testing requirements, does hipaa require a pentest, hipaa security rule penetration testing, healthcare penetration testing"
+---
+
+If your organization handles protected health information (PHI), you've probably asked whether HIPAA requires a penetration test. Here's a clear, practical answer — and what healthcare organizations and their vendors should actually do.
+
+## Does HIPAA require penetration testing?
+
+**Not by name — but it's strongly implied.** The HIPAA Security Rule is risk-based and doesn't list "penetration testing" as a mandatory control. However, two requirements make pentesting the most practical way to comply:
+
+- **Risk Analysis — §164.308(a)(1)(ii)(A):** covered entities and business associates must conduct "an accurate and thorough assessment of the potential risks and vulnerabilities to the confidentiality, integrity, and availability" of PHI. You cannot accurately assess technical vulnerabilities without actually testing your systems.
+- **Evaluation — §164.308(a)(8):** organizations must perform periodic technical and non-technical evaluations to confirm their safeguards meet the Security Rule. A penetration test is a direct technical evaluation.
+
+The U.S. Department of Health and Human Services (HHS) and OCR have repeatedly emphasized that a risk analysis must be **technical and thorough** — not a paper checklist. Penetration testing, alongside vulnerability scanning, is the recognized way to satisfy that bar.
+
+## Why pentesting matters in healthcare specifically
+
+Healthcare is the most-breached industry, and breaches are expensive — both in OCR penalties and in patient trust. Attackers target PHI because it's valuable and long-lived. A penetration test surfaces the exact weaknesses (exposed services, weak access controls, injection flaws, misconfigured cloud storage) that lead to PHI exposure, *before* an attacker finds them.
+
+## What to test for HIPAA
+
+A HIPAA-relevant penetration test should cover the systems that **create, receive, maintain, or transmit PHI**, including:
+
+- Internet-facing systems and patient portals (external + web application testing)
+- APIs that move PHI between systems
+- Cloud environments storing PHI (IAM and storage misconfiguration)
+- Microsoft 365 / email tenants, a common PHI exposure point
+- Internal networks where PHI is processed
+
+## How often should healthcare organizations test?
+
+HIPAA says evaluations must be "periodic" but doesn't fix an interval. The accepted best practice is **at least annually**, and after any significant change — a new application, a cloud migration, or an infrastructure overhaul. Pairing an annual pentest with ongoing vulnerability scanning demonstrates continuous diligence.
+
+## Business associates need it too
+
+If you're a SaaS vendor, billing platform, or any **business associate** that touches PHI on behalf of a covered entity, the same expectations flow down to you through your Business Associate Agreement (BAA). Your healthcare customers will increasingly ask for proof of a recent penetration test as part of their vendor risk reviews.
+
+## Get a HIPAA-aligned pentest, fast
+
+[Affordable Pentesting](/#pricing) delivers AI-driven, human-validated penetration testing with **compliance-ready reports** that support your HIPAA risk analysis and evaluation requirements — across web apps, APIs, cloud, and M365 — typically within 48 hours.
+
+[See pricing](/#pricing) or [start a test](/login).
+
+*Related: [SOC 2 Penetration Testing Requirements](/blog/soc-2-penetration-testing-requirements) · [PCI DSS Penetration Testing Requirements](/blog/pci-dss-penetration-testing-requirements)*
+
+> This article is general guidance, not legal or compliance advice. Consult a qualified HIPAA professional for your specific obligations.

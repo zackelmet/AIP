@@ -1,0 +1,61 @@
+---
+title: "Types of Penetration Testing: Which One Do You Need?"
+date: "2026-06-11"
+description: "External, web app, internal, API, cloud, and M365 penetration testing explained — what each one covers, when you need it, and how to choose the right scope."
+image: "/blog/og-default.png"
+keywords: "types of penetration testing, external vs internal penetration testing, web application penetration testing, which pentest do I need"
+---
+
+"Penetration test" is an umbrella term. Underneath it are several distinct assessments, each targeting a different part of your attack surface. Buying the wrong type — or paying for all of them when you only need one — is a common and expensive mistake. This guide explains the main types and helps you pick the right scope.
+
+## External (network/IP) penetration testing
+
+**What it covers:** Your internet-facing systems — public IPs, firewalls, VPNs, mail servers, and exposed services. The tester acts as an anonymous attacker on the internet trying to find a way in.
+
+**When you need it:** Almost everyone. If you have any public-facing infrastructure, this is the baseline. It's also the most affordable type and a common compliance starting point.
+
+## Web application penetration testing
+
+**What it covers:** Your web apps and the logic behind them — authentication, session management, injection (SQLi, XSS), broken access control (IDOR), and business-logic flaws that scanners can't find.
+
+**When you need it:** If you run any customer-facing or internal web application that handles sensitive data, this is essential. It's typically the highest-value test for SaaS companies because the application *is* the product.
+
+## API penetration testing
+
+**What it covers:** REST/GraphQL APIs — broken object-level authorization (BOLA), broken authentication, excessive data exposure, and injection. APIs are often the most exposed and least tested part of a modern stack.
+
+**When you need it:** If your product is API-first, powers a mobile app, or exposes partner integrations. API flaws are now among the most common breach causes.
+
+## Internal / Active Directory penetration testing
+
+**What it covers:** What an attacker could do *after* gaining a foothold — lateral movement, privilege escalation, Kerberoasting, and domain compromise. It simulates a malicious insider or a breached workstation.
+
+**When you need it:** If you have an internal network, on-prem Active Directory, or want to understand blast radius after a phishing-style compromise.
+
+## Cloud penetration testing
+
+**What it covers:** AWS, Azure, and GCP environments — IAM misconfigurations, over-permissive roles, exposed storage buckets, and insecure services.
+
+**When you need it:** If a meaningful portion of your infrastructure lives in the cloud (it almost certainly does). Cloud misconfiguration is one of the leading causes of data exposure.
+
+## M365 tenant penetration testing
+
+**What it covers:** Your Microsoft 365 and Entra ID tenant — conditional access gaps, risky OAuth app consents, MFA coverage, and over-exposed SharePoint/Teams data.
+
+**When you need it:** If your organization runs on Microsoft 365 (most do). Identity is the new perimeter, and tenant misconfigurations are a fast path to email and data compromise.
+
+## How to choose the right scope
+
+Ask three questions:
+
+1. **Where does my sensitive data live?** Test the systems that store or process it first.
+2. **What's internet-facing?** Anything reachable from the public internet should be in scope.
+3. **What does my compliance framework require?** PCI DSS, SOC 2, and HIPAA each imply a different baseline. (See our [compliance guides](/blog/soc-2-penetration-testing-requirements).)
+
+For most SaaS businesses, the highest-impact combination is **external + web application + API** testing. Add **cloud** and **M365** as your footprint there grows, and **internal** when you have on-prem infrastructure.
+
+## Test every surface — affordably
+
+You shouldn't have to choose between coverage and budget. [Affordable Pentesting](/#pricing) offers AI-driven, human-validated testing across external, web app, API, cloud, and M365 environments, with transparent per-asset pricing and audit-ready reports.
+
+[Explore pricing](/#pricing) or [start a test](/login). Not sure what you need? Our guide to [penetration testing costs](/blog/penetration-testing-cost) breaks down each type by price.
