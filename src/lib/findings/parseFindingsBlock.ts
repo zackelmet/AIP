@@ -119,6 +119,20 @@ export function parseCSVFindings(csvText: string): ParsedFinding[] {
     );
     const impact = col(row, "impact");
     const remediation = col(row, "remediation", "fix", "recommendation");
+    const cvss31Score = col(
+      row,
+      "cvss 3.1 score",
+      "cvss31 score",
+      "cvss score",
+      "cvss",
+    );
+    const cvss31Vector = col(
+      row,
+      "cvss 3.1 vector",
+      "cvss31 vector",
+      "cvss vector",
+      "vector",
+    );
     const target = col(row, "target", "url", "host", "endpoint");
     const affectedComponent = col(
       row,
@@ -137,6 +151,8 @@ export function parseCSVFindings(csvText: string): ParsedFinding[] {
       // Surface "Impact" in the steps field since there's no dedicated impact field
       stepsToReproduce: impact,
       remediation,
+      cvss31Score: cvss31Score || undefined,
+      cvss31Vector: cvss31Vector || undefined,
     });
   }
 
@@ -153,6 +169,8 @@ export interface ParsedFinding {
   evidence: string;
   stepsToReproduce: string;
   remediation: string;
+  cvss31Score?: string;
+  cvss31Vector?: string;
 }
 
 const SEVERITY_MAP: Record<string, Severity> = {
