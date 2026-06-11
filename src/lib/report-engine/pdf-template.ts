@@ -876,9 +876,10 @@ export async function buildReportPdf(payload: ReportPayload) {
 
   findings.forEach((finding: ReportFinding, index: number) => {
     const sev = normalizeSeverity(finding.severity, finding.cvss);
-    const { likelihood, impact } = deriveLikelihoodImpact(
-      finding.cvss31Vector,
-    );
+    // Prefer the CVSS 4.0 vector (falls back to 3.1) for both the displayed
+    // vector and the derived Likelihood/Impact ratings.
+    const cvssVector = finding.cvss40Vector || finding.cvss31Vector;
+    const { likelihood, impact } = deriveLikelihoodImpact(cvssVector);
     const num = `01-${String(index + 1).padStart(2, "0")}-`;
 
     ensure(130);
@@ -951,14 +952,8 @@ export async function buildReportPdf(payload: ReportPayload) {
       color: severityColor(sev),
     });
     state.y -= 15;
-    if (finding.cvss31Score || finding.cvss31Vector) {
-      const cvssLine = [
-        finding.cvss31Score ? `CVSS 3.1: ${finding.cvss31Score}` : null,
-        finding.cvss31Vector ?? null,
-      ]
-        .filter(Boolean)
-        .join("  ");
-      paragraph(cvssLine, {
+    if (cvssVector) {
+      paragraph(cvssVector, {
         x: BODY_X,
         width: BODY_W,
         size: 10,

@@ -13,6 +13,8 @@ interface Finding {
   cvssValue: string;
   cvss31Score?: string;
   cvss31Vector?: string;
+  cvss40Score?: string;
+  cvss40Vector?: string;
   severity: string;
 }
 
@@ -64,6 +66,8 @@ export default function QuickReport() {
         cvssValue: f.severity.charAt(0).toUpperCase() + f.severity.slice(1),
         cvss31Score: f.cvss31Score,
         cvss31Vector: f.cvss31Vector,
+        cvss40Score: f.cvss40Score,
+        cvss40Vector: f.cvss40Vector,
         severity: f.severity,
       }));
       setFindings(mapped);

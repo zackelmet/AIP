@@ -84,14 +84,99 @@ function bucketImpact(isc: number): Rating {
   return "None";
 }
 
+// ── CVSS 4.0 ──
+//
+// CVSS 4.0 has no simple exploitability/impact subscore formula (it uses a
+// MacroVector lookup), so we bucket qualitatively from the base metrics — good
+// enough for the Likelihood/Impact display chips.
+
+interface Cvss40Metrics {
+  AV?: string;
+  AC?: string;
+  AT?: string;
+  PR?: string;
+  UI?: string;
+  VC?: string;
+  VI?: string;
+  VA?: string;
+  SC?: string;
+  SI?: string;
+  SA?: string;
+}
+
+export function parseCvss40Vector(vector: string | undefined): Cvss40Metrics {
+  const metrics: Cvss40Metrics = {};
+  if (!vector) return metrics;
+  for (const part of vector.split("/")) {
+    const [key, value] = part.split(":");
+    if (key && value && key !== "CVSS") {
+      (metrics as Record<string, string>)[key.trim().toUpperCase()] =
+        value.trim().toUpperCase();
+    }
+  }
+  return metrics;
+}
+
+function deriveLikelihoodImpact40(m: Cvss40Metrics): {
+  likelihood: Rating | null;
+  impact: Rating | null;
+} {
+  const hasExploit = m.AV && m.AC && m.PR && m.UI;
+  const hasImpact = m.VC && m.VI && m.VA;
+
+  // Likelihood: higher = easier to exploit.
+  const AV: Record<string, number> = { N: 4, A: 3, L: 2, P: 1 };
+  const AC: Record<string, number> = { L: 2, H: 1 };
+  const AT: Record<string, number> = { N: 2, P: 1 };
+  const PR: Record<string, number> = { N: 3, L: 2, H: 1 };
+  const UI: Record<string, number> = { N: 3, P: 2, A: 1 };
+  const ease =
+    (AV[m.AV ?? ""] ?? 0) +
+    (AC[m.AC ?? ""] ?? 0) +
+    (AT[m.AT ?? "N"] ?? 2) +
+    (PR[m.PR ?? ""] ?? 0) +
+    (UI[m.UI ?? ""] ?? 0);
+  const likelihood: Rating | null = !hasExploit
+    ? null
+    : ease >= 11
+      ? "High"
+      : ease >= 8
+        ? "Medium"
+        : "Low";
+
+  // Impact: sum severity across vulnerable + subsequent system metrics.
+  const cia: Record<string, number> = { H: 2, L: 1, N: 0 };
+  const impactSum = (["VC", "VI", "VA", "SC", "SI", "SA"] as const).reduce(
+    (acc, k) => acc + (cia[(m as Record<string, string>)[k] ?? "N"] ?? 0),
+    0,
+  );
+  const impact: Rating | null = !hasImpact
+    ? null
+    : impactSum >= 6
+      ? "Critical"
+      : impactSum >= 4
+        ? "High"
+        : impactSum >= 2
+          ? "Medium"
+          : impactSum > 0
+            ? "Low"
+            : "None";
+
+  return { likelihood, impact };
+}
+
 /**
- * Returns derived Likelihood and Impact ratings from a CVSS 3.1 vector.
- * Returns null for either rating if the vector lacks the needed metrics.
+ * Returns derived Likelihood and Impact ratings from a CVSS vector.
+ * Auto-detects CVSS 4.0 vs 3.1; returns null for either rating when the vector
+ * lacks the needed metrics.
  */
 export function deriveLikelihoodImpact(vector: string | undefined): {
   likelihood: Rating | null;
   impact: Rating | null;
 } {
+  if (vector && /CVSS:4\.0/i.test(vector)) {
+    return deriveLikelihoodImpact40(parseCvss40Vector(vector));
+  }
   const m = parseCvss31Vector(vector);
   const hasExploit = m.AV && m.AC && m.UI;
   const hasImpact = m.C && m.I && m.A;

@@ -133,6 +133,8 @@ export function parseCSVFindings(csvText: string): ParsedFinding[] {
       "cvss vector",
       "vector",
     );
+    const cvss40Score = col(row, "cvss 4.0 score", "cvss40 score");
+    const cvss40Vector = col(row, "cvss 4.0 vector", "cvss40 vector");
     const target = col(row, "target", "url", "host", "endpoint");
     const affectedComponent = col(
       row,
@@ -153,6 +155,8 @@ export function parseCSVFindings(csvText: string): ParsedFinding[] {
       remediation,
       cvss31Score: cvss31Score || undefined,
       cvss31Vector: cvss31Vector || undefined,
+      cvss40Score: cvss40Score || undefined,
+      cvss40Vector: cvss40Vector || undefined,
     });
   }
 
@@ -171,6 +175,8 @@ export interface ParsedFinding {
   remediation: string;
   cvss31Score?: string;
   cvss31Vector?: string;
+  cvss40Score?: string;
+  cvss40Vector?: string;
 }
 
 const SEVERITY_MAP: Record<string, Severity> = {

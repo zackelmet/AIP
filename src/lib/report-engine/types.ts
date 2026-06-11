@@ -10,6 +10,10 @@ export interface ReportFinding {
   cvss31Score?: string;
   /** CVSS 3.1 vector string (e.g. "CVSS:3.1/AV:A/AC:H/..."). */
   cvss31Vector?: string;
+  /** CVSS 4.0 base score as a display string (e.g. "2.3"). */
+  cvss40Score?: string;
+  /** CVSS 4.0 vector string (e.g. "CVSS:4.0/AV:N/AC:H/AT:P/..."). */
+  cvss40Vector?: string;
   severity?: "Critical" | "High" | "Medium" | "Low" | "Informational";
   references?: string[];
 }

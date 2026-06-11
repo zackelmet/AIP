@@ -49,6 +49,14 @@ describe("Report Engine v2 PDF", () => {
     expect(impact).toBe("Critical");
   });
 
+  it("derives Likelihood + Impact from a CVSS 4.0 vector", () => {
+    const { likelihood, impact } = deriveLikelihoodImpact(
+      "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H",
+    );
+    expect(likelihood).toBe("High");
+    expect(impact).toBe("Critical");
+  });
+
   it("returns nulls when the vector lacks metrics", () => {
     const { likelihood, impact } = deriveLikelihoodImpact("");
     expect(likelihood).toBeNull();

@@ -56,6 +56,8 @@ export async function POST(request: NextRequest) {
     const findings: ReportFinding[] = body.findings.map((f: any) => {
       const cvss31Score = String(f?.cvss31Score ?? "").trim();
       const cvss31Vector = String(f?.cvss31Vector ?? "").trim();
+      const cvss40Score = String(f?.cvss40Score ?? "").trim();
+      const cvss40Vector = String(f?.cvss40Vector ?? "").trim();
       const severityLabel = String(f?.cvssValue ?? f?.severity ?? "").trim();
       // Prefer the real CVSS 3.1 base score; fall back to severity-derived.
       const fromScore = Number(cvss31Score);
@@ -75,6 +77,8 @@ export async function POST(request: NextRequest) {
         cvssValue: severityLabel,
         cvss31Score: cvss31Score || undefined,
         cvss31Vector: cvss31Vector || undefined,
+        cvss40Score: cvss40Score || undefined,
+        cvss40Vector: cvss40Vector || undefined,
         severity: f?.severity,
       };
     });
