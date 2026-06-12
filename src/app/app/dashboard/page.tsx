@@ -351,8 +351,8 @@ function DashboardInner({
                   </h3>
                   <p className="text-gray-300 mb-4">
                     Choose from Web App ($500), External IP ($199), or Pentest+
-                    ($1,500) for up to 50 IPs or 100 API endpoints with up to 10
-                    user roles.
+                    ($1,500) — a web app pentest covering up to 5 domains/URLs,
+                    50 IPs, 100 API endpoints, and up to 10 user roles.
                   </p>
                   <div className="flex flex-wrap gap-3">
                     <button
@@ -511,7 +511,7 @@ function DashboardInner({
                     {selectedPentestType === "web_app"
                       ? "Up to 3 roles, 10 endpoints"
                       : selectedPentestType === "pentest_plus"
-                        ? "50 IPs or 100 API endpoints, up to 10 roles"
+                        ? "5 domains/URLs, 50 IPs, 100 API endpoints, 10 roles"
                         : "Gateways & firewalls"}
                   </p>
                 </div>

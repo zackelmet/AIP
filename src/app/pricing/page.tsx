@@ -55,11 +55,13 @@ const PRODUCTS: Product[] = [
     name: "Pentest+",
     price: 1500,
     priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PENTEST_PLUS || "",
-    description: "Up to 50 external IPs or webapp with 100 API endpoints",
+    description: "Web app pentest — up to 5 domains/URLs & 50 IPs",
     features: [
       "1 Pentest+ credit",
-      "AI pentest: up to 50 external IPs",
-      "Or webapp with up to 100 API endpoints",
+      "Web application pentest",
+      "Up to 5 domains/URLs covered",
+      "Up to 50 external IPs included",
+      "Up to 100 API endpoints",
       "Up to 10 user roles tested",
       "Compliance ready reports",
       "Authentication & authorization testing",
@@ -211,7 +213,7 @@ function PricingPageInner() {
             {[
               {
                 q: "What does each credit type include?",
-                a: "External IP covers gateways, firewalls, and external infrastructure. Web App covers up to 3 user roles, 20 pages, and 10 API endpoints. Pentest+ covers up to 50 external IPs or a webapp with up to 100 API endpoints and up to 10 user roles.",
+                a: "External IP covers gateways, firewalls, and external infrastructure. Web App covers up to 3 user roles, 20 pages, and 10 API endpoints. Pentest+ is a web application pentest covering up to 5 domains/URLs, 50 external IPs, 100 API endpoints, and up to 10 user roles.",
               },
               {
                 q: "Do pentest credits expire?",
