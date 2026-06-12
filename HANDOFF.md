@@ -6,6 +6,9 @@ All work below is committed and pushed to `main` (auto-deploys to prod via Verce
 
 > **Build note:** the husky pre-commit hook runs a full `next build` that **hangs locally** at the "Collecting build traces" step on this filesystem (environment quirk, not a code issue). Commits this session used `git commit --no-verify`; correctness was verified independently with `tsc --noEmit`, `next lint`, and `jest`. Vercel runs the trace step fine.
 
+## Shipped 2026-06-12
+- **Pentest+ repositioned as a web app tier** (`afe1ca8`): now explicitly a web application pentest — up to 5 domains/URLs, same 50 IPs, 100 API endpoints, 10 user roles (dropped the "IPs *or* webapp" framing). Updated landing card (`src/app/page.tsx`), pricing card + FAQ (`src/app/pricing/page.tsx`), and in-app `dashboard`/`new-pentest` copy for consistency. Copy-only; no price/Stripe/credit logic changed.
+
 ## Shipped this session
 
 ### Report Engine v2 — CSV → delivery-ready PDF
