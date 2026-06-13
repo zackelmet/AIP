@@ -6,6 +6,12 @@ All work below is committed and pushed to `main` (auto-deploys to prod via Verce
 
 > **Build note:** the husky pre-commit hook runs a full `next build` that **hangs locally** at the "Collecting build traces" step on this filesystem (environment quirk, not a code issue). Commits this session used `git commit --no-verify`; correctness was verified independently with `tsc --noEmit`, `next lint`, and `jest`. Vercel runs the trace step fine.
 
+## Shipped 2026-06-13
+- **Pentest+ scope now actually delivered end-to-end.** The UI advertised a bigger web-app engagement (10 roles, 100 endpoints, 5 domains/URLs, 50 IPs) but the launch path dropped most of it. Fixes:
+  - `new-pentest/page.tsx`: roles + endpoints are now sent for `pentest_plus` (were gated to `web_app` only); all comma-separated targets are sent as a `targets` array (was sending only the first); Pentest+ is one engagement on 1 credit, so the "Start N Pentests"/per-target job split and the misleading "each IP = 1 credit" amber warning are now `external_ip`-only. Pentest+ gets its own helper + emerald multi-target note.
+  - `api/pentests/route.ts`: now **stores** `targets` and `roles` on the pentest doc and **forwards** both to the Make.com webhook. `roles` (credentialed) was previously validated but never persisted — this also fixes credentialed **Web App** tests.
+  - **Server-side scope enforcement** added: endpoints ≤100 (pentest_plus)/≤10 (web_app); Pentest+ targets ≤5 domains/URLs and ≤50 IPs (IP vs domain classified by regex). Role cap (10/3) was already enforced.
+
 ## Shipped 2026-06-12
 - **Pentest+ repositioned as a web app tier** (`afe1ca8`): now explicitly a web application pentest — up to 5 domains/URLs, same 50 IPs, 100 API endpoints, 10 user roles (dropped the "IPs *or* webapp" framing). Updated landing card (`src/app/page.tsx`), pricing card + FAQ (`src/app/pricing/page.tsx`), and in-app `dashboard`/`new-pentest` copy for consistency. Copy-only; no price/Stripe/credit logic changed.
 
