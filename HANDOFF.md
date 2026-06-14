@@ -1,10 +1,17 @@
 # Handoff — AIP (Affordable Pentesting)
 
-_Last updated: 2026-06-11_
+_Last updated: 2026-06-14_
 
 All work below is committed and pushed to `main` (auto-deploys to prod via Vercel at https://ai.affordablepentesting.com).
 
 > **Build note:** the husky pre-commit hook runs a full `next build` that **hangs locally** at the "Collecting build traces" step on this filesystem (environment quirk, not a code issue). Commits this session used `git commit --no-verify`; correctness was verified independently with `tsc --noEmit`, `next lint`, and `jest`. Vercel runs the trace step fine.
+
+## Shipped 2026-06-14
+- **First-run product tour (onboarding walkthrough).** New users get a guided `driver.js` tour that auto-starts once on `/app/dashboard`, spotlighting the Launch CTA, credits, and key sidebar nav (configure scope, track tests, scheduling, manual pentest, buy credits).
+  - Shows once: writes `onboardingCompleted` + `onboardingCompletedAt` to the Firestore user doc (owner-writable per existing rules), with a `localStorage` guard (`aip_tour_seen_v1`) to prevent re-flash. Replayable anytime via a **"Take a tour"** button in the sidebar (dispatches `aip:start-tour`).
+  - Mobile-safe: the step filter skips off-screen anchors (sidebar is off-canvas on mobile), degrading to the in-content steps.
+  - Files: `package.json` (+`driver.js@1.4.0`), `src/lib/onboarding/tourSteps.ts`, `src/lib/onboarding/tour-theme.css`, `src/components/onboarding/OnboardingTour.tsx`, `src/components/dashboard/DashboardLayout.tsx` (anchors + "Take a tour" + mount), `src/app/app/dashboard/page.tsx` (CTA + credits anchors), `src/lib/types/user.ts` (new fields).
+  - Re-test the auto-trigger: clear `aip_tour_seen_v1` and set `onboardingCompleted=false` on your user doc (or just click "Take a tour").
 
 ## Shipped 2026-06-13
 - **Pentest+ scope now actually delivered end-to-end.** The UI advertised a bigger web-app engagement (10 roles, 100 endpoints, 5 domains/URLs, 50 IPs) but the launch path dropped most of it. Fixes:

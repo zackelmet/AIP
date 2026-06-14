@@ -1,0 +1,61 @@
+/* Dark + mint theme for the driver.js product tour, scoped to .aip-tour */
+.driver-popover.aip-tour {
+  background-color: #0f1d2b;
+  color: #e5e7eb;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55);
+  max-width: 340px;
+}
+
+.driver-popover.aip-tour .driver-popover-title {
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.driver-popover.aip-tour .driver-popover-description {
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.driver-popover.aip-tour .driver-popover-progress-text {
+  color: #94a3b8;
+  font-size: 0.75rem;
+}
+
+.driver-popover.aip-tour .driver-popover-close-btn {
+  color: #94a3b8;
+}
+.driver-popover.aip-tour .driver-popover-close-btn:hover {
+  color: #ffffff;
+}
+
+.driver-popover.aip-tour .driver-popover-footer button {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  text-shadow: none;
+  padding: 0.35rem 0.85rem;
+  font-weight: 500;
+}
+
+.driver-popover.aip-tour .driver-popover-footer button:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.driver-popover.aip-tour .driver-popover-next-btn {
+  background-color: #34d399 !important;
+  color: #041018 !important;
+  border-color: #34d399 !important;
+  font-weight: 600 !important;
+}
+.driver-popover.aip-tour .driver-popover-next-btn:hover {
+  background-color: #10b981 !important;
+}
+
+.driver-popover.aip-tour .driver-popover-arrow {
+  border-color: #0f1d2b;
+}

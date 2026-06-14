@@ -215,6 +215,7 @@ function DashboardInner({
         <div className="space-y-6">
           <Link
             href="/app/new-pentest"
+            data-tour="start-pentest"
             className="w-full block bg-gradient-to-br from-[#34D399] to-[#10b981] border border-[#34D399] rounded-xl p-6 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all text-center"
           >
             <div className="p-4 rounded-full bg-[#041018]/10 mb-3 inline-block">
@@ -229,7 +230,7 @@ function DashboardInner({
             <p className="text-[#041018]/70 text-sm">Configure and launch</p>
           </Link>
 
-          <div className="grid lg:grid-cols-3 gap-6">
+          <div className="grid lg:grid-cols-3 gap-6" data-tour="credits">
             {/* Web App Credits Card */}
             <div className="bg-gradient-to-br from-[#0a141f] to-[#0a141f]/80 border border-[#34D399]/30 rounded-xl p-6 shadow-lg">
               <div className="flex items-start justify-between mb-4">

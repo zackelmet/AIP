@@ -25,6 +25,9 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { useUserData } from "@/lib/hooks/useUserData";
 import signout from "@/lib/firebase/signout";
 import Image from "next/image";
+import OnboardingTour, {
+  START_TOUR_EVENT,
+} from "@/components/onboarding/OnboardingTour";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -102,6 +105,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="min-h-screen bg-[#0a141f] flex overflow-hidden">
+      {/* First-run product tour (auto-starts once on the dashboard) */}
+      <OnboardingTour />
+
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -148,6 +154,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <Link
                 key={item.href}
                 href={item.href}
+                data-tour={`nav-${item.href.split("/").pop()}`}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   isActive
                     ? "bg-[#34D399]/20 text-[#34D399] font-semibold border border-[#34D399]/30"
@@ -166,6 +173,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="px-4 pb-6 space-y-4">
           {/* Support links */}
           <div className="space-y-1">
+            <button
+              type="button"
+              onClick={() => {
+                setSidebarOpen(false);
+                window.dispatchEvent(new Event(START_TOUR_EVENT));
+              }}
+              className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors text-sm"
+            >
+              <FontAwesomeIcon icon={faQuestionCircle} className="w-4 h-4" />
+              Take a tour
+            </button>
             {bottomItems.map((item) => (
               <a
                 key={item.href}
@@ -234,6 +252,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {/* Buy Credits button */}
           <Link
             href="/app/dashboard?purchase=web_app"
+            data-tour="buy-credits"
             className="block w-full px-4 py-3 bg-[#34D399] text-[#041018] font-semibold rounded-lg text-center hover:bg-[#10b981] transition-colors"
           >
             Buy Credits

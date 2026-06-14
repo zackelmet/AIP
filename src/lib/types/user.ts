@@ -61,6 +61,10 @@ export interface UserDocument {
   // Scan Results (last 30 days, metadata only)
   completedScans?: ScanMetadata[];
 
+  // Onboarding
+  onboardingCompleted?: boolean;
+  onboardingCompletedAt?: Timestamp;
+
   // Optional Metadata
   lastLoginAt?: Timestamp;
   profileImageUrl?: string;
