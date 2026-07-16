@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
                   endpoints: schedule.endpoints || null,
                   additionalContext: schedule.additionalContext || null,
                   callbackUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/pentests`,
-                  webhookSecret: process.env.GCP_WEBHOOK_SECRET || "",
+                  webhookSecret: process.env.PENTEST_WEBHOOK_SECRET || "",
                   scheduledRun: true,
                   scheduleId,
                   targetIndex: index,

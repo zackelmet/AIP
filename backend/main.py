@@ -11,7 +11,7 @@ from worker import execute_pentest
 app = Flask(__name__)
 
 # Environment variables
-WEBHOOK_SECRET = os.environ.get('GCP_WEBHOOK_SECRET')
+WEBHOOK_SECRET = os.environ.get('PENTEST_WEBHOOK_SECRET')
 WEBAPP_API_URL = os.environ.get('WEBAPP_API_URL', 'https://affordable-pentesting.vercel.app/api/pentests')
 
 @app.route('/execute-pentest', methods=['POST'])

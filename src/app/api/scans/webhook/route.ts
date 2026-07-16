@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     // Verify webhook signature. Accept either header name so workers and
     // functions with different header naming conventions both work.
-    const webhookSecret = process.env.GCP_WEBHOOK_SECRET;
+    const webhookSecret = process.env.PENTEST_WEBHOOK_SECRET;
     const sig1 = request.headers.get("x-webhook-signature");
     const sig2 = request.headers.get("x-gcp-webhook-secret");
     const sig3 = request.headers.get("x-webhook-secret");

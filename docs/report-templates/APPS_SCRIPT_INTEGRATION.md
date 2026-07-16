@@ -6,7 +6,7 @@ The webapp can send report jobs to Apps Script, which:
 2. Injects placeholders + findings into a Google Docs template
 3. Keeps a Drive copy
 4. Exports both PDF + DOCX
-5. Calls webapp finalize endpoint to store in Firebase GCS and return signed URLs
+5. Calls webapp finalize endpoint to store in Firebase Storage and return signed URLs
 
 ## Authorization Model
 - Primary authorization happens in the webapp at `POST /api/admin/report-engine/submit` via `verifyAdmin`, which checks Firebase auth + Firestore `isAdmin`.

@@ -150,20 +150,17 @@ src/
    vercel --prod
    ```
 
-### 4. GCP Scanner Functions (Optional)
+### 4. Strix Pentest Engine (Oracle VPS)
 
-Configure the scanner function URLs in `.env.local`:
+The AI pentest engine is the Strix AI-pentester running on the Oracle Cloud VPS.
+The webapp dispatches jobs to it and receives a findings callback, both authenticated
+with a shared secret. Configure it in `.env.local`:
 ```
-GCP_NMAP_FUNCTION_URL=https://...
-GCP_OPENVAS_API_URL=https://...
-GCP_ZAP_API_URL=https://...
-GCP_WEBHOOK_SECRET=your-secret
+PENTEST_WEBHOOK_SECRET=your-secret
 ```
 
-See individual setup docs:
-- [Nmap Scanner](gcp/functions/nmap-scanner/)
-- [OpenVAS Scanner](gcp/functions/openvas-scanner/)
-- [ZAP Scanner](gcp/functions/zap-scanner/)
+See the project `HANDOFF.md` for the Oracle VPS / Strix runner details and the
+job dispatch → findings CSV → report engine contract.
 
 ## 🔐 Environment Variables
 
@@ -192,11 +189,8 @@ NEXT_PUBLIC_STRIPE_PRICE_AI_MONTHLY=
 NEXT_PUBLIC_STRIPE_PRICE_MANUAL_BASIC=
 NEXT_PUBLIC_STRIPE_PRICE_MANUAL_ADVANCED=
 
-# GCP Scanner Functions
-GCP_NMAP_FUNCTION_URL=
-GCP_OPENVAS_API_URL=
-GCP_ZAP_API_URL=
-GCP_WEBHOOK_SECRET=
+# Strix pentest engine (Oracle VPS)
+PENTEST_WEBHOOK_SECRET=
 
 # Application
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
@@ -265,7 +259,7 @@ npm start
 2. ⏳ Create Firebase service account and add to `.env.local`
 3. ⏳ Set up Stripe webhook endpoint
 4. ⏳ Push environment variables to Vercel
-5. ⏳ Deploy GCP scanner functions
+5. ⏳ Provision the Strix pentest engine on the Oracle VPS + set PENTEST_WEBHOOK_SECRET
 6. ⏳ Update production URLs in `.env.local`
 
 ### Optional Enhancements

@@ -10,7 +10,7 @@ AI-powered autonomous penetration testing platform powered by Anthropic Claude a
 
 ## Deploying
 - Frontend: Vercel (Next.js 14)
-- Backend: Cloud Run / Cloud Functions for AI pentest orchestration
+- Backend: Strix AI-pentester on the Oracle Cloud VPS for pentest orchestration
 - Database: Firebase Firestore
 - Storage: Firebase Storage for pentest results
 - Payments: Stripe

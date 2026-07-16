@@ -1,8 +1,74 @@
 # Handoff — AIP (Affordable Pentesting)
 
-_Last updated: 2026-06-14_
+_Last updated: 2026-07-15_
 
 All work below is committed and pushed to `main` (auto-deploys to prod via Vercel at https://ai.affordablepentesting.com).
+
+## PLANNED — Full self-serve loop: Strix VPS backend → CSV → report engine (2026-07-15)
+
+**No code written yet.** This is the agreed plan; revisit to build. Goal: close the loop so a paid
+pentest runs itself end-to-end — webapp dispatches job → VPS AI pentester runs it → returns findings CSV →
+webapp report engine auto-generates the PDF → customer emailed. Today the return + report step is **manual**
+(admin drives `/admin/quick-report`).
+
+### Decisions locked with Zack
+- **Run the VPS engine ALONGSIDE the existing Make.com webhook** (Make stays as fallback while Strix has no
+  paid model credits), not as a replacement.
+- **Report engine flexes to Strix's output** where needed (Zack: "we'll be flexible there").
+
+### Backend VPS — CONFIRMED present & working
+- **Oracle Cloud ARM VPS**: `147.224.173.192`, ssh alias `autojob-vps`, hostname `openclaw`, aarch64,
+  user `ubuntu`, key `/home/zack/Desktop/openclaw/ssh-key-2026-02-02.key`.
+- **`strix-agent 1.1.0`** installed via pipx (Python 3.12), CLI-only (`strix -n` headless) — **no REST API**;
+  integration = spawn CLI as a job + ingest its output dir. Runner scripts live in `/home/ubuntu/strix/`
+  (`run-gemini.sh`, `run-eval.sh`, `RESUME-STRIX.md`, `instruction.txt`); the Groq/LiteLLM shims are in place;
+  a working Gemini key sits at `/home/ubuntu/strix/gemini.key`. Docker + strix-sandbox image present; OWASP
+  Juice Shop container available as a test target.
+- ⚠️ **Shared box** — autojob-applier runs there under PM2 (fluxbox/browser/sdr-loop/vnc). Leave it alone.
+- Strix eval history/creds/blocker are documented in the `strix-engine` memory + `/home/ubuntu/strix/RESUME-STRIX.md`.
+  NB: that eval was originally scoped to the **msp** app; AIP would be the first app actually wired to the box.
+
+### Strix output contract (per-run dir under `strix_runs/`)
+- **`findings.sarif`** — SARIF 2.1.0, findings in `runs[0].results[]`.
+- **`run.json`** — `status`, `targets_info`, `llm_usage` (tokens → cost).
+- **`strix.log`** + `.state/agents.db`.
+- ⚠️ **Never seen a populated finding**: every run on the box so far has `results: []` (token-wall failures +
+  one Gemini-flash "completed" run that found 0 vulns on Juice Shop). Real deep findings need a **paid model
+  top-up** ("no AI credits yet"). **Before building the SARIF→CSV mapper, pull the populated SARIF result shape
+  from Strix source** (github.com/usestrix/strix) — how it fills `ruleId`/`level`/`message`/severity/CVSS.
+
+### Chosen data contract
+Strix emits SARIF; report engine already ingests **CSV** via `parseCSVFindings`. Seam = a thin
+**SARIF → CSV adapter ON THE BOX** mapping into the columns `parseCSVFindings` already accepts
+(Title, Severity, Description, Proof of Concept, Impact, Remediation, CVSS 3.1/4.0 Score+Vector, Target,
+Affected Component). Keeps the webapp callback trivial (accept CSV → existing report engine).
+
+### Current webapp wiring (what exists)
+- Dispatch: `POST /api/pentests` (`src/app/api/pentests/route.ts`) — Stripe-credit check → deduct + create
+  Firestore `pentests` doc (`status:"running"`) in a txn → fire `MAKE_WEBHOOK_URL` with the job +
+  `callbackUrl` (**currently points at `/api/pentests`, the create route — wrong for a machine callback**) +
+  `webhookSecret` (`PENTEST_WEBHOOK_SECRET`).
+- Return webhook that exists: `POST /api/scans/webhook` (verifies `PENTEST_WEBHOOK_SECRET`, Firebase Storage signed URLs) —
+  but `/api/pentests/[id]` only has `GET`; **no route currently attaches findings + triggers the report.**
+- Report engine (DONE, good): `parseCSVFindings` (`src/lib/findings/parseFindingsBlock.ts`) →
+  `buildReportPdf`/`buildReportDocx` (`src/lib/report-engine/`). Driven manually today via `/admin/quick-report`.
+
+### Build plan — three bricks
+1. **Webapp callback** `POST /api/pentests/callback` (secret-auth'd): accept `{ pentestId, csv }` →
+   `parseCSVFindings` → `buildReportPdf` → store PDF → flip pentest to `complete` → fire existing
+   "report ready" email (`sendPentestReportReadyEmail`). **Contract-independent — fully buildable/testable
+   today with a mock CSV.** Recommended first brick (keystone, unblocks everything).
+2. **VPS job-runner**: small HTTP service on the Oracle box — accept job → run `strix -n` (reuse
+   `run-gemini.sh` patterns) → SARIF→CSV → POST to the callback. Runs alongside autojob-applier.
+3. **Dispatch wiring**: `/api/pentests` fires the VPS job *alongside* Make.com; set `callbackUrl` → new route.
+
+### Open questions for next session (not yet decided)
+- Sequencing: build webapp callback first (recommended) vs. stand up VPS runner first to watch a real flow.
+- VPS service process manager: **PM2** (matches the box) vs. systemd unit.
+- Paid model top-up (Anthropic/OpenAI/paid-Gemini) is still the true unblock for real findings — billing call.
+
+---
+
 
 > **Build note:** the husky pre-commit hook runs a full `next build` that **hangs locally** at the "Collecting build traces" step on this filesystem (environment quirk, not a code issue). Commits this session used `git commit --no-verify`; correctness was verified independently with `tsc --noEmit`, `next lint`, and `jest`. Vercel runs the trace step fine.
 

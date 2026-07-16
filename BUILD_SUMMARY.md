@@ -176,7 +176,7 @@
 3. **Stripe Webhook**: Set up `/api/webhooks/stripe` endpoint and add secret
 4. **Vercel Environment**: Push all env vars to Vercel
 5. **Admin Roles**: Implement proper role-based access control (currently checks email)
-6. **GCP Functions**: Deploy scanner functions (optional for AI pentests)
+6. **Strix Engine**: Provision the Strix AI-pentester on the Oracle VPS + set `PENTEST_WEBHOOK_SECRET`
 
 ## 🚀 Next Deployment
 
@@ -198,7 +198,7 @@ vercel --prod
 ✅ Stripe price IDs (all 4 products created)
 ⏳ Firebase service account key (needs creation)
 ⏳ Stripe webhook secret (needs setup)
-⏳ GCP function URLs (optional)
+⏳ Strix engine on Oracle VPS + `PENTEST_WEBHOOK_SECRET`
 
 ## 💡 Future Enhancements
 
