@@ -14,12 +14,10 @@ import {
   faCog,
   faChevronUp,
   faUser,
-  faShieldHalved,
   faPlus,
   faList,
   faUserShield,
   faCalendarCheck,
-  faFilePdf,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useUserData } from "@/lib/hooks/useUserData";
@@ -82,19 +80,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       icon: faUser,
     },
     ...(userData?.isAdmin
-      ? [
-          { href: "/admin", label: "Admin", icon: faUserShield },
-          {
-            href: "/admin/report-engine",
-            label: "Report Engine",
-            icon: faShieldHalved,
-          },
-          {
-            href: "/admin/quick-report",
-            label: "Report Engine v2",
-            icon: faFilePdf,
-          },
-        ]
+      ? [{ href: "/admin", label: "Admin", icon: faUserShield }]
       : []),
   ];
 

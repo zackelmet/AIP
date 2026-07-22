@@ -1,11 +1,5 @@
-import {
-  PDFDocument,
-  PDFFont,
-  PDFImage,
-  PDFPage,
-  StandardFonts,
-  rgb,
-} from "pdf-lib";
+import { PDFDocument, PDFFont, PDFImage, PDFPage, rgb } from "pdf-lib";
+import fontkit from "@pdf-lib/fontkit";
 import { ReportPayload, ReportFinding } from "@/lib/report-engine/types";
 import { deriveLikelihoodImpact, Rating } from "@/lib/report-engine/cvss";
 import fs from "node:fs";
@@ -219,8 +213,19 @@ function ratingColor(rating: Rating) {
 
 export async function buildReportPdf(payload: ReportPayload) {
   const pdf = await PDFDocument.create();
-  const font = await pdf.embedFont(StandardFonts.Helvetica);
-  const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
+  pdf.registerFontkit(fontkit);
+  const fontBytes = new Uint8Array(
+    fs.readFileSync(
+      path.join(process.cwd(), "public", "fonts", "IBMPlexSans-Regular.ttf"),
+    ),
+  );
+  const boldBytes = new Uint8Array(
+    fs.readFileSync(
+      path.join(process.cwd(), "public", "fonts", "IBMPlexSans-Bold.ttf"),
+    ),
+  );
+  const font = await pdf.embedFont(fontBytes);
+  const bold = await pdf.embedFont(boldBytes);
 
   const now = new Date();
   const completedDate =
@@ -233,7 +238,9 @@ export async function buildReportPdf(payload: ReportPayload) {
     brand === "msp" ? "MSP Pentesting" : "Affordable Pentesting";
   const brandTester = brand === "msp" ? "MSP Hacker Agent" : "AIP Hacker Agent";
   const brandEmail =
-    brand === "msp" ? "zack@msppentesting.com" : "zack@affordablepentesting.com";
+    brand === "msp"
+      ? "zack@msppentesting.com"
+      : "zack@affordablepentesting.com";
   const brandLogoFile =
     brand === "msp"
       ? "msp pentesting logo (1) (3) (1).png"
@@ -459,12 +466,7 @@ export async function buildReportPdf(payload: ReportPayload) {
       }
       state.y -= padV;
       const bottom = state.y;
-      const edge = (
-        x1: number,
-        y1: number,
-        x2: number,
-        y2: number,
-      ) =>
+      const edge = (x1: number, y1: number, x2: number, y2: number) =>
         state.page.drawLine({
           start: { x: x1, y: y1 },
           end: { x: x2, y: y2 },
@@ -652,6 +654,8 @@ export async function buildReportPdf(payload: ReportPayload) {
     color: rgb(0.7, 0.72, 0.75),
   });
   gap(18);
+  // Ensure entire attestation block fits on one page
+  ensure(460);
   const attRef = state.page;
   tocAdd("Third-Party Attestation Statement", attRef, 1);
   boldLabel("Third-Party Attestation Statement", 14);
@@ -668,13 +672,13 @@ export async function buildReportPdf(payload: ReportPayload) {
   gap(14);
   const sigX = BODY_X + 20;
   [
-    [payload.tester ?? "Zack ElMetennani", font],
-    ["Security Lead", font],
-    [brandEmail, font],
-    [brandName, font],
-  ].forEach(([line]) => {
+    payload.tester ?? "Zack ElMetennani",
+    "Security Lead",
+    brandEmail,
+    brandName,
+  ].forEach((line) => {
     ensure(14);
-    state.page.drawText(sanitize(line as string), {
+    state.page.drawText(sanitize(line), {
       x: sigX,
       y: state.y - 11,
       size: 11,
@@ -684,16 +688,17 @@ export async function buildReportPdf(payload: ReportPayload) {
     state.y -= 15;
   });
   if (icon) {
-    gap(8);
     const s = Math.min(64 / icon.width, 64 / icon.height);
-    ensure(icon.height * s + 8);
+    const iconH = icon.height * s;
+    ensure(iconH + 16);
+    gap(8);
     state.page.drawImage(icon, {
       x: sigX,
-      y: state.y - icon.height * s,
+      y: state.y - iconH,
       width: icon.width * s,
-      height: icon.height * s,
+      height: iconH,
     });
-    state.y -= icon.height * s;
+    state.y -= iconH;
   }
 
   // ═══════════════════════════ EXECUTIVE SUMMARY ═══════════════════════════
@@ -720,9 +725,7 @@ export async function buildReportPdf(payload: ReportPayload) {
       Low: 0,
       Informational: 0,
     };
-    findings.forEach(
-      (f) => counts[normalizeSeverity(f.severity, f.cvss)]++,
-    );
+    findings.forEach((f) => counts[normalizeSeverity(f.severity, f.cvss)]++);
     const order: Severity[] = [
       "Critical",
       "High",
@@ -787,10 +790,13 @@ export async function buildReportPdf(payload: ReportPayload) {
   gap(12);
   tocAdd("Scope", state.page, 1);
   subHeading("Scope");
-  paragraph("The following targets were included in the scope of the penetration test:", {
-    size: 11,
-    lineHeight: 16,
-  });
+  paragraph(
+    "The following targets were included in the scope of the penetration test:",
+    {
+      size: 11,
+      lineHeight: 16,
+    },
+  );
   gap(2);
   const scopeTargets = payload.scopeTargets?.length
     ? payload.scopeTargets
@@ -798,12 +804,20 @@ export async function buildReportPdf(payload: ReportPayload) {
       ? [payload.target]
       : ["Not provided"];
   scopeTargets.forEach((t) =>
-    paragraph(`-    ${t}`, { x: BODY_X + 20, width: BODY_W - 20, size: 11, lineHeight: 16 }),
+    paragraph(`-    ${t}`, {
+      x: BODY_X + 20,
+      width: BODY_W - 20,
+      size: 11,
+      lineHeight: 16,
+    }),
   );
   gap(12);
   tocAdd("Tools and Test Cases", state.page, 1);
   subHeading("Tools and Test Cases");
-  paragraph(TOOLS_DEFAULT, { size: 11, lineHeight: 16 });
+  paragraph(payload.toolsAndTestCases ?? TOOLS_DEFAULT, {
+    size: 11,
+    lineHeight: 16,
+  });
 
   // ═══════════════════════════════ METHODOLOGY ═══════════════════════════════
   const methRef = newPage();
@@ -882,16 +896,8 @@ export async function buildReportPdf(payload: ReportPayload) {
     const { likelihood, impact } = deriveLikelihoodImpact(cvssVector);
     const num = `01-${String(index + 1).padStart(2, "0")}-`;
 
+    if (index > 0) newPage();
     ensure(130);
-    if (index > 0) {
-      state.page.drawLine({
-        start: { x: PAGE_MARGIN, y: state.y },
-        end: { x: PAGE_WIDTH - PAGE_MARGIN, y: state.y },
-        thickness: 0.8,
-        color: rgb(0.85, 0.87, 0.9),
-      });
-      gap(16);
-    }
     const startRef = state.page;
     tocAdd(`${num}${finding.title}`, startRef, 1);
 
@@ -899,7 +905,8 @@ export async function buildReportPdf(payload: ReportPayload) {
     const pillH = 17;
     ensure(pillH + 10);
     let px = PAGE_MARGIN;
-    px += drawPill(state.page, sev, px, state.y - pillH, severityColor(sev), 9) + 8;
+    px +=
+      drawPill(state.page, sev, px, state.y - pillH, severityColor(sev), 9) + 8;
     if (likelihood)
       px +=
         drawPill(
@@ -1008,7 +1015,13 @@ export async function buildReportPdf(payload: ReportPayload) {
   centeredHeading("Risk Matrix", 30);
   gap(10);
   {
-    const impactCols = ["Insignificant", "Minor", "Moderate", "Major", "Critical"];
+    const impactCols = [
+      "Insignificant",
+      "Minor",
+      "Moderate",
+      "Major",
+      "Critical",
+    ];
     const rows: Array<[string, string[]]> = [
       ["Almost Certain", ["High", "High", "Critical", "Critical", "Critical"]],
       ["Likely", ["Moderate", "High", "High", "Critical", "Critical"]],
@@ -1057,7 +1070,16 @@ export async function buildReportPdf(payload: ReportPayload) {
       height: rH,
       color: TEAL_DARK,
     });
-    center(state.page, "Impact", x0 + firstW, cellW * 5, yTop - 17, font, 11, rgb(0.85, 0.95, 0.9));
+    center(
+      state.page,
+      "Impact",
+      x0 + firstW,
+      cellW * 5,
+      yTop - 17,
+      font,
+      11,
+      rgb(0.85, 0.95, 0.9),
+    );
     yTop -= rH;
     // Second header: "Likelihood" corner + impact column labels
     state.page.drawRectangle({
@@ -1067,7 +1089,16 @@ export async function buildReportPdf(payload: ReportPayload) {
       height: rH,
       color: TEAL_DARK,
     });
-    center(state.page, "Likelihood", x0, firstW, yTop - 17, font, 10.5, rgb(0.5, 0.86, 0.66));
+    center(
+      state.page,
+      "Likelihood",
+      x0,
+      firstW,
+      yTop - 17,
+      font,
+      10.5,
+      rgb(0.5, 0.86, 0.66),
+    );
     impactCols.forEach((c, i) => {
       const cx = x0 + firstW + i * cellW;
       state.page.drawRectangle({
@@ -1093,7 +1124,16 @@ export async function buildReportPdf(payload: ReportPayload) {
         borderColor: rgb(0.1, 0.1, 0.1),
         borderWidth: 0.8,
       });
-      center(state.page, likelihoodLabel, x0, firstW, yTop - 17, font, 9.5, TEXT);
+      center(
+        state.page,
+        likelihoodLabel,
+        x0,
+        firstW,
+        yTop - 17,
+        font,
+        9.5,
+        TEXT,
+      );
       vals.forEach((v, i) => {
         const cx = x0 + firstW + i * cellW;
         state.page.drawRectangle({
@@ -1105,7 +1145,16 @@ export async function buildReportPdf(payload: ReportPayload) {
           borderColor: rgb(0.1, 0.1, 0.1),
           borderWidth: 0.8,
         });
-        center(state.page, v, cx, cellW, yTop - 17, font, 9.5, cellTextColor(v));
+        center(
+          state.page,
+          v,
+          cx,
+          cellW,
+          yTop - 17,
+          font,
+          9.5,
+          cellTextColor(v),
+        );
       });
       yTop -= rH;
     });

@@ -32,6 +32,7 @@ export interface ReportPayload {
   executiveSummary?: string;
   purpose?: string;
   detailedAnalysis?: string;
+  toolsAndTestCases?: string;
   scopeTargets?: string[];
   sharedWithUserIds?: string[];
   findings: ReportFinding[];

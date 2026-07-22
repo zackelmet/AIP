@@ -440,7 +440,7 @@ export default function Home() {
           {/* PDF Viewer */}
           <div className="rounded-xl overflow-hidden border border-white/10 shadow-2xl shadow-black/40 mb-8">
             <iframe
-              src="/templates/AIP Sample Report - External Pentest.docx.pdf"
+              src="/templates/AIP Sample Report - WebApp Pentest.docx.pdf"
               className="w-full"
               style={{ height: "780px" }}
               title="AIP Sample Pentest Report"
@@ -450,7 +450,7 @@ export default function Home() {
           {/* Actions */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
-              href="/templates/AIP Sample Report - External Pentest.docx.pdf"
+              href="/templates/AIP Sample Report - WebApp Pentest.docx.pdf"
               download="AIP Sample Pentest Report.pdf"
               className="inline-flex items-center gap-2 px-8 py-4 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors text-base"
             >
@@ -471,7 +471,7 @@ export default function Home() {
               Download Sample Report
             </a>
             <a
-              href="/templates/AIP Sample Report - External Pentest.docx.pdf"
+              href="/templates/AIP Sample Report - WebApp Pentest.docx.pdf"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-8 py-4 bg-white/5 hover:bg-white/10 text-white font-normal rounded-lg border border-white/20 transition-colors text-base"
@@ -501,8 +501,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Simple{" "}
-              <span className="text-[#34D399]">Pricing</span>
+              Simple <span className="text-[#34D399]">Pricing</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Purchase credits for the pentests you need

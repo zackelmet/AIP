@@ -98,6 +98,8 @@ function statusBadge(status: string) {
   const map: Record<string, string> = {
     completed: "text-[#34D399]",
     running: "text-yellow-400",
+    review: "text-yellow-400",
+    rejected: "text-red-400",
   };
   return map[normalized] ?? "text-[var(--text-muted)]";
 }

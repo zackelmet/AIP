@@ -1,10 +1,14 @@
-import AdminDashboard from "@/components/admin/AdminDashboard";
+import AdminTabs from "@/components/admin/AdminTabs";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 
-export default async function AdminDashboardPage() {
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
   const cookieStore = cookies();
   const sessionToken = cookieStore.get("__session")?.value ?? "";
 
@@ -21,11 +25,9 @@ export default async function AdminDashboardPage() {
     } catch {
       decoded = await admin.auth().verifyIdToken(sessionToken);
     }
-    // Fast path: custom claim
     if (decoded.isAdmin === true) {
       isAdmin = true;
     } else {
-      // Fallback: Firestore isAdmin field
       const userDoc = await admin
         .firestore()
         .collection("users")
@@ -35,17 +37,17 @@ export default async function AdminDashboardPage() {
         isAdmin = true;
       }
     }
-  } catch {
-    // Invalid or expired token
-  }
+  } catch {}
 
   if (!isAdmin) {
     redirect("/app/dashboard");
   }
 
+  const { tab } = await searchParams;
+
   return (
     <DashboardLayout>
-      <AdminDashboard />
+      <AdminTabs defaultTab={tab || "dashboard"} />
     </DashboardLayout>
   );
 }

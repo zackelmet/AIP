@@ -3,6 +3,7 @@ import { verifyAdmin } from "@/lib/auth/verifyAuth";
 import { buildReportDocx } from "@/lib/report-engine/docx-template";
 import { getReportSignedUrl, saveReportPdf } from "@/lib/report-engine/storage";
 import { ReportPayload, ReportFinding } from "@/lib/report-engine/types";
+import { parseSarifString } from "@/lib/report-engine/sarif-to-findings";
 
 export const runtime = "nodejs";
 
@@ -81,12 +82,42 @@ function validatePayload(body: any) {
     });
   }
 
-  if (!Array.isArray(body.findings) || body.findings.length === 0) {
+  const hasSarif = body.sarif !== undefined;
+  const hasFindings = Array.isArray(body.findings) && body.findings.length > 0;
+
+  if (!hasFindings && !hasSarif) {
     errors.push({
       path: "findings",
-      message: "At least one finding is required",
+      message: "Either 'findings' array or 'sarif' JSON is required",
     });
-  } else {
+  }
+
+  if (hasSarif) {
+    const sarifInput =
+      typeof body.sarif === "string" ? body.sarif : JSON.stringify(body.sarif);
+    const parsed = parseSarifString(sarifInput);
+    if (parsed.length === 0) {
+      errors.push({
+        path: "sarif",
+        message: "SARIF input contained no valid findings",
+      });
+    } else {
+      parsed.forEach((finding, index) => {
+        const partial: Partial<ReportFinding> = {
+          title: finding.title,
+          description: finding.description,
+          poc: finding.poc,
+          impact: finding.impact,
+          remediation: finding.remediation,
+          cvss: finding.cvss,
+          cvssValue: finding.cvssValue,
+        };
+        errors.push(...validateFinding(partial, index));
+      });
+    }
+  }
+
+  if (hasFindings) {
     body.findings.forEach((finding: Partial<ReportFinding>, index: number) => {
       errors.push(...validateFinding(finding, index));
     });
@@ -112,6 +143,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const findings: ReportFinding[] = body.sarif
+      ? parseSarifString(
+          typeof body.sarif === "string"
+            ? body.sarif
+            : JSON.stringify(body.sarif),
+        )
+      : body.findings;
+
     const payload: ReportPayload = {
       reportType: ["external", "webapp", "msp"].includes(body.reportType)
         ? body.reportType
@@ -134,7 +173,7 @@ export async function POST(request: NextRequest) {
             (item: unknown) => typeof item === "string",
           )
         : undefined,
-      findings: body.findings.map((finding: ReportFinding) => ({
+      findings: findings.map((finding: ReportFinding) => ({
         title: finding.title.trim(),
         description: finding.description.trim(),
         poc: finding.poc.trim(),

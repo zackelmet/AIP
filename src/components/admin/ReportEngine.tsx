@@ -2,6 +2,7 @@
 
 import { FormEvent, useRef, useState } from "react";
 import { parseCSVFindings } from "@/lib/findings/parseFindingsBlock";
+import { parseSarifString } from "@/lib/report-engine/sarif-to-findings";
 
 interface Finding {
   title: string;
@@ -40,6 +41,7 @@ export default function ReportEngine() {
   const [downloadFileName, setDownloadFileName] = useState("");
   const [csvImportError, setCsvImportError] = useState<string | null>(null);
   const csvInputRef = useRef<HTMLInputElement>(null);
+  const sarifInputRef = useRef<HTMLInputElement>(null);
 
   const RISK_TO_CVSS: Record<string, number> = {
     critical: 9.0,
@@ -47,6 +49,36 @@ export default function ReportEngine() {
     medium: 5.0,
     low: 2.5,
     info: 0.0,
+  };
+
+  const handleSARIFImport = (file: File) => {
+    setCsvImportError(null);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string;
+      const parsed = parseSarifString(text);
+      if (parsed.length === 0) {
+        setCsvImportError(
+          "No findings found in SARIF. Ensure the file is valid Strix SARIF 2.1.0 JSON.",
+        );
+        return;
+      }
+      const mapped: Finding[] = parsed.map((f) => ({
+        title: f.title,
+        description: f.description,
+        poc: f.poc,
+        impact: f.impact,
+        remediation: f.remediation,
+        cvss: String(f.cvss),
+        cvssValue: f.cvssValue || String(f.cvss),
+      }));
+      setFindings((prev) => {
+        const isBlank = prev.length === 1 && !prev[0].title.trim();
+        return isBlank ? mapped : [...prev, ...mapped];
+      });
+      setFieldErrors({});
+    };
+    reader.readAsText(file);
   };
 
   const handleCSVImport = (file: File) => {
@@ -331,6 +363,24 @@ export default function ReportEngine() {
               Findings ({findings.length})
             </h2>
             <div className="flex items-center gap-3">
+              <input
+                ref={sarifInputRef}
+                type="file"
+                accept=".sarif,.json,application/json"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleSARIFImport(file);
+                  e.target.value = "";
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => sarifInputRef.current?.click()}
+                className="rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-gray-300 px-4 py-2 text-sm transition-colors"
+              >
+                Import SARIF
+              </button>
               <input
                 ref={csvInputRef}
                 type="file"
