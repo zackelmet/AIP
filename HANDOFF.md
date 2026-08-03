@@ -1,6 +1,6 @@
 # Handoff — AIP (Affordable Pentesting)
 
-_Last updated: 2026-07-15_
+_Last updated: 2026-07-16_
 
 All work below is committed and pushed to `main` (auto-deploys to prod via Vercel at https://ai.affordablepentesting.com).
 
@@ -10,6 +10,35 @@ All work below is committed and pushed to `main` (auto-deploys to prod via Verce
 pentest runs itself end-to-end — webapp dispatches job → VPS AI pentester runs it → returns findings CSV →
 webapp report engine auto-generates the PDF → customer emailed. Today the return + report step is **manual**
 (admin drives `/admin/quick-report`).
+
+**Update 2026-07-16 — Strix backend now runs on a live Anthropic key; blocker is the account rate tier, not credits.**
+Wired Strix on the Oracle VPS to a new funded Anthropic key (`anthropic/claude-haiku-4-5`; key saved in
+`~/Documents/Notes/openclaw`, on the box at `/home/ubuntu/strix/anthropic.key` + `run-anthropic.sh`, targeting
+`https://ai.affordablepentesting.com` with a non-destructive AIP-scoped instruction). **First real run executed
+end-to-end** — auth, model, and the spawn→run→`findings.sarif` loop all work (the ~37K-token first request cleared the
+old Groq TPM wall). **But the account is anomalously throttled to 10K input-tokens/min & 5 req/min** — ~200× BELOW
+Anthropic's lowest **Start tier** (Haiku 4.5 Start = 2M ITPM / 1,000 RPM). Strix's ~37K-token requests are 3–4× over the
+10K → 429/backoff retry loop; 45-min run = $0.54, 0 findings, killed. **Fix is a Console setting, NOT more spend / NOT a
+bigger model** (Start tier alone dwarfs Strix's needs; my earlier "deposit to Tier 2" note was wrong): in
+console.anthropic.com → **Settings → Limits** raise any self-set/workspace limit, and → **Settings → Billing** add a
+payment method / verify the org to get placed on real Start-tier limits; if it stays stuck, use "Request rate limit
+increase" or support. Then `SCAN_MODE=quick bash /home/ubuntu/strix/run-anthropic.sh eval_aip2`. Full detail in the
+`strix-engine` memory. The **webapp callback brick (#1 below) is still the recommended first build** and is unblocked
+regardless (testable with a mock CSV today).
+
+**Two unblock paths for the Strix engine (Zack deciding, 2026-07-16):**
+- **(A) Anthropic Start tier — best findings quality, free capacity.** In console.anthropic.com → **Settings → Billing**:
+  add a payment method + **buy credits** (the $5 promo does NOT activate real limits; a card-backed purchase does). That
+  promotes the org off the restricted free/eval state onto **Start tier** → Haiku 4.5 at **1,000 RPM / 2,000,000 ITPM**
+  (Settings → Limits confirms). No extra spend needed for *capacity* — Start tier is free headroom; you only pay per
+  token. Zack's plan: **do this when the Max plan expires.** Frontier quality (Haiku/Sonnet) = better vulns for a paid
+  product. Rerun: `SCAN_MODE=quick bash /home/ubuntu/strix/run-anthropic.sh eval_aip2`.
+- **(B) Groq Dev tier — cheapest, most-integrated, consolidates with the rest of the stack.** Upgrade Groq free →
+  pay-as-you-go to clear the 8K-TPM wall; the Groq↔Strix LiteLLM shims are **already on the box** (`run-eval.sh`). **Use
+  a Strix-recommended Groq model (Kimi K2 / Qwen), NOT gpt-oss-120b** (Strix flags gpt-oss "not recommended"). Pairs with
+  Zack's broader plan to run **OpenCode + a token-efficient Groq model instead of Claude Code**, and Groq for the apps
+  (ai-hacker / vuln-trends already Groq). Tradeoff: cheaper/faster but likely lower findings quality than frontier — fine
+  to **validate the loop on Groq**, but keep path (A)'s Sonnet-class model for production customer pentests.
 
 ### Decisions locked with Zack
 - **Run the VPS engine ALONGSIDE the existing Make.com webhook** (Make stays as fallback while Strix has no

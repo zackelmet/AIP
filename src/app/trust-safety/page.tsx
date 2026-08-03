@@ -112,6 +112,17 @@ const sections = [
     ],
   },
   {
+    icon: faReceipt,
+    title: "Data Retention",
+    anchor: "retention",
+    content: [
+      "Pentest results — including scan data, vulnerability findings, and generated reports — are retained for 90 days from the date the pentest is completed. After 90 days, all associated data is permanently deleted from our systems.",
+      "This 90-day retention window applies to all pentest data across our platform, including: pentest records in our database, generated PDF reports in cloud storage, and any associated scan artifacts stored on our backend infrastructure.",
+      "If you need to keep your reports beyond the 90-day window, download them before the retention period expires. We recommend downloading reports immediately upon completion and storing them in your own secure environment.",
+      "Upon account deletion, all data is deleted within 30 days regardless of the 90-day pentest retention window. Payment records are retained separately per applicable financial regulations.",
+    ],
+  },
+  {
     icon: faCircleInfo,
     title: "Responsible Disclosure",
     anchor: "disclosure",

@@ -42,30 +42,16 @@ const SEVERITY_RANK: Record<Severity, number> = {
 };
 
 // ── Default narrative content (so reports look complete from CSV alone) ──
-const ABOUT_INTRO =
-  "Security is a fundamental right, not a corporate luxury. At AffordablePentesting.com, we specialize in providing high-impact, manual security assessments designed for organizations that require elite technical depth without the enterprise price tag. We bridge the gap between automated scanning and expensive consultancy, ensuring that your data remains yours.";
-const ABOUT_PILLARS_LEAD =
-  'Every finding within this document is vetted through a rigorous validation process. We don\'t just "run tools". Our methodology is built on three core pillars:';
-const ABOUT_PILLARS: Array<[string, string]> = [
-  [
-    "Autonomous Intelligence",
-    "Utilizing the latest AI models, we leverage hacking agents that think and evolve in real-time. Unlike static automated scripts or slow human testers, our AI identifies complex attack chains and multi-step vulnerabilities at machine speed, uncovering deep-seated logic flaws that legacy methods miss.",
-  ],
-  [
-    "Industry Standards",
-    "Our testing workflows are mapped to the OWASP Top 10, NIST SP 800-115, and PTES (Penetration Testing Execution Standard) frameworks.",
-  ],
-  [
-    "Dynamic Risk Context",
-    "Our AI engine analyzes your specific business logic to categorize risks based on real-world impact. We filter out the noise, making sure your remediation efforts are focused on the vulnerabilities that pose a genuine threat to your operations and data.",
-  ],
+const ABOUT_PARAS = [
+  "AffordablePentesting.com delivers manual-grade security assessments powered by AI. Every finding is validated against real exploitability, not just scan output. Our methodology maps to OWASP, NIST, and PTES standards — we just run it faster. The result is a clear, prioritized list of what's actually broken and how to fix it.",
+  "We test your app the same way a human pentester would, but at machine speed. Our AI agents find vulnerabilities, validate them with proof-of-concept exploits, and filter out the noise. What you get is a report focused on what matters: the real risks to your business.",
 ];
 
 const PURPOSE_DEFAULT =
   "This assessment was conducted to identify security issues and assess the risk and impact these vulnerabilities would have on the organization if exploited by a malicious actor.\n\nAP Pentesting ensured the confidentiality, integrity, & availability of the data held within the application was maintained. The discovery of the findings during this assessment did not negatively impact the application's functionality or data integrity in any way.";
 
 const TOOLS_DEFAULT =
-  "The AI hacker agent employs a multi-layered approach to security assessment, integrating industry-standard tools and advanced red teaming techniques. Initial reconnaissance utilizes Amass, Gau, and Katana for comprehensive attack surface mapping, while DNSRecon and ProjectDiscovery-httpx identify subdomains and active services. Vulnerability discovery focuses on web application flaws such as SQL injection, Cross-Site Scripting (XSS), and Broken Access Control, utilizing SQLmap, XSStrike, Dalfox, and JWT_tool. For API security, Schemathesis performs property-based testing against defined schemas. Infrastructure assessments leverage NetExec, SMBMap, and Enum4linux to identify misconfigurations in network services, while Kerbrute and BloodyAD facilitate Active Directory enumeration and credential-based attacks like Kerberoasting.\n\nTest cases include verifying firewall efficacy with Wafw00f, performing directory and parameter discovery via Gobuster and FFuf, and executing man-in-the-middle or coercion attacks using MITM6 and Coercer. Exploitation and post-exploitation phases involve Searchsploit for vulnerability research and MSFConsole for payload delivery, with MSFVenom generating custom shells. Privilege escalation vectors are systematically identified using LinPEAS and WinPEAS to assess local security postures.";
+  "The assessment was conducted using a systematic testing methodology combining automated scanning and manual validation techniques. Reconnaissance and discovery phases utilized network scanning, directory enumeration, and service fingerprinting tools to map the attack surface. Vulnerability testing focused on web application security including input validation, authentication mechanisms, and access control verification. All findings were validated through manual proof-of-concept testing to eliminate false positives, with remediation guidance aligned to OWASP and NIST best practices.";
 
 const METHODOLOGY: Array<[string, string]> = [
   [
@@ -636,26 +622,20 @@ export async function buildReportPdf(payload: ReportPayload) {
   tocAdd(`About ${brandName}`, aboutRef);
   centeredHeading(`About ${brandName}`, 30);
   gap(4);
-  paragraph(ABOUT_INTRO, { size: 11, lineHeight: 16 });
-  gap(8);
-  paragraph(ABOUT_PILLARS_LEAD, { size: 11, lineHeight: 16 });
-  gap(6);
-  ABOUT_PILLARS.forEach(([l, b]) => {
-    bullet(l, b);
-    gap(4);
+  ABOUT_PARAS.forEach((p) => {
+    paragraph(p, { size: 11, lineHeight: 16 });
+    gap(6);
   });
-  gap(8);
+  gap(2);
   // divider
-  ensure(20);
+  ensure(16);
   state.page.drawLine({
     start: { x: BODY_X, y: state.y },
     end: { x: PAGE_WIDTH - BODY_X, y: state.y },
     thickness: 0.8,
     color: rgb(0.7, 0.72, 0.75),
   });
-  gap(18);
-  // Ensure entire attestation block fits on one page
-  ensure(460);
+  gap(10);
   const attRef = state.page;
   tocAdd("Third-Party Attestation Statement", attRef, 1);
   boldLabel("Third-Party Attestation Statement", 14);
@@ -669,8 +649,9 @@ export async function buildReportPdf(payload: ReportPayload) {
     `The findings herein represent a rigorous, point-in-time evaluation of the target environment's resilience against modern adversarial tactics. This statement serves as formal verification for stakeholders, partners, and regulatory bodies that ${payload.clientName} has undergone professional third-party security validation.`,
     { size: 11, lineHeight: 16 },
   );
-  gap(14);
+  gap(24);
   const sigX = BODY_X + 20;
+  const sigStartY = state.y;
   [
     payload.tester ?? "Zack ElMetennani",
     "Security Lead",
@@ -688,17 +669,15 @@ export async function buildReportPdf(payload: ReportPayload) {
     state.y -= 15;
   });
   if (icon) {
-    const s = Math.min(64 / icon.width, 64 / icon.height);
+    const s = Math.min(44 / icon.width, 44 / icon.height);
     const iconH = icon.height * s;
-    ensure(iconH + 16);
-    gap(8);
+    const iconW = icon.width * s;
     state.page.drawImage(icon, {
-      x: sigX,
-      y: state.y - iconH,
-      width: icon.width * s,
+      x: sigX + 220,
+      y: sigStartY - iconH,
+      width: iconW,
       height: iconH,
     });
-    state.y -= iconH;
   }
 
   // ═══════════════════════════ EXECUTIVE SUMMARY ═══════════════════════════

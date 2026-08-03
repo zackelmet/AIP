@@ -11,6 +11,8 @@ import {
 import { db } from "@/lib/firebase/firebaseClient";
 import { normalizePentestStatus } from "@/lib/pentests/status";
 
+const RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
+
 export function useUserScans(uid?: string | null) {
   const [scans, setScans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +24,8 @@ export function useUserScans(uid?: string | null) {
       return;
     }
 
-    // Listen to the top-level `pentests` collection (new AI pentest system)
+    const cutoff = Date.now() - RETENTION_MS;
+
     const pentestsQ = query(
       collection(db, "pentests"),
       where("userId", "==", uid),
@@ -32,20 +35,29 @@ export function useUserScans(uid?: string | null) {
     const unsubscribe = onSnapshot(
       pentestsQ,
       (snap) => {
-        const items: any[] = snap.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            scanId: doc.id,
-            type: data.type,
-            target: data.targetUrl,
-            status: normalizePentestStatus(data.status),
-            startTime: data.createdAt || null,
-            endTime: data.completedAt || null,
-            results: data.results || null,
-            vulnerabilities: data.vulnerabilities || [],
-            reportUrl: data.reportUrl || null,
-          };
-        });
+        const items: any[] = snap.docs
+          .map((doc) => {
+            const data = doc.data();
+            return {
+              scanId: doc.id,
+              type: data.type,
+              target: data.targetUrl,
+              status: normalizePentestStatus(data.status),
+              startTime: data.createdAt || null,
+              endTime: data.completedAt || null,
+              results: data.results || null,
+              vulnerabilities: data.vulnerabilities || [],
+              reportUrl: data.reportUrl || null,
+            };
+          })
+          .filter((scan) => {
+            const t = scan.startTime?.toDate
+              ? scan.startTime.toDate().getTime()
+              : scan.startTime
+                ? new Date(scan.startTime).getTime()
+                : 0;
+            return t >= cutoff;
+          });
         setScans(items);
         setLoading(false);
       },
