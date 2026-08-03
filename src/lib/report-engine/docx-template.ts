@@ -6,6 +6,14 @@ import { ReportPayload } from "@/lib/report-engine/types";
 
 type Severity = "Critical" | "High" | "Medium" | "Low" | "Informational";
 
+const SEVERITY_RANK: Record<Severity, number> = {
+  Critical: 0,
+  High: 1,
+  Medium: 2,
+  Low: 3,
+  Informational: 4,
+};
+
 const SEVERITY_COLORS: Record<string, string> = {
   Critical: "C00000",
   High: "FF0000",
@@ -107,8 +115,14 @@ export function buildReportDocx(payload: ReportPayload): Buffer {
       : ["Not provided"];
 
   // Severity summary counts
+  const sortedFindings = [...payload.findings].sort((a, b) => {
+    const sa = SEVERITY_RANK[normalizeSeverity(a.severity, a.cvss)];
+    const sb = SEVERITY_RANK[normalizeSeverity(b.severity, b.cvss)];
+    if (sa !== sb) return sa - sb;
+    return b.cvss - a.cvss;
+  });
   const severityCounts = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
-  for (const f of payload.findings) {
+  for (const f of sortedFindings) {
     const sev = normalizeSeverity(f.severity, f.cvss).toLowerCase();
     if (sev === "critical") severityCounts.critical++;
     else if (sev === "high") severityCounts.high++;
@@ -117,7 +131,7 @@ export function buildReportDocx(payload: ReportPayload): Buffer {
     else severityCounts.info++;
   }
 
-  const findings = payload.findings.map((finding, index) => {
+  const findings = sortedFindings.map((finding, index) => {
     const sev = normalizeSeverity(finding.severity, finding.cvss);
     return {
       index: String(index + 1).padStart(2, "0"),
@@ -164,7 +178,8 @@ export function buildReportDocx(payload: ReportPayload): Buffer {
     // Scope — single joined string for {{SCOPE_TARGET}} placeholder
     SCOPE_TARGET: scopeTargets.join("\n"),
 
-    // Findings Summary severity counts
+    // Findings Summary narrative + severity counts
+    FINDINGS_SUMMARY: payload.findingsSummary ?? "",
     CRITICAL_COUNT: String(severityCounts.critical),
     HIGH_COUNT: String(severityCounts.high),
     MEDIUM_COUNT: String(severityCounts.medium),

@@ -30,6 +30,7 @@ export interface ReportPayload {
   version?: string;
   notes?: string;
   executiveSummary?: string;
+  findingsSummary?: string;
   purpose?: string;
   detailedAnalysis?: string;
   toolsAndTestCases?: string;

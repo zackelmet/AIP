@@ -163,6 +163,7 @@ export async function POST(request: NextRequest) {
       version: body.version?.trim() || undefined,
       notes: body.notes?.trim() || undefined,
       executiveSummary: body.executiveSummary?.trim() || undefined,
+      findingsSummary: body.findingsSummary?.trim() || undefined,
       purpose: body.purpose?.trim() || undefined,
       detailedAnalysis: body.detailedAnalysis?.trim() || undefined,
       scopeTargets: Array.isArray(body.scopeTargets)

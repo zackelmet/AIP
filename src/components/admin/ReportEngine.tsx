@@ -30,7 +30,7 @@ export default function ReportEngine() {
   const [projectTitle, setProjectTitle] = useState("");
   const [target, setTarget] = useState("");
   const [executiveSummary, setExecutiveSummary] = useState("");
-  const [detailedAnalysis, setDetailedAnalysis] = useState("");
+  const [findingsSummary, setFindingsSummary] = useState("");
   const [findings, setFindings] = useState<Finding[]>([emptyFinding()]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -169,7 +169,7 @@ export default function ReportEngine() {
       projectTitle: projectTitle.trim(),
       target: target.trim() || undefined,
       executiveSummary: executiveSummary.trim() || undefined,
-      detailedAnalysis: detailedAnalysis.trim() || undefined,
+      findingsSummary: findingsSummary.trim() || undefined,
       findings: findings.map((finding) => ({
         title: finding.title.trim(),
         description: finding.description.trim(),
@@ -202,7 +202,7 @@ export default function ReportEngine() {
       setTarget("");
       setReportType("external");
       setExecutiveSummary("");
-      setDetailedAnalysis("");
+      setFindingsSummary("");
       setFindings([emptyFinding()]);
       setFieldErrors({});
     } catch {
@@ -344,13 +344,13 @@ export default function ReportEngine() {
             </label>
             <label className="space-y-1.5 block">
               <span className="text-sm text-gray-400">
-                Finding Summary (optional)
+                Findings Summary (optional)
               </span>
               <textarea
                 rows={4}
-                value={detailedAnalysis}
-                onChange={(event) => setDetailedAnalysis(event.target.value)}
-                placeholder="Overall findings summary or additional analyst notes"
+                value={findingsSummary}
+                onChange={(event) => setFindingsSummary(event.target.value)}
+                placeholder="Narrative summary shown above the severity table on the Findings Summary page"
                 className={`${inputClassName} resize-y`}
               />
             </label>
