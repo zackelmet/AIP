@@ -8,6 +8,7 @@ const CALLBACK_URL =
   "https://ai.affordablepentesting.com/api/pentests/callback";
 const WEBHOOK_SECRET =
   "9e33b83b7ae6aeda980df8152927aba5551ecd5e718b6bd475bde3902ad6ecd3";
+const JOB_RUNNER_SECRET = process.env.VPS_JOB_RUNNER_SECRET || "";
 
 const sa = require(SA_PATH);
 const app = admin.initializeApp({
@@ -66,7 +67,10 @@ async function poll() {
       try {
         const res = await fetch(`${JOB_RUNNER_URL}/jobs`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "X-Job-Secret": JOB_RUNNER_SECRET,
+          },
           body: JSON.stringify(payload),
         });
         const result = await res.json();

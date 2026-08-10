@@ -1,8 +1,18 @@
 # Handoff — AIP (Affordable Pentesting)
 
-_Last updated: 2026-07-16_
+_Last updated: 2026-08-10_
 
 All work below is committed and pushed to `main` (auto-deploys to prod via Vercel at https://ai.affordablepentesting.com).
+
+## Shipped 2026-08-10 — Manual approval gate for VPS dispatch
+
+- **New pentest status `pending_dispatch`.** `POST /api/pentests` no longer sends anything to the VPS job-runner. It creates the doc as `pending_dispatch` and fires ONLY the Make.com webhook (parallel path, unchanged).
+- **`POST /api/pentests/[id]/dispatch`** (admin-only via `verifyAdmin`): sends the job to the VPS runner, sets `status:"running"` + `dispatchedBy`/`dispatchedAt`. On VPS rejection the doc stays `pending_dispatch` for retry.
+- **`/api/pentests/[id]/reject`** now also accepts `pending_dispatch` (cancel queued jobs).
+- **Admin Review tab** (`ReviewPentests.tsx`) gained a "Pending Dispatch" window above the review list — Approve & Dispatch (VPS) + Reject per queued pentest.
+- **Status plumbing**: `pending_dispatch` added to `normalizePentestStatus` (lib/pentests/status.ts), user dashboard (clock icon) and admin badges handle it.
+- **Runner auth hardened** (2026-08-10): the VPS job-runner (`server.py` on oracle-vps, PM2 `job-runner`) now requires header `X-Job-Secret` on `POST /jobs`, read from `/home/ubuntu/strix/job-runner/.secret`. Webapp sends it via `VPS_JOB_RUNNER_SECRET` (Vercel prod env set). Local reference copy: `scripts/job-runner-server.py.reference`.
+- ⚠️ **Smoke test policy**: `scripts/smokeTestDispatch.mjs` NEVER sends jobs to the pentest server / burns OpenRouter tokens unless `--dispatch` is passed explicitly. Default is launch-only (create → assert `pending_dispatch` → stop; completion = manual admin approval). Verify changes with `tsc --noEmit` + `next lint`; these changes were deployed to prod and verified (dispatch 403 unauth / gate held, smoke run `jFbkx5f15F63bigtGAfb` dispatched only via the script's explicit step).
 
 ## PLANNED — Full self-serve loop: Strix VPS backend → CSV → report engine (2026-07-15)
 
@@ -74,11 +84,12 @@ Affected Component). Keeps the webapp callback trivial (accept CSV → existing 
 
 ### Current webapp wiring (what exists)
 - Dispatch: `POST /api/pentests` (`src/app/api/pentests/route.ts`) — Stripe-credit check → deduct + create
-  Firestore `pentests` doc (`status:"running"`) in a txn → fire `MAKE_WEBHOOK_URL` with the job +
-  `callbackUrl` (**currently points at `/api/pentests`, the create route — wrong for a machine callback**) +
-  `webhookSecret` (`PENTEST_WEBHOOK_SECRET`).
-- Return webhook that exists: `POST /api/scans/webhook` (verifies `PENTEST_WEBHOOK_SECRET`, Firebase Storage signed URLs) —
-  but `/api/pentests/[id]` only has `GET`; **no route currently attaches findings + triggers the report.**
+  Firestore `pentests` doc (**`status:"pending_dispatch"`** — queued for admin approval, NOT sent to
+  the VPS) in a txn → fire `MAKE_WEBHOOK_URL` with the job + `callbackUrl` (`/api/pentests`, the
+  create route — still worth fixing for a machine callback) + `webhookSecret` (`PENTEST_WEBHOOK_SECRET`).
+  VPS dispatch happens only via the admin approval gate: `POST /api/pentests/[id]/dispatch`.
+- Return webhook that exists: `POST /api/pentests/callback` (verifies `PENTEST_WEBHOOK_SECRET`, attaches
+  findings, builds the report via the report engine, flips pentest to `review`) — SHIPPED (was brick 1 below).
 - Report engine (DONE, good): `parseCSVFindings` (`src/lib/findings/parseFindingsBlock.ts`) →
   `buildReportPdf`/`buildReportDocx` (`src/lib/report-engine/`). Driven manually today via `/admin/quick-report`.
 
