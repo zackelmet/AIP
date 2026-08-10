@@ -44,7 +44,7 @@ for (const f of [".env.local", ".env.vercel"]) {
   }
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ai.affordablepentesting.com";
+const BASE_URL = "https://ai.affordablepentesting.com";
 const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
 const VPS_RUNNER_URL = process.env.VPS_JOB_RUNNER_URL;
 
@@ -66,7 +66,7 @@ const db = admin.firestore();
 
 const SMOKE_EMAIL = "zack@msppentesting.com";
 const ALLOW_DISPATCH = process.argv.includes("--dispatch");
-const TARGET = process.argv[5] || "https://ai.affordablepentesting.com";
+const TARGET = process.argv[5] || BASE_URL;
 const PENTEST_TYPE = "web_app";
 const WAIT_MINUTES = Number(process.argv[3] || 10);
 
@@ -170,7 +170,15 @@ async function run() {
     fail(`queue fetch: HTTP ${qRes.status} ${JSON.stringify(qData).slice(0, 200)}`);
   }
 
-  // 4. Dispatch (admin approve) -> running
+  // 4. STOP unless --dispatch was explicitly passed (policy: never send jobs to
+  // the pentest server / burn tokens without explicit opt-in)
+  if (!ALLOW_DISPATCH) {
+    console.log("\n⏹  Stopping here by policy — pentest awaits manual approval in /admin (Pending Dispatch).");
+    console.log("    To continue: run  node scripts/smokeTestDispatch.mjs --dispatch");
+    console.log("    (or click Approve & Dispatch in the admin Review tab).");
+    console.log(`    Pentest: ${pentestId}`);
+    process.exit(failed > 0 ? 1 : 0);
+  }
   console.log("\n4️⃣  Approve: POST /api/pentests/" + pentestId + "/dispatch…");
   const dRes = await fetch(`${BASE_URL}/api/pentests/${pentestId}/dispatch`, {
     method: "POST",
@@ -187,15 +195,6 @@ async function run() {
   const dispatched = await waitForStatus(pentestId, "running", 2, 1);
   if (dispatched?.dispatchedAt) pass("doc updated: status=running, dispatchedAt set");
   else fail(`doc missing dispatchedAt: ${JSON.stringify(dispatched)}`);
-
-  // 4b. STOP unless --dispatch was explicitly passed
-  if (!ALLOW_DISPATCH) {
-    console.log("\n⏹  Stopping here by policy — pentest awaits manual approval in /admin (Pending Dispatch).");
-    console.log("    To continue: run  node scripts/smokeTestDispatch.mjs --dispatch");
-    console.log("    (or click Approve & Dispatch in the admin Review tab).");
-    console.log(`    Pentest: ${pentestId}`);
-    process.exit(failed > 0 ? 1 : 0);
-  }
 
   // 5. Make webhook fired in parallel
   console.log("\n5️⃣  Make.com webhook (parallel path)…");
