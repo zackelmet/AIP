@@ -99,6 +99,7 @@ function statusBadge(status: string) {
     completed: "text-[#34D399]",
     running: "text-yellow-400",
     review: "text-yellow-400",
+    pending_dispatch: "text-yellow-400",
     rejected: "text-red-400",
   };
   return map[normalized] ?? "text-[var(--text-muted)]";
