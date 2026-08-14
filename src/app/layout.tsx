@@ -80,6 +80,12 @@ export default function RootLayout({
         gtag('config', 'G-W7KR3XVQTY');
         gtag('config', 'AW-18028367660');
       `}</Script>
+      {/* Ahrefs Analytics */}
+      <Script
+        src="https://analytics.ahrefs.com/analytics.js"
+        data-key="N4Mnpu+8JEJfzzJ4k33EyQ"
+        strategy="afterInteractive"
+      />
       {/* Change your theme HERE */}
       <body data-theme="cupcake" className={ibmPlexSans.className}>
         <ClientProviders>
