@@ -22,6 +22,9 @@ export const metadata: Metadata = {
   description:
     "AI-powered automated pentests and expert-led manual penetration testing. Get comprehensive security assessments from certified professionals.",
   metadataBase: new URL("https://ai.affordablepentesting.com"),
+  alternates: {
+    canonical: "https://ai.affordablepentesting.com",
+  },
   openGraph: {
     title: "Affordable Pentesting - Penetration Testing as a Service",
     description:

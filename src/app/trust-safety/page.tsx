@@ -23,7 +23,24 @@ export const metadata = {
       "Our commitment to ethical penetration testing, data security, and responsible disclosure.",
     url: "https://ai.affordablepentesting.com/trust-safety",
     siteName: "Affordable Pentesting",
+    images: [
+      {
+        url: "/og-logo.png",
+        width: 871,
+        height: 526,
+        alt: "Affordable Pentesting",
+      },
+    ],
+    type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Trust + Safety Center — Affordable Pentesting",
+    description:
+      "Our commitment to ethical penetration testing, data security, and responsible disclosure.",
+    images: ["/og-logo.png"],
+  },
+  alternates: { canonical: "https://ai.affordablepentesting.com/trust-safety" },
 };
 
 const sections = [

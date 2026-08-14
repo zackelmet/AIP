@@ -11,12 +11,23 @@ export const metadata = {
     description: "Security insights, pentesting tips, and vulnerability research from Affordable Pentesting.",
     url: "https://ai.affordablepentesting.com/blog",
     siteName: "Affordable Pentesting",
+    images: [
+      {
+        url: "/og-logo.png",
+        width: 871,
+        height: 526,
+        alt: "Affordable Pentesting",
+      },
+    ],
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Blog - Affordable Pentesting",
     description: "Security insights, pentesting tips, and vulnerability research from Affordable Pentesting.",
+    images: ["/og-logo.png"],
   },
+  alternates: { canonical: "https://ai.affordablepentesting.com/blog" },
 };
 
 export default function BlogPage() {
