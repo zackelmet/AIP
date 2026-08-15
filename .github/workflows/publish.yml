@@ -1,0 +1,38 @@
+name: Publish Scheduled Blog Posts
+on:
+  schedule:
+    - cron: "0 12 * * 1,3,5"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish ready posts
+        run: |
+          PUBLISHED=false
+          for f in src/posts/*.mdx; do
+            if [ ! -f "$f" ]; then continue; fi
+            SCHEDULED=$(grep -oP '^scheduledDate:\s*"\K[^"]+' "$f" || true)
+            if [ -n "$SCHEDULED" ]; then
+              SCHEDULED_EPOCH=$(date -d "$SCHEDULED" +%s 2>/dev/null || true)
+              NOW_EPOCH=$(date +%s)
+              if [ -n "$SCHEDULED_EPOCH" ] && [ "$SCHEDULED_EPOCH" -le "$NOW_EPOCH" ]; then
+                sed -i '/^scheduledDate:/d' "$f"
+                echo "Published: $f"
+                PUBLISHED=true
+              fi
+            fi
+          done
+          if [ "$PUBLISHED" = "true" ]; then
+            git config user.name "blog-publisher[bot]"
+            git config user.email "blog-publisher[bot]@users.noreply.github.com"
+            git add src/posts/*.mdx
+            git commit -m "publish scheduled blog posts"
+            git push
+          else
+            echo "No posts to publish"
+          fi

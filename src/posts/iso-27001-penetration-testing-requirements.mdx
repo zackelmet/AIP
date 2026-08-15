@@ -1,0 +1,46 @@
+---
+title: "ISO 27001 Pentest Requirements"
+date: "2026-08-17"
+description: "What ISO 27001 actually requires for penetration testing — mapping Annex A.8.8 and A.8.29 to the real-world pentest scope certification bodies expect."
+image: "/blog/og-default.png"
+keywords: "ISO 27001 penetration testing requirements, ISO 27001 pentest, Annex A 8.8, ISO 27001 certification, ISO 27001 audit"
+scheduledDate: "2026-08-17"
+---
+
+ISO 27001 does not explicitly say "you must run a penetration test." But certification bodies consistently interpret several Annex A controls as requiring active security testing. If you are pursuing or maintaining ISO 27001 certification, here is what the standard actually says and what your auditor will expect.
+
+## What ISO 27001 says about security testing
+
+The standard addresses penetration testing through two primary controls:
+
+**Annex A.8.8 — Management of technical vulnerabilities.** This control requires you to identify, evaluate, and remediate technical vulnerabilities in a timely manner. A penetration test is one of the most effective ways to satisfy this control because it validates that vulnerabilities exist — not just that a scanner says they do.
+
+**Annex A.8.29 — Security testing in development and acceptance.** For new or changed systems, you must test security controls before going live. This applies to web applications, APIs, and infrastructure changes.
+
+While these controls do not mandate pentesting by name, most certification bodies expect to see evidence of active testing as part of your Statement of Applicability (SoA).
+
+## What auditors look for
+
+When an ISO 27001 auditor reviews your penetration testing program, they will typically check for:
+
+- **A defined testing schedule.** Annual testing is the baseline expectation, with more frequent testing for high-risk or high-change environments.
+- **Clear scope definition.** The pentest scope should map to assets identified in your asset inventory (Clause A.5.9).
+- **Methodology documentation.** Your pentest provider should follow a recognized methodology (OWASP, NIST SP 800-115, or PTES).
+- **Evidence of remediation.** Findings must be tracked, prioritized, and remediated with a retest to close the loop.
+- **Management review.** Results should feed into the management review process (Clause 9.3) and risk treatment plan.
+
+## How to scope an ISO 27001 pentest
+
+Most organizations start with:
+
+- **External network pentest** — perimeter systems, public-facing applications, and remote access points.
+- **Web application pentest** — customer-facing and internal web apps that process or store data covered by the ISMS.
+- **Internal network pentest** — especially if your scope includes internal systems under your control.
+
+For organizations with cloud infrastructure, a cloud configuration review is also recommended.
+
+## How Affordable Pentesting helps with ISO 27001
+
+Every [Affordable Pentesting](/pricing) engagement produces an audit-ready report mapped to industry standards. Our findings include risk ratings, remediation guidance, and evidence packages that satisfy ISO 27001 auditors directly. [Launch a pentest](/login) to generate the evidence your certification body needs.
+
+*Related reading: [Types of Penetration Testing](/blog/types-of-penetration-testing)*

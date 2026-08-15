@@ -5,9 +5,16 @@ import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import BlogLayout from "@/components/blog/BlogLayout";
+import { notFound } from "next/navigation";
 
 const SITE = "https://ai.affordablepentesting.com";
 const DEFAULT_IMAGE = "/blog/og-default.png";
+
+function isPublished(data: { [key: string]: unknown }): boolean {
+  if (!data.scheduledDate) return true;
+  const scheduled = new Date(data.scheduledDate as string);
+  return scheduled <= new Date();
+}
 
 function readPost(slug: string) {
   const fullPath = path.join(process.cwd(), "src/posts", `${slug}.mdx`);
@@ -18,9 +25,16 @@ function readPost(slug: string) {
 export async function generateStaticParams() {
   const postsDirectory = path.join(process.cwd(), "src/posts");
   const fileNames = fs.readdirSync(postsDirectory);
-  return fileNames.map((fileName) => ({
-    slug: fileName.replace(/\.mdx$/, ""),
-  }));
+  return fileNames
+    .filter((fileName) => {
+      const fullPath = path.join(postsDirectory, fileName);
+      const fileContents = fs.readFileSync(fullPath, "utf8");
+      const { data } = matter(fileContents);
+      return isPublished(data);
+    })
+    .map((fileName) => ({
+      slug: fileName.replace(/\.mdx$/, ""),
+    }));
 }
 
 export async function generateMetadata({
@@ -29,6 +43,7 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const { data } = readPost(params.slug);
+  if (!isPublished(data)) return {};
   const title = data.title || "Affordable Pentesting Blog";
   const description = data.description || "";
   const url = `${SITE}/blog/${params.slug}`;
@@ -61,6 +76,7 @@ export async function generateMetadata({
 
 export default function BlogPost({ params }: { params: { slug: string } }) {
   const { content, data } = readPost(params.slug);
+  if (!isPublished(data)) notFound();
   const title = data.title || "";
   const description = data.description || "";
   const url = `${SITE}/blog/${params.slug}`;
@@ -110,7 +126,7 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
   };
 
   return (
-    <main className="bg-white">
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -121,6 +137,6 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
           options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
         />
       </BlogLayout>
-    </main>
+    </>
   );
 }

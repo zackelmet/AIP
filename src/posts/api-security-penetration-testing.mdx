@@ -1,0 +1,50 @@
+---
+title: "API Security Penetration Testing"
+date: "2026-08-19"
+description: "API penetration testing methodology — REST, GraphQL, gRPC, and WebSocket vulnerabilities including BOLA, mass assignment, injection, and authentication flaws."
+image: "/blog/og-default.png"
+keywords: "API penetration testing, API security testing, REST API pentest, GraphQL security testing, API vulnerability assessment, BOLA testing"
+scheduledDate: "2026-08-19"
+---
+
+APIs are now the primary attack surface for most organizations. Modern applications rely on dozens of internal and external APIs, each representing a potential entry point for attackers. An API-specific penetration test goes beyond what a standard web application pentest covers.
+
+## Why API pentesting needs a separate focus
+
+Traditional web application pentests focus on the browser-facing interface — forms, URL parameters, and cookies. APIs introduce a fundamentally different attack surface:
+
+- **Programmatic access patterns** — attackers can send crafted requests at machine speed
+- **Authentication is not authorization** — a valid API token does not mean the caller should have access to every resource
+- **Massive data surface** — APIs often return far more data than the UI displays
+- **Chained endpoint exploitation** — a weak endpoint can enable attacks on stronger ones
+
+## API vulnerabilities to test for
+
+| Vulnerability | Description | Where it lives |
+|---|---|---|
+| Broken Object Level Authorization (BOLA) | Accessing another user's data by modifying object IDs | Every GET/PUT/DELETE endpoint |
+| Broken User Authentication | Weak JWT, missing token validation, session fixation | Auth endpoints |
+| Mass Assignment | API accepts unintended fields in request bodies | POST/PATCH endpoints |
+| Excessive Data Exposure | API returns more fields than the client needs | Response bodies |
+| Rate limiting bypass | Brute-forcing without throttling | Login and enumeration endpoints |
+| Injection (SQL, NoSQL, LDAP) | Untrusted input reaches a parser | Search and filter endpoints |
+
+## Testing across API paradigms
+
+**REST APIs** — test standard CRUD operations, HTTP method abuse, content-type switching, and parameter pollution.
+
+**GraphQL APIs** — test introspection query abuse, batching attacks, deep query nesting for DoS, and field-level authorization gaps.
+
+**gRPC APIs** — test protobuf message tampering, service reflection, and streaming endpoint abuse.
+
+**WebSocket APIs** — test message injection, origin validation, and session binding.
+
+## Compliance requirements
+
+PCI DSS and SOC 2 both require API security testing when APIs are in scope. Many auditors now specifically ask whether API endpoints were included in the pentest scope separately from the web application scope.
+
+## Start testing your APIs
+
+Affordable Pentesting's web application and Pentest+ plans include full API testing coverage. [Launch a pentest](/login) to validate your API security posture, or [see pricing](/pricing) for plans that include up to 100 API endpoints.
+
+*Related reading: [SaaS Penetration Testing Guide](/blog/saas-penetration-testing)*

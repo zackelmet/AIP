@@ -1,0 +1,44 @@
+---
+title: "IoT Penetration Testing Guide"
+date: "2026-09-01"
+description: "IoT and medical device penetration testing — firmware analysis, embedded protocol testing, physical attack vectors, FDA premarket guidance, and regulatory compliance."
+image: "/blog/og-default.png"
+keywords: "IoT penetration testing, medical device pentest, IoT security testing, embedded device pentest, firmware security testing"
+scheduledDate: "2026-09-01"
+---
+
+Connected devices — IoT sensors, medical devices, industrial controllers — create unique pentesting challenges. Unlike web applications, IoT testing requires firmware analysis, hardware interaction, and proprietary protocol assessment.
+
+## How IoT pentesting is different
+
+Traditional pentesting focuses on software running on standard operating systems. IoT pentesting involves:
+
+- **Firmware analysis.** Extracting and analyzing device firmware for hardcoded credentials, backdoors, and vulnerable libraries.
+- **Hardware interfaces.** Testing physical ports (JTAG, UART, SPI) for debug access, firmware dumping, and privilege escalation.
+- **Proprietary protocols.** Reverse engineering custom communication protocols instead of testing standard HTTP/HTTPS.
+- **Resource-constrained devices.** Limited CPU, memory, and battery mean traditional security controls may not apply.
+
+## What an IoT pentest covers
+
+| Layer | What to test |
+|---|---|
+| Firmware | Hardcoded secrets, outdated components, encryption flaws |
+| Hardware | Debug port access, tamper resistance, side-channel leakage |
+| Network | Custom protocols, traffic encryption, command injection |
+| Cloud backend | Device APIs, authentication, firmware update mechanisms |
+| Mobile companion app | Local storage, device pairing, data transmission |
+
+## Regulatory considerations
+
+Medical device manufacturers must comply with FDA premarket cybersecurity guidance, which requires:
+
+- Threat modeling for connected devices
+- Security testing including penetration testing
+- Software bill of materials (SBOM) documentation
+- Coordinated disclosure processes
+
+## Affordable Pentesting for IoT
+
+Whether you are testing a medical device, industrial sensor, or consumer IoT product, our manual and AI-driven testing can help validate your device security. [Start a pentest](/login) or [contact our team](/support) to discuss your IoT testing needs.
+
+*Related reading: [Cloud Penetration Testing Guide](/blog/cloud-penetration-testing)*

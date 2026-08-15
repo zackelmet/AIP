@@ -1,0 +1,48 @@
+---
+title: "Cloud Penetration Testing Guide"
+date: "2026-08-21"
+description: "Cloud penetration testing methodology for AWS, Azure, and GCP — IAM assessment, storage security, Kubernetes testing, and shared responsibility model considerations."
+image: "/blog/og-default.png"
+keywords: "cloud penetration testing, AWS penetration testing, Azure penetration testing, GCP penetration testing, cloud security testing, Kubernetes pentest"
+scheduledDate: "2026-08-21"
+---
+
+Cloud penetration testing differs fundamentally from traditional on-premise testing. In the cloud, you are testing configurations, IAM policies, and service interactions within a shared responsibility model. You cannot test the underlying infrastructure — only your organization's implementation on top of it.
+
+## Cloud pentest methodology
+
+A cloud pentest typically covers five areas:
+
+**1. IAM and identity.** The most common cloud vulnerabilities are not in the application code — they are in identity and access management. Test for over-permissive roles, unused privileges, service account key exposure, and cross-account trust relationships.
+
+**2. Storage security.** Object storage (S3 buckets, Azure Blob, GCP Cloud Storage) is frequently misconfigured. Test for public read/write access, unencrypted data, and versioning or logging disabled.
+
+**3. Network configuration.** Assess VPC peering, security group rules, NACLs, and open ports. Cloud networks are software-defined, which means misconfigurations are easy to create and hard to detect.
+
+**4. Container and Kubernetes.** For organizations running containers, test cluster RBAC, pod security policies, network policies, and container image vulnerabilities.
+
+**5. Serverless functions.** Test Lambda functions, Cloud Functions, and Azure Functions for event injection, insecure environment variables, and excessive IAM permissions.
+
+## Shared responsibility model
+
+| Layer | AWS responsibility | Customer responsibility |
+|---|---|---|
+| Physical security | Yes | No |
+| Hypervisor | Yes | No |
+| Network infrastructure | Yes | No |
+| Operating system | No | Yes |
+| Application configuration | No | Yes |
+| IAM and access management | No | Yes |
+| Data encryption | Shared | Yes |
+
+Your pentest scope should focus exclusively on the customer-responsible layers.
+
+## Compliance in the cloud
+
+Many compliance frameworks (SOC 2, PCI DSS, HIPAA, FedRAMP) accept cloud pentest evidence, provided the scope is clearly documented. Your pentest report should explicitly call out which cloud services were tested and which were out of scope under the shared responsibility model.
+
+## Get your cloud environment tested
+
+Affordable Pentesting's Pentest+ plan covers up to 50 external IPs and includes cloud configuration review. [Launch a cloud pentest](/login) or [view pricing](/pricing).
+
+*Related reading: [API Security Penetration Testing](/blog/api-security-penetration-testing)*

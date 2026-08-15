@@ -1,0 +1,70 @@
+---
+title: "How to Read a Pentest Report"
+date: "2026-08-19"
+description: "A buyer's guide to reading a penetration test report — executive summary, risk ratings, finding walkthroughs, and what separates a quality report from a scanner dump."
+image: "/blog/og-default.png"
+keywords: "how to read a penetration test report, pentest report explained, penetration testing report, understanding pentest findings"
+scheduledDate: "2026-08-19"
+---
+
+A penetration test is only as valuable as the report it produces. A good report tells you what is broken, how bad it is, and exactly how to fix it. A bad report buries you in false positives and technical jargon.
+
+Here is how to read a penetration test report and know whether you got your money's worth.
+
+## The executive summary
+
+This is the section your CEO and board will read. It should answer three questions:
+
+- **What did you find?** A high-level summary of the most critical vulnerabilities.
+- **How bad is it?** A risk rating for the overall engagement (Critical, High, Medium, Low).
+- **What should we do?** A prioritized set of strategic recommendations.
+
+A red flag: if the executive summary is just the methodology section renamed, the report was likely a template dump. A quality report tailors the executive summary to your business.
+
+## Finding details
+
+Each finding should follow a consistent format:
+
+| Field | What it tells you |
+|---|---|
+| Title | What the vulnerability is |
+| Risk rating (CVSS) | How severe it is on the 1-10 scale |
+| Affected asset | Exactly which system or endpoint is vulnerable |
+| Description | What the vulnerability means in plain language |
+| Proof of concept | Step-by-step reproduction steps |
+| Remediation | How to fix it, with specific configuration or code guidance |
+
+**Red flag:** Findings without proof-of-concept screenshots or reproduction steps. You should be able to independently verify every finding.
+
+## Risk ratings explained
+
+Most reports use CVSS v3.1 scoring:
+
+| Rating | CVSS range | What it means |
+|---|---|---|
+| Critical | 9.0-10.0 | Immediate remediation required. Active exploitation likely. |
+| High | 7.0-8.9 | Remediate urgently. Significant business impact possible. |
+| Medium | 4.0-6.9 | Remediate in normal cycle. Moderate risk. |
+| Low | 0.1-3.9 | Address when practical. Low immediate risk. |
+
+## What to look for in a quality report
+
+**Remediation retesting.** A good provider offers retesting of remediated findings. The report should include a process for verifying fixes.
+
+**False positive elimination.** Every finding should be manually validated. Scanner output pasted into a report is not a pentest — it is a scan.
+
+**Compliance mapping.** Findings mapped to SOC 2, HIPAA, PCI DSS, or ISO 27001 controls make audit submission much easier.
+
+**Plain language.** Technical findings should include an executive-friendly explanation of business impact, not just raw curl commands.
+
+## What Affordable Pentesting reports include
+
+Every [Affordable Pentesting](/pricing) report includes:
+
+- Executive summary with business impact analysis
+- CVSS-scored findings with proof-of-concept evidence
+- Step-by-step remediation guidance
+- Compliance framework mapping
+- Free retesting of remediated findings
+
+[Launch a pentest](/login) and see the difference a quality report makes.

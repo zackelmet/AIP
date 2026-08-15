@@ -1,0 +1,70 @@
+---
+title: "How to Prepare for a Pentest"
+date: "2026-08-17"
+description: "A practical 7-day checklist for preparing your first penetration test — scope definition, stakeholder notifications, system backups, and what to expect."
+image: "/blog/og-default.png"
+keywords: "how to prepare for a penetration test, pentest preparation checklist, penetration testing preparation, what to do before a pentest"
+scheduledDate: "2026-08-17"
+---
+
+Your first penetration test can feel intimidating. You are inviting someone to attack your systems — and that is the point. Proper preparation ensures you get maximum value from the engagement without surprises.
+
+Here is a 7-day checklist to prepare.
+
+## 7 days before: define scope
+
+Scope is the single biggest factor in pentest quality and cost. Be precise about:
+
+- **IP ranges and domains** — include every public-facing asset, even ones you think are low-risk. Attackers love forgotten subdomains.
+- **Web applications** — list all URLs, user roles, and API endpoints. Specify authentication requirements.
+- **Third-party dependencies** — if your app relies on SSO providers, CDNs, or external APIs, note them.
+- **Excluded systems** — if critical production systems must not be tested destructively, document the rules of engagement.
+
+## 5 days before: gather access and documentation
+
+Your testing team may need:
+
+- Test accounts for each user role (admin, regular user, read-only)
+- API keys or tokens if API testing is in scope
+- Network diagrams and architecture documentation
+- Previous pentest reports (if this is a follow-up)
+- Compliance framework mapping (SOC 2, HIPAA, PCI DSS)
+
+## 3 days before: notify stakeholders
+
+Who should know a pentest is happening?
+
+- **IT operations** — so they do not mistake test traffic for a real attack
+- **Security team** — so they can monitor and correlate alerts
+- **Executive leadership** — so they are not caught off-guard by findings
+- **Customers** — if your pentest involves production customer data or if your contract requires notification
+
+## 1 day before: technical preparation
+
+- **Back up critical systems.** While professional pentesters avoid destructive actions, a backup is cheap insurance.
+- **Verify whitelisting.** If your pentest provider needs IP whitelisting, confirm it is in place.
+- **Test your monitoring.** A pentest is a great way to validate that your SIEM and detection tools actually work.
+
+## Day of the test: what to expect
+
+A typical pentest kicks off with reconnaissance — the tester gathers publicly available information about your organization and attack surface. Active testing follows, starting with scanning and progressing to attempted exploitation.
+
+You should receive:
+- A mid-engagement status update (especially for longer tests)
+- A draft report within the agreed timeline
+- A final report with executive summary, findings, and remediation guidance
+
+## After the test: remediation and retesting
+
+The real value comes after the report is delivered:
+
+1. **Prioritize findings** based on risk rating and business impact.
+2. **Remediate critical and high findings** first.
+3. **Request a retest** of remediated findings to close the loop.
+4. **Present results to management** for risk acceptance decisions.
+
+## Start your first pentest today
+
+Affordable Pentesting makes the process simple. [Choose your pentest type](/pricing), purchase credits, and launch when ready — no sales calls required. [Get started](/login).
+
+*Related reading: [Types of Penetration Testing](/blog/types-of-penetration-testing)*

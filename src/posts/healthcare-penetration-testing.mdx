@@ -1,0 +1,41 @@
+---
+title: "Healthcare Pentesting Guide"
+date: "2026-08-24"
+description: "Penetration testing for healthcare organizations — beyond HIPAA basics, covering EHR systems, telehealth platforms, medical devices, patient portals, and third-party vendor risk."
+image: "/blog/og-default.png"
+keywords: "healthcare penetration testing, healthcare pentest, HIPAA pentest, medical device security testing, EHR security testing"
+scheduledDate: "2026-08-24"
+---
+
+HIPAA requires that covered entities and business associates evaluate the technical safeguards protecting electronic protected health information (ePHI). While the Security Rule does not name penetration testing explicitly, auditors increasingly expect it as part of a defensible security posture.
+
+## Beyond the HIPAA Security Rule
+
+Most healthcare organizations know the HIPAA Security Rule minimums. What separates a compliant organization from a secure one is testing that goes beyond the checklist:
+
+**EHR and EMR systems.** Electronic health record systems store years of patient data and are the crown jewels of any healthcare environment. Test authentication, role-based access, audit logging, and data extraction pathways.
+
+**Telehealth platforms.** Telehealth exploded during the pandemic and introduced new attack surfaces: WebRTC configuration, screen-sharing isolation, session recording security, and patient-provider authentication flows.
+
+**Medical devices (IoT).** Infusion pumps, imaging systems, patient monitors, and other connected medical devices often run outdated software with known vulnerabilities. They are rarely patchable on a normal IT schedule.
+
+**Patient portals.** Patient-facing portals are a common entry point. Test authentication strength, session management, PII exposure, and API endpoints that serve patient data.
+
+## Healthcare compliance frameworks that require pentesting
+
+| Framework | Pentest requirement |
+|---|---|
+| HIPAA Security Rule | Implied by §164.312(b) — evaluation of technical safeguards |
+| PCI DSS (if processing payments) | Requirement 11.4 — annual testing |
+| SOC 2 (for healthcare SaaS) | Expected — annual testing |
+| HITRUST CSF | Requires penetration testing as part of certification |
+
+## Third-party vendor risk
+
+Healthcare organizations rely heavily on third-party vendors — cloud hosting, billing platforms, analytics tools, and AI-assisted diagnostics. Each vendor represents a potential ePHI exposure. Your pentest program should include vendor risk assessment and validation.
+
+## Get your healthcare organization tested
+
+Affordable Pentesting delivers HIPAA-ready penetration test reports designed for your compliance auditor. [Launch a pentest](/login) or [view pricing](/pricing).
+
+*Related reading: [HIPAA Penetration Testing Requirements](/blog/hipaa-penetration-testing-requirements)*
