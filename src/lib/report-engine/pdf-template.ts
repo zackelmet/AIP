@@ -1,5 +1,4 @@
 import { PDFDocument, PDFFont, PDFImage, PDFPage, rgb } from "pdf-lib";
-import { PDFName, PDFRef } from "pdf-lib/core/objects";
 import fontkit from "@pdf-lib/fontkit";
 import { ReportPayload, ReportFinding } from "@/lib/report-engine/types";
 import { deriveLikelihoodImpact, Rating } from "@/lib/report-engine/cvss";
@@ -708,10 +707,18 @@ export async function buildReportPdf(payload: ReportPayload) {
       width: iconW,
       height: iconH,
     });
-    state.page.addLinkAnnotation({
-      uri: "https://ai.affordablepentesting.com",
-      rect: [iconX, iconY, iconX + iconW, iconY + iconH],
-    });
+    try {
+      const ctx = (state.page as any).doc.context;
+      const linkRef = ctx.register(ctx.obj({
+        Type: "Annot",
+        Subtype: "Link",
+        Rect: [iconX, iconY, iconX + iconW, iconY + iconH],
+        A: { Type: "Action", S: "URI", URI: "https://ai.affordablepentesting.com" },
+      }));
+      (state.page as any).node.addAnnot(linkRef);
+    } catch (e) {
+      console.error("Failed to add link annotation:", e);
+    }
   }
 
   // ═══════════════════════════ EXECUTIVE SUMMARY ═══════════════════════════
