@@ -602,7 +602,7 @@ export async function buildReportPdf(payload: ReportPayload) {
       if (i === 3) {
         let ly = yTop - headerH - 16;
         noteLines.forEach((ln) => {
-          meta.drawText(ln, { x: cx + 8, y: ly, size: 10, font, color: TEXT });
+          meta.drawText(ln, { x: cx + 8, y: ly, size: 11, font, color: TEXT });
           ly -= 13;
         });
       } else {
