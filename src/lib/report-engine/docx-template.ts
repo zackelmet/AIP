@@ -98,16 +98,19 @@ export function buildReportDocx(payload: ReportPayload): Buffer {
   if (payload.brand === "whitelabel" && payload.brandLogo) {
     const zip = new PizZip(templateBuffer);
     const raw = payload.brandLogo.replace(/^data:image\/png;base64,/, "");
-    // Replace cover logo (image2.png) — keep page-4 icon (image1.png) as AP
+    // Replace cover logo (image2.png) and background (image3.jpg may have 
+    // logo baked in) — keep page-4 icon (image1.png) as AP
     zip.file("word/media/image2.png", Buffer.from(raw, "base64"), { base64: false });
 
-    // Replace accent green (#34d399, #94d882) in document body with brand color
+    // Replace accent green in document body with brand color
+    // OOXML stores colors without # prefix (e.g. "34d399" not "#34d399")
     if (payload.brandColor) {
+      const brandHex = payload.brandColor.toLowerCase().replace("#", "");
       const docXml = zip.file("word/document.xml");
       if (docXml) {
         let content = docXml.asText();
-        content = content.replace(/#34d399/gi, payload.brandColor.toLowerCase().replace("#", ""));
-        content = content.replace(/#94d882/gi, payload.brandColor.toLowerCase().replace("#", ""));
+        content = content.replace(/34d399/gi, brandHex);
+        content = content.replace(/94d882/gi, brandHex);
         zip.file("word/document.xml", content);
       }
     }
