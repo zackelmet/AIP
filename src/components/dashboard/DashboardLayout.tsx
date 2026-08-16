@@ -14,7 +14,7 @@ import {
   faCog,
   faChevronUp,
   faUser,
-  faPlus,
+  faBolt,
   faList,
   faUserShield,
   faCalendarCheck,
@@ -242,7 +242,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             className="block w-full px-4 py-3 bg-[#34D399] text-[#041018] font-semibold rounded-lg text-center hover:bg-[#10b981] transition-colors"
           >
             Buy Credits
-            <FontAwesomeIcon icon={faPlus} className="ml-2" />
+            <FontAwesomeIcon icon={faBolt} className="ml-2" />
           </Link>
         </div>
       </aside>
