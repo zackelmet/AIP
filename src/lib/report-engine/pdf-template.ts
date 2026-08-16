@@ -1,4 +1,5 @@
 import { PDFDocument, PDFFont, PDFImage, PDFPage, rgb } from "pdf-lib";
+import { PDFName, PDFRef } from "pdf-lib/core/objects";
 import fontkit from "@pdf-lib/fontkit";
 import { ReportPayload, ReportFinding } from "@/lib/report-engine/types";
 import { deriveLikelihoodImpact, Rating } from "@/lib/report-engine/cvss";
@@ -699,11 +700,17 @@ export async function buildReportPdf(payload: ReportPayload) {
     const s = Math.min(44 / icon.width, 44 / icon.height);
     const iconH = icon.height * s;
     const iconW = icon.width * s;
+    const iconX = sigX + 220;
+    const iconY = sigStartY - iconH;
     state.page.drawImage(icon, {
-      x: sigX + 220,
-      y: sigStartY - iconH,
+      x: iconX,
+      y: iconY,
       width: iconW,
       height: iconH,
+    });
+    state.page.addLinkAnnotation({
+      uri: "https://ai.affordablepentesting.com",
+      rect: [iconX, iconY, iconX + iconW, iconY + iconH],
     });
   }
 
