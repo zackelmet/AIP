@@ -92,7 +92,29 @@ export function buildReportDocx(payload: ReportPayload): Buffer {
     throw new Error(`Report template not found at ${templatePath}`);
   }
 
-  const templateBuffer = fs.readFileSync(templatePath);
+  let templateBuffer = fs.readFileSync(templatePath);
+
+  // For white-label, replace the cover-page logo and accent colors
+  if (payload.brand === "whitelabel" && payload.brandLogo) {
+    const zip = new PizZip(templateBuffer);
+    const raw = payload.brandLogo.replace(/^data:image\/png;base64,/, "");
+    // Replace cover logo (image2.png) — keep page-4 icon (image1.png) as AP
+    zip.file("word/media/image2.png", Buffer.from(raw, "base64"), { base64: false });
+
+    // Replace accent green (#34d399, #94d882) in document body with brand color
+    if (payload.brandColor) {
+      const docXml = zip.file("word/document.xml");
+      if (docXml) {
+        let content = docXml.asText();
+        content = content.replace(/#34d399/gi, payload.brandColor.toLowerCase().replace("#", ""));
+        content = content.replace(/#94d882/gi, payload.brandColor.toLowerCase().replace("#", ""));
+        zip.file("word/document.xml", content);
+      }
+    }
+
+    templateBuffer = zip.generate({ type: "nodebuffer" }) as Buffer;
+  }
+
   const zip = new PizZip(templateBuffer);
 
   const doc = new Docxtemplater(zip, {
