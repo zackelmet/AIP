@@ -96,6 +96,7 @@ export function buildReportDocx(payload: ReportPayload): Buffer {
 
   // For white-label, replace the cover-page logo and accent colors
   if (payload.brand === "whitelabel" && payload.brandLogo) {
+    console.log("DOCX: applying whitelabel branding");
     const zip = new PizZip(templateBuffer);
     const raw = payload.brandLogo.replace(/^data:image\/png;base64,/, "");
     // Replace cover logo (image2.png) and background (image3.jpg may have 

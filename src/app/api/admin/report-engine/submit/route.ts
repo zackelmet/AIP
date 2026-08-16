@@ -202,6 +202,9 @@ const payload: ReportPayload = {
     };
 
     const docxBytes = buildReportDocx(payload);
+    console.log("Report submit: brand=%s client=%s findings=%d logo=%s",
+      payload.brand, payload.clientName, payload.findings.length,
+      payload.brandLogo ? payload.brandLogo.slice(0, 40) + "..." : "none");
     const saved = await saveReportPdf({
       pdfBytes: docxBytes,
       payload,
