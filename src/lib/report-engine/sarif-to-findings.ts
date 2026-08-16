@@ -122,8 +122,8 @@ export function sarifToFindings(sarifDoc: SarifDoc): ReportFinding[] {
 
     const pocParts: string[] = [];
     if (strix?.poc?.description) pocParts.push(strix.poc.description);
-    if (strix?.technical_analysis)
-      pocParts.push(`\nTechnical Analysis:\n${strix.technical_analysis}`);
+
+    const technicalAnalysis = strix?.technical_analysis ?? "";
 
     let remediation = strix?.remediation_steps ?? "";
     if (!remediation && rule?.help?.text) {
@@ -134,6 +134,7 @@ export function sarifToFindings(sarifDoc: SarifDoc): ReportFinding[] {
 
     const target = strix?.target ?? "";
     const endpoint = strix?.endpoint ?? "";
+    const method = strix?.method ?? "";
     const targetUrl = target || endpoint;
 
     const references: string[] = [];
@@ -154,6 +155,9 @@ export function sarifToFindings(sarifDoc: SarifDoc): ReportFinding[] {
       poc: pocParts.join("\n\n"),
       impact: strix?.impact ?? "",
       remediation,
+      technicalAnalysis,
+      endpoint: endpoint || undefined,
+      method: method || undefined,
       cvss,
       cvssValue: `${cvss}`,
       cvss31Score: cvss > 0 ? `${cvss}` : undefined,

@@ -983,9 +983,24 @@ export async function buildReportPdf(payload: ReportPayload) {
       gap(8);
     }
 
+    if (finding.endpoint || finding.method) {
+      const locParts = [];
+      if (finding.method) locParts.push(finding.method);
+      if (finding.endpoint) locParts.push(finding.endpoint);
+      boldLabel("Location:");
+      paragraph(locParts.join(" "), { size: 11, lineHeight: 16 });
+      gap(8);
+    }
+
     boldLabel("Proof of Concept:");
     boxedText(finding.poc);
     gap(10);
+
+    if (finding.technicalAnalysis) {
+      boldLabel("Technical Analysis:");
+      paragraph(finding.technicalAnalysis, { size: 11, lineHeight: 16 });
+      gap(10);
+    }
 
     boldLabel("Remediation Recommendations:");
     paragraph(finding.remediation, { size: 11, lineHeight: 16 });
