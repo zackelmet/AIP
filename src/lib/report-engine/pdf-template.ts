@@ -679,12 +679,12 @@ export async function buildReportPdf(payload: ReportPayload) {
   gap(24);
   const sigX = BODY_X + 20;
   const sigStartY = state.y;
-  [
+  const sigLines = [
     payload.tester ?? "Zack ElMetennani",
     "Security Lead",
     brandEmail,
-    brandName,
-  ].forEach((line) => {
+  ];
+  sigLines.forEach((line) => {
     ensure(14);
     state.page.drawText(sanitize(line), {
       x: sigX,
@@ -695,6 +695,38 @@ export async function buildReportPdf(payload: ReportPayload) {
     });
     state.y -= 15;
   });
+  // brandName as underlined blue link
+  ensure(14);
+  const brandY = state.y - 11;
+  state.page.drawText(sanitize(brandName), {
+    x: sigX,
+    y: brandY,
+    size: 11,
+    font,
+    color: rgb(0, 0.3, 0.7),
+  });
+  // underline
+  const brandW = font.widthOfTextAtSize(sanitize(brandName), 11);
+  state.page.drawLine({
+    start: { x: sigX, y: brandY + 1 },
+    end: { x: sigX + brandW, y: brandY + 1 },
+    thickness: 0.6,
+    color: rgb(0, 0.3, 0.7),
+  });
+  // link annotation
+  try {
+    const ctx = (state.page as any).doc.context;
+    const brandLinkRef = ctx.register(ctx.obj({
+      Type: "Annot",
+      Subtype: "Link",
+      Rect: [sigX, brandY - 2, sigX + brandW, brandY + 12],
+      A: { Type: "Action", S: "URI", URI: "https://ai.affordablepentesting.com" },
+    }));
+    (state.page as any).node.addAnnot(brandLinkRef);
+  } catch (e) {
+    console.error("Failed to add brand link:", e);
+  }
+  state.y -= 15;
   if (icon) {
     const s = Math.min(44 / icon.width, 44 / icon.height);
     const iconH = icon.height * s;
