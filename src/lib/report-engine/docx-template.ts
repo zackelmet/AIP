@@ -92,20 +92,7 @@ export function buildReportDocx(payload: ReportPayload): Buffer {
     throw new Error(`Report template not found at ${templatePath}`);
   }
 
-  let templateBuffer = fs.readFileSync(templatePath);
-
-  // For white-label, inject the custom logo into the template ZIP
-  if (payload.brand === "whitelabel" && payload.brandLogo) {
-    const zip = new PizZip(templateBuffer);
-    // Find the first image media file in the template
-    const mediaFiles = zip.file(/word\/media\/image\d+\.\w+/);
-    if (mediaFiles.length > 0) {
-      const raw = payload.brandLogo.replace(/^data:image\/png;base64,/, "");
-      zip.file(mediaFiles[0].name, Buffer.from(raw, "base64"), { base64: false });
-    }
-    templateBuffer = zip.generate({ type: "nodebuffer" }) as Buffer;
-  }
-
+  const templateBuffer = fs.readFileSync(templatePath);
   const zip = new PizZip(templateBuffer);
 
   const doc = new Docxtemplater(zip, {
