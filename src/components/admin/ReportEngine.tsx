@@ -346,18 +346,26 @@ export default function ReportEngine() {
               <h3 className="text-base text-gray-300 font-medium">White-Label Branding</h3>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <span className="text-sm text-gray-400">Logo (PNG)</span>
+                  <span className="text-sm text-gray-400">Logo (PNG, WebP, JPEG)</span>
                   <input
                     type="file"
-                    accept="image/png"
+                    accept="image/png,image/webp,image/jpeg"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
-                      const reader = new FileReader();
-                      reader.onload = (ev) => {
-                        setBrandLogoBase64(ev.target?.result as string);
+                      // Convert any image type to PNG for the PDF/DOCX pipeline
+                      const img = new Image();
+                      const url = URL.createObjectURL(file);
+                      img.onload = () => {
+                        const c = document.createElement("canvas");
+                        c.width = img.width;
+                        c.height = img.height;
+                        const ctx = c.getContext("2d")!;
+                        ctx.drawImage(img, 0, 0);
+                        setBrandLogoBase64(c.toDataURL("image/png"));
+                        URL.revokeObjectURL(url);
                       };
-                      reader.readAsDataURL(file);
+                      img.src = url;
                     }}
                     className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-[#34D399]/20 file:text-[#34D399] file:text-sm hover:file:bg-[#34D399]/30 transition"
                   />
