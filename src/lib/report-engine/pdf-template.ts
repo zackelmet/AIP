@@ -23,6 +23,14 @@ const TEXT = rgb(0.13, 0.13, 0.13);
 const GREY = rgb(0.42, 0.45, 0.5);
 const BORDER = rgb(0.2, 0.2, 0.2);
 
+function hexToRgb(hex: string): ReturnType<typeof rgb> {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.slice(0, 2), 16) / 255;
+  const g = parseInt(h.slice(2, 4), 16) / 255;
+  const b = parseInt(h.slice(4, 6), 16) / 255;
+  return rgb(r, g, b);
+}
+
 const SEV_TEXT: Record<string, ReturnType<typeof rgb>> = {
   Critical: rgb(0.75, 0, 0),
   High: rgb(0.95, 0, 0),
@@ -220,21 +228,36 @@ export async function buildReportPdf(payload: ReportPayload) {
     payload.reportType === "webapp" ? "Web App Pentest" : "External Pentest";
 
   const brand = payload.brand ?? "aip";
-  const brandName =
-    brand === "msp" ? "MSP Pentesting" : "Affordable Pentesting";
-  const brandTester = brand === "msp" ? "MSP Hacker Agent" : "AIP Hacker Agent";
-  const brandEmail =
-    brand === "msp"
-      ? "zack@msppentesting.com"
-      : "zack@affordablepentesting.com";
-  const brandLogoFile =
-    brand === "msp"
-      ? "msp pentesting logo (1) (3) (1).png"
-      : "affordable-pentesting-logo.png";
-  const brandIconFile =
-    brand === "msp"
-      ? "msp pentesting logo (1) (3) (1).png"
-      : "affordable-pentesting-icon.png";
+
+  let brandName: string;
+  let brandTester: string;
+  let brandEmail: string;
+  let brandLogoFile: string;
+  let brandIconFile: string;
+  let primaryAccent = TEAL;
+
+  if (brand === "msp") {
+    brandName = "MSP Pentesting";
+    brandTester = "MSP Hacker Agent";
+    brandEmail = "zack@msppentesting.com";
+    brandLogoFile = "msp pentesting logo (1) (3) (1).png";
+    brandIconFile = "msp pentesting logo (1) (3) (1).png";
+  } else if (brand === "whitelabel") {
+    brandName = payload.clientName || "White Label";
+    brandTester = payload.tester || "Security Team";
+    brandEmail = payload.notes || "";
+    brandLogoFile = "";
+    brandIconFile = "";
+    if (payload.brandColor) {
+      primaryAccent = hexToRgb(payload.brandColor);
+    }
+  } else {
+    brandName = "Affordable Pentesting";
+    brandTester = "AIP Hacker Agent";
+    brandEmail = "zack@affordablepentesting.com";
+    brandLogoFile = "affordable-pentesting-logo.png";
+    brandIconFile = "affordable-pentesting-icon.png";
+  }
 
   // Sort findings by severity (Critical → Informational).
   const findings = [...payload.findings].sort((a, b) => {
@@ -246,6 +269,10 @@ export async function buildReportPdf(payload: ReportPayload) {
 
   const embedPng = async (relPath: string): Promise<PDFImage | null> => {
     try {
+      if (brand === "whitelabel" && payload.brandLogo) {
+        const raw = payload.brandLogo.replace(/^data:image\/png;base64,/, "");
+        return await pdf.embedPng(Buffer.from(raw, "base64"));
+      }
       const abs = path.join(process.cwd(), "public", relPath);
       if (!fs.existsSync(abs)) return null;
       return await pdf.embedPng(new Uint8Array(fs.readFileSync(abs)));
@@ -279,12 +306,12 @@ export async function buildReportPdf(payload: ReportPayload) {
       y: state.y - size,
       size,
       font,
-      color: TEAL,
+      color: primaryAccent,
     });
     state.y -= size + 22;
   };
 
-  const subHeading = (text: string, color = TEAL, size = 17) => {
+  const subHeading = (text: string, color = primaryAccent, size = 17) => {
     ensure(size + 10);
     state.page.drawText(text, {
       x: PAGE_MARGIN,
@@ -353,7 +380,7 @@ export async function buildReportPdf(payload: ReportPayload) {
       y: state.y - size,
       size,
       font: bold,
-      color: TEAL,
+      color: primaryAccent,
     });
     // Label + body wrapped together; label rendered bold inline on first line.
     const labelText = `${label}: `;
@@ -512,7 +539,7 @@ export async function buildReportPdf(payload: ReportPayload) {
       y,
       size,
       font: f,
-      color: TEAL,
+      color: primaryAccent,
     });
   };
   coverCenter(coverTitle, PAGE_HEIGHT - 410, 24, font);
@@ -976,7 +1003,7 @@ export async function buildReportPdf(payload: ReportPayload) {
   );
   gap(10);
   tocAdd("Severity Descriptions", state.page, 1);
-  subHeading("Severity Descriptions", TEAL, 22);
+  subHeading("Severity Descriptions", primaryAccent, 22);
   paragraph(
     "The severity of each finding in this report is independent. Finding severity ratings combine direct technical and business impact with the worst-case scenario in an attack chain. The more significant the impact, and the fewer vulnerabilities that must be exploited to achieve that impact, the higher the severity.",
     { size: 11, lineHeight: 16 },
@@ -1158,7 +1185,7 @@ export async function buildReportPdf(payload: ReportPayload) {
         y: ty - 30,
         size: 30,
         font,
-        color: TEAL,
+color: primaryAccent,
       });
       ty -= 30 + 28;
     };

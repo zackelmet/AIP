@@ -82,6 +82,13 @@ function validatePayload(body: any) {
     });
   }
 
+  if (body.brand && !["aip", "msp", "whitelabel"].includes(body.brand)) {
+    errors.push({
+      path: "brand",
+      message: "brand must be 'aip', 'msp', or 'whitelabel'",
+    });
+  }
+
   const hasSarif = body.sarif !== undefined;
   const hasFindings = Array.isArray(body.findings) && body.findings.length > 0;
 
@@ -151,10 +158,13 @@ export async function POST(request: NextRequest) {
         )
       : body.findings;
 
-    const payload: ReportPayload = {
+const payload: ReportPayload = {
       reportType: ["external", "webapp", "msp"].includes(body.reportType)
-        ? body.reportType
-        : "external",
+        ? body.reportType : "external",
+      brand: ["aip", "msp", "whitelabel"].includes(body.brand)
+        ? body.brand : undefined,
+      brandLogo: body.brand === "whitelabel" ? body.brandLogo : undefined,
+      brandColor: body.brandColor?.trim() || undefined,
       clientName: body.clientName.trim(),
       projectTitle: body.projectTitle.trim(),
       target: body.target?.trim() || undefined,

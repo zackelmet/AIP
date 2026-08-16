@@ -21,7 +21,11 @@ export interface ReportFinding {
 export interface ReportPayload {
   reportType?: "external" | "webapp" | "msp";
   /** Cover branding — which company's logo/identity to render. */
-  brand?: "msp" | "aip";
+  brand?: "msp" | "aip" | "whitelabel";
+  /** Base64 PNG data URL for white-label logo (embed directly). */
+  brandLogo?: string;
+  /** Hex color string for primary accent (e.g. "#16a34a"). */
+  brandColor?: string;
   clientName: string;
   projectTitle: string;
   target?: string;

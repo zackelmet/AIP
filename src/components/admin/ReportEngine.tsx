@@ -26,6 +26,9 @@ const emptyFinding = (): Finding => ({
 
 export default function ReportEngine() {
   const [reportType, setReportType] = useState<"external" | "msp">("external");
+  const [brand, setBrand] = useState<"aip" | "msp" | "whitelabel">("aip");
+  const [brandLogoBase64, setBrandLogoBase64] = useState<string | null>(null);
+  const [brandColor, setBrandColor] = useState("#34D399");
   const [clientName, setClientName] = useState("");
   const [projectTitle, setProjectTitle] = useState("");
   const [target, setTarget] = useState("");
@@ -165,6 +168,9 @@ export default function ReportEngine() {
 
     const payload = {
       reportType,
+      brand,
+      brandLogo: brand === "whitelabel" ? brandLogoBase64 : undefined,
+      brandColor: brand === "whitelabel" ? brandColor : undefined,
       clientName: clientName.trim(),
       projectTitle: projectTitle.trim(),
       target: target.trim() || undefined,
@@ -201,6 +207,9 @@ export default function ReportEngine() {
       setProjectTitle("");
       setTarget("");
       setReportType("external");
+      setBrand("aip");
+      setBrandLogoBase64(null);
+      setBrandColor("#34D399");
       setExecutiveSummary("");
       setFindingsSummary("");
       setFindings([emptyFinding()]);
@@ -237,17 +246,20 @@ export default function ReportEngine() {
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
           <select
-            value={reportType}
+            value={brand}
             onChange={(event) =>
-              setReportType(event.target.value as "external" | "msp")
+              setBrand(event.target.value as "aip" | "msp" | "whitelabel")
             }
             className="rounded-lg border border-white/20 bg-[#0a1929] px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#34D399]/40 transition cursor-pointer"
           >
-            <option value="external" className="bg-[#0a1929] text-white">
+            <option value="aip" className="bg-[#0a1929] text-white">
               Affordable Pentesting
             </option>
             <option value="msp" className="bg-[#0a1929] text-white">
               MSP Pentesting
+            </option>
+            <option value="whitelabel" className="bg-[#0a1929] text-white">
+              White Label
             </option>
           </select>
           <button
@@ -328,6 +340,51 @@ export default function ReportEngine() {
               />
             </label>
           </div>
+
+          {brand === "whitelabel" && (
+            <div className="p-4 rounded-lg border border-white/10 bg-white/[0.03] space-y-4">
+              <h3 className="text-base text-gray-300 font-medium">White-Label Branding</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <span className="text-sm text-gray-400">Logo (PNG)</span>
+                  <input
+                    type="file"
+                    accept="image/png"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = (ev) => {
+                        setBrandLogoBase64(ev.target?.result as string);
+                      };
+                      reader.readAsDataURL(file);
+                    }}
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-[#34D399]/20 file:text-[#34D399] file:text-sm hover:file:bg-[#34D399]/30 transition"
+                  />
+                  {brandLogoBase64 && (
+                    <p className="text-xs text-[#34D399]">Logo loaded</p>
+                  )}
+                </div>
+                <div className="space-y-1.5">
+                  <span className="text-sm text-gray-400">Accent Color</span>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={brandColor}
+                      onChange={(e) => setBrandColor(e.target.value)}
+                      className="w-10 h-10 rounded-lg border border-white/10 bg-transparent cursor-pointer"
+                    />
+                    <input
+                      value={brandColor}
+                      onChange={(e) => setBrandColor(e.target.value)}
+                      placeholder="#34D399"
+                      className="w-28 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#34D399]/40 font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="grid md:grid-cols-2 gap-4">
             <label className="space-y-1.5 block">
