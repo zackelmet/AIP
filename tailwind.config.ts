@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-ibm-plex-sans)", "IBM Plex Sans", "sans-serif"],
+        sans: ["IBM Plex Sans", "sans-serif"],
         serif: ['"Roboto Slab"', "ui-serif", "Georgia", "serif"],
       },
       colors: {
