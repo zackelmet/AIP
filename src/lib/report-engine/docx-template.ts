@@ -49,9 +49,9 @@ function normalizeSeverity(value: string | undefined, cvss: number): Severity {
   return "Informational";
 }
 
-function resolveTemplatePath(reportType: string): string {
+function resolveTemplatePath(reportType: string, brand?: string): string {
   // MSP Pentesting branded template
-  if (reportType === "msp") {
+  if (reportType === "msp" || brand === "msp") {
     return path.join(
       process.cwd(),
       "public",
@@ -86,7 +86,10 @@ function resolveTemplatePath(reportType: string): string {
 }
 
 export function buildReportDocx(payload: ReportPayload): Buffer {
-  const templatePath = resolveTemplatePath(payload.reportType ?? "external");
+  const templatePath = resolveTemplatePath(
+    payload.reportType ?? "external",
+    payload.brand,
+  );
 
   if (!fs.existsSync(templatePath)) {
     throw new Error(`Report template not found at ${templatePath}`);
@@ -98,9 +101,11 @@ export function buildReportDocx(payload: ReportPayload): Buffer {
   if (payload.brand === "whitelabel" && payload.brandLogo) {
     const zip = new PizZip(templateBuffer);
     const raw = payload.brandLogo.replace(/^data:image\/png;base64,/, "");
-    // Replace cover logo (image2.png) and background (image3.jpg may have 
+    // Replace cover logo (image2.png) and background (image3.jpg may have
     // logo baked in) — keep page-4 icon (image1.png) as AP
-    zip.file("word/media/image2.png", Buffer.from(raw, "base64"), { base64: false });
+    zip.file("word/media/image2.png", Buffer.from(raw, "base64"), {
+      base64: false,
+    });
 
     // Replace accent green in document body with brand color
     // OOXML stores colors without # prefix (e.g. "34d399" not "#34d399")
