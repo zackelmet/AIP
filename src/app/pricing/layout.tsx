@@ -14,6 +14,14 @@ export const metadata: Metadata = {
       "External IP, web application, and Pentest+ plans. Buy credits instantly and launch a test in minutes.",
     url: `${domain}/pricing`,
     siteName: "Affordable Pentesting",
+    images: [
+      {
+        url: "/og-logo.png",
+        width: 871,
+        height: 526,
+        alt: "Affordable Pentesting",
+      },
+    ],
     type: "website",
   },
   twitter: {
@@ -21,6 +29,7 @@ export const metadata: Metadata = {
     title: "Pricing - Penetration Testing as a Service",
     description:
       "External IP, web application, and Pentest+ plans. Buy credits instantly.",
+    images: ["/og-logo.png"],
   },
 };
 

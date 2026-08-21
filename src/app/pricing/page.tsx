@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/AuthContext";
 import toast from "react-hot-toast";
 
@@ -71,18 +71,17 @@ const PRODUCTS: Product[] = [
   },
 ];
 
-function PricingPageInner() {
+export default function PricingPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { currentUser: user } = useAuth();
   const [loading, setLoading] = useState<string | null>(null);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    if (searchParams.get("canceled")) {
+    if (new URLSearchParams(window.location.search).get("canceled")) {
       toast.error("Checkout canceled");
     }
-  }, [searchParams]);
+  }, []);
 
   const handleCheckout = async (id: string, priceId: string) => {
     if (!user) {
@@ -244,13 +243,5 @@ function PricingPageInner() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function PricingPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0a141f]" />}>
-      <PricingPageInner />
-    </Suspense>
   );
 }

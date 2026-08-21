@@ -4,11 +4,13 @@ import { getAllPosts } from "@/lib/blog/mdx";
 
 export const metadata = {
   title: "Blog - Affordable Pentesting",
-  description: "Security insights, pentesting tips, and vulnerability research from Affordable Pentesting.",
+  description:
+    "Security insights, pentesting tips, and vulnerability research from Affordable Pentesting — practical guides on compliance, scoping, and reports.",
   metadataBase: new URL("https://ai.affordablepentesting.com"),
   openGraph: {
     title: "Blog - Affordable Pentesting",
-    description: "Security insights, pentesting tips, and vulnerability research from Affordable Pentesting.",
+    description:
+      "Security insights, pentesting tips, and vulnerability research from Affordable Pentesting — practical guides on compliance, scoping, and reports.",
     url: "https://ai.affordablepentesting.com/blog",
     siteName: "Affordable Pentesting",
     images: [
@@ -24,7 +26,8 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Blog - Affordable Pentesting",
-    description: "Security insights, pentesting tips, and vulnerability research from Affordable Pentesting.",
+    description:
+      "Security insights, pentesting tips, and vulnerability research from Affordable Pentesting — practical guides on compliance, scoping, and reports.",
     images: ["/og-logo.png"],
   },
   alternates: { canonical: "https://ai.affordablepentesting.com/blog" },
@@ -82,7 +85,9 @@ export default function BlogPage() {
                   <h2 className="text-white font-bold text-lg mb-2 group-hover:text-[#4590e2] transition-colors leading-snug">
                     {post.title}
                   </h2>
-                  <p className="text-gray-400 text-sm line-clamp-3 flex-1">{post.description}</p>
+                  <p className="text-gray-400 text-sm line-clamp-3 flex-1">
+                    {post.description}
+                  </p>
                   <span className="mt-4 text-sm font-semibold text-[#4590e2] group-hover:underline">
                     Read more →
                   </span>
@@ -95,4 +100,3 @@ export default function BlogPage() {
     </main>
   );
 }
-

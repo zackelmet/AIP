@@ -14,6 +14,14 @@ export const metadata: Metadata = {
       "Contact the Affordable Pentesting support team for help with credits, pentest launches, and reports.",
     url: `${domain}/support`,
     siteName: "Affordable Pentesting",
+    images: [
+      {
+        url: "/og-logo.png",
+        width: 871,
+        height: 526,
+        alt: "Affordable Pentesting",
+      },
+    ],
     type: "website",
   },
   twitter: {
@@ -21,6 +29,7 @@ export const metadata: Metadata = {
     title: "Support - Affordable Pentesting",
     description:
       "Contact the Affordable Pentesting support team for help with credits, pentest launches, and reports.",
+    images: ["/og-logo.png"],
   },
 };
 
