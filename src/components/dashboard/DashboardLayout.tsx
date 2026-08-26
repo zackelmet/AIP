@@ -111,7 +111,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           } flex flex-col`}
         >
           {/* Logo */}
-          <div className="p-6 border-b border-[#34D399]">
+          <div className="p-6 border-b border-[#34D399] flex-shrink-0">
             <Link
               href="https://ai.affordablepentesting.com/"
               className="flex items-center gap-3"
@@ -132,36 +132,36 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </Link>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-1">
-            {navItems.map((item) => {
-              const isActive =
-                pathname === item.href ||
-                (item.href !== "/admin" &&
-                  pathname?.startsWith(`${item.href}/`));
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  data-tour={`nav-${item.href.split("/").pop()}`}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive
-                      ? "bg-[#34D399]/20 text-[#34D399] font-semibold border border-[#34D399]/30"
-                      : "text-gray-300 hover:bg-white/5 hover:text-white"
-                  }`}
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  <FontAwesomeIcon icon={item.icon} className="w-5 h-5" />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
+          {/* Scrollable nav area */}
+          <div className="flex-1 overflow-y-auto min-h-0">
+            {/* Navigation */}
+            <nav className="px-4 py-6 space-y-1">
+              {navItems.map((item) => {
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== "/admin" &&
+                    pathname?.startsWith(`${item.href}/`));
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    data-tour={`nav-${item.href.split("/").pop()}`}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                      isActive
+                        ? "bg-[#34D399]/20 text-[#34D399] font-semibold border border-[#34D399]/30"
+                        : "text-gray-300 hover:bg-white/5 hover:text-white"
+                    }`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <FontAwesomeIcon icon={item.icon} className="w-5 h-5" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
 
-          {/* Bottom section */}
-          <div className="px-4 pb-6 space-y-4">
             {/* Support links */}
-            <div className="space-y-1">
+            <div className="px-4 space-y-1">
               <button
                 type="button"
                 onClick={() => {
@@ -187,7 +187,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             {/* Account */}
             <div
-              className="relative border-t border-gray-700 pt-4"
+              className="relative border-t border-gray-700 mt-4 pt-4 px-4"
               ref={accountMenuRef}
             >
               <button
@@ -241,15 +241,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               )}
             </div>
 
-            {/* Buy Credits button */}
-            <Link
-              href="/app/dashboard?purchase=web_app"
-              data-tour="buy-credits"
-              className="block w-full px-4 py-3 bg-[#34D399] text-[#041018] font-semibold rounded-lg text-center hover:bg-[#10b981] transition-colors"
-            >
-              Buy Credits
-              <FontAwesomeIcon icon={faPlus} className="ml-2" />
-            </Link>
+            {/* Buy Credits button — sticky at bottom, scrolls away when content overflows */}
+            <div className="sticky bottom-0 bg-[#0a141f] px-4 pb-6 pt-4">
+              <Link
+                href="/app/dashboard?purchase=web_app"
+                data-tour="buy-credits"
+                className="block w-full px-4 py-3 bg-[#34D399] text-[#041018] font-semibold rounded-lg text-center hover:bg-[#10b981] transition-colors"
+              >
+                Buy Credits
+                <FontAwesomeIcon icon={faPlus} className="ml-2" />
+              </Link>
+            </div>
           </div>
         </aside>
 
