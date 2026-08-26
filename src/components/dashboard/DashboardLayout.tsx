@@ -26,6 +26,7 @@ import Image from "next/image";
 import OnboardingTour, {
   START_TOUR_EVENT,
 } from "@/components/onboarding/OnboardingTour";
+import Footer from "@/components/nav/Footer";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -90,212 +91,220 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a141f] flex overflow-hidden">
+    <div className="min-h-screen bg-[#0a141f] flex flex-col">
       {/* First-run product tour (auto-starts once on the dashboard) */}
       <OnboardingTour />
 
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#0a141f] text-white transform transition-transform duration-300 ease-in-out ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        } flex flex-col`}
-      >
-        {/* Logo */}
-        <div className="p-6 border-b border-[#34D399]">
-          <Link
-            href="https://ai.affordablepentesting.com/"
-            className="flex items-center gap-3"
-          >
-            <Image
-              src="/affordablepentestinglogo.svg"
-              alt="Affordable Pentesting"
-              width={44}
-              height={44}
-              className="w-11 h-11 flex-shrink-0"
-            />
-            <span
-              className="text-white font-semibold text-base tracking-wide leading-tight"
-              style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
-            >
-              Affordable Pentesting
-            </span>
-          </Link>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-1">
-          {navItems.map((item) => {
-            const isActive =
-              pathname === item.href ||
-              (item.href !== "/admin" && pathname?.startsWith(`${item.href}/`));
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                data-tour={`nav-${item.href.split("/").pop()}`}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive
-                    ? "bg-[#34D399]/20 text-[#34D399] font-semibold border border-[#34D399]/30"
-                    : "text-gray-300 hover:bg-white/5 hover:text-white"
-                }`}
-                onClick={() => setSidebarOpen(false)}
-              >
-                <FontAwesomeIcon icon={item.icon} className="w-5 h-5" />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Bottom section */}
-        <div className="px-4 pb-6 space-y-4">
-          {/* Support links */}
-          <div className="space-y-1">
-            <button
-              type="button"
-              onClick={() => {
-                setSidebarOpen(false);
-                window.dispatchEvent(new Event(START_TOUR_EVENT));
-              }}
-              className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors text-sm"
-            >
-              <FontAwesomeIcon icon={faQuestionCircle} className="w-4 h-4" />
-              Take a tour
-            </button>
-            {bottomItems.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors text-sm"
-              >
-                <FontAwesomeIcon icon={item.icon} className="w-4 h-4" />
-                {item.label}
-              </a>
-            ))}
-          </div>
-
-          {/* Account */}
+      <div className="flex flex-1">
+        {/* Mobile overlay */}
+        {sidebarOpen && (
           <div
-            className="relative border-t border-gray-700 pt-4"
-            ref={accountMenuRef}
-          >
-            <button
-              onClick={() => setAccountMenuOpen(!accountMenuOpen)}
-              className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
-            >
-              <div className="w-8 h-8 rounded-full bg-[#34D399] text-[#041018] font-bold flex items-center justify-center text-sm">
-                {getInitials(currentUser?.email)}
-              </div>
-              <div className="flex-1 overflow-hidden text-left">
-                <div className="text-sm font-medium truncate">
-                  {currentUser?.email || "User"}
-                </div>
-              </div>
-              <FontAwesomeIcon
-                icon={faChevronUp}
-                className={`text-gray-400 text-sm transition-transform ${accountMenuOpen ? "" : "rotate-180"}`}
-              />
-            </button>
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
-            {/* Account Dropdown Menu */}
-            {accountMenuOpen && (
-              <div className="absolute bottom-full left-4 right-4 mb-2 bg-gray-800 rounded-lg shadow-xl border border-gray-700 overflow-hidden">
-                <div className="py-1">
-                  <Link
-                    href="/app/settings"
-                    className="flex items-center gap-3 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
-                    onClick={() => {
-                      setAccountMenuOpen(false);
-                      setSidebarOpen(false);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faCog} className="w-4 h-4" />
-                    Settings
-                  </Link>
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setAccountMenuOpen(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300 transition-colors"
-                  >
-                    <FontAwesomeIcon icon={faSignOutAlt} className="w-4 h-4" />
-                    Logout
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Buy Credits button */}
-          <Link
-            href="/app/dashboard?purchase=web_app"
-            data-tour="buy-credits"
-            className="block w-full px-4 py-3 bg-[#34D399] text-[#041018] font-semibold rounded-lg text-center hover:bg-[#10b981] transition-colors"
-          >
-            Buy Credits
-            <FontAwesomeIcon icon={faPlus} className="ml-2" />
-          </Link>
-        </div>
-      </aside>
-
-      {/* Main content */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
-        {/* Mobile header with hamburger - hidden on admin page */}
-        {!pathname?.startsWith("/admin") && (
-          <header className="lg:hidden bg-[#0a141f] border-b border-[#34D399] px-4 py-3 flex items-center justify-between sticky top-0 z-30">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="p-2 text-gray-400 hover:text-white"
-            >
-              <FontAwesomeIcon icon={faBars} className="w-6 h-6" />
-            </button>
+        {/* Sidebar */}
+        <aside
+          className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#0a141f] text-white transform transition-transform duration-300 ease-in-out ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          } flex flex-col`}
+        >
+          {/* Logo */}
+          <div className="p-6 border-b border-[#34D399]">
             <Link
               href="https://ai.affordablepentesting.com/"
-              className="flex items-center gap-2"
+              className="flex items-center gap-3"
             >
               <Image
                 src="/affordablepentestinglogo.svg"
                 alt="Affordable Pentesting"
-                width={32}
-                height={32}
-                className="w-8 h-8"
+                width={44}
+                height={44}
+                className="w-11 h-11 flex-shrink-0"
               />
               <span
-                className="font-semibold text-white text-sm"
+                className="text-white font-semibold text-base tracking-wide leading-tight"
                 style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
               >
                 Affordable Pentesting
               </span>
             </Link>
-            <div className="w-10" /> {/* Spacer for centering */}
-          </header>
-        )}
+          </div>
 
-        {/* Page content */}
-        {!isLoadingAuth && !currentUser && (
-          <div className="bg-gray-700/40 border-b border-gray-600 text-gray-200 px-4 py-2 text-sm flex items-center justify-between gap-3">
-            <span>Your session has expired. Please sign in again.</span>
-            <Link
-              href={`/login?redirect=${encodeURIComponent(pathname || "/app/dashboard")}`}
-              className="text-gray-100 hover:text-white underline underline-offset-2 transition-colors font-medium"
+          {/* Navigation */}
+          <nav className="flex-1 px-4 py-6 space-y-1">
+            {navItems.map((item) => {
+              const isActive =
+                pathname === item.href ||
+                (item.href !== "/admin" &&
+                  pathname?.startsWith(`${item.href}/`));
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  data-tour={`nav-${item.href.split("/").pop()}`}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-[#34D399]/20 text-[#34D399] font-semibold border border-[#34D399]/30"
+                      : "text-gray-300 hover:bg-white/5 hover:text-white"
+                  }`}
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <FontAwesomeIcon icon={item.icon} className="w-5 h-5" />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Bottom section */}
+          <div className="px-4 pb-6 space-y-4">
+            {/* Support links */}
+            <div className="space-y-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setSidebarOpen(false);
+                  window.dispatchEvent(new Event(START_TOUR_EVENT));
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors text-sm"
+              >
+                <FontAwesomeIcon icon={faQuestionCircle} className="w-4 h-4" />
+                Take a tour
+              </button>
+              {bottomItems.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors text-sm"
+                >
+                  <FontAwesomeIcon icon={item.icon} className="w-4 h-4" />
+                  {item.label}
+                </a>
+              ))}
+            </div>
+
+            {/* Account */}
+            <div
+              className="relative border-t border-gray-700 pt-4"
+              ref={accountMenuRef}
             >
-              Sign in
+              <button
+                onClick={() => setAccountMenuOpen(!accountMenuOpen)}
+                className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                <div className="w-8 h-8 rounded-full bg-[#34D399] text-[#041018] font-bold flex items-center justify-center text-sm">
+                  {getInitials(currentUser?.email)}
+                </div>
+                <div className="flex-1 overflow-hidden text-left">
+                  <div className="text-sm font-medium truncate">
+                    {currentUser?.email || "User"}
+                  </div>
+                </div>
+                <FontAwesomeIcon
+                  icon={faChevronUp}
+                  className={`text-gray-400 text-sm transition-transform ${accountMenuOpen ? "" : "rotate-180"}`}
+                />
+              </button>
+
+              {/* Account Dropdown Menu */}
+              {accountMenuOpen && (
+                <div className="absolute bottom-full left-4 right-4 mb-2 bg-gray-800 rounded-lg shadow-xl border border-gray-700 overflow-hidden">
+                  <div className="py-1">
+                    <Link
+                      href="/app/settings"
+                      className="flex items-center gap-3 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        setSidebarOpen(false);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faCog} className="w-4 h-4" />
+                      Settings
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setAccountMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300 transition-colors"
+                    >
+                      <FontAwesomeIcon
+                        icon={faSignOutAlt}
+                        className="w-4 h-4"
+                      />
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Buy Credits button */}
+            <Link
+              href="/app/dashboard?purchase=web_app"
+              data-tour="buy-credits"
+              className="block w-full px-4 py-3 bg-[#34D399] text-[#041018] font-semibold rounded-lg text-center hover:bg-[#10b981] transition-colors"
+            >
+              Buy Credits
+              <FontAwesomeIcon icon={faPlus} className="ml-2" />
             </Link>
           </div>
-        )}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto font-light">
-          {children}
-        </main>
+        </aside>
+
+        {/* Main content */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Mobile header with hamburger - hidden on admin page */}
+          {!pathname?.startsWith("/admin") && (
+            <header className="lg:hidden bg-[#0a141f] border-b border-[#34D399] px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="p-2 text-gray-400 hover:text-white"
+              >
+                <FontAwesomeIcon icon={faBars} className="w-6 h-6" />
+              </button>
+              <Link
+                href="https://ai.affordablepentesting.com/"
+                className="flex items-center gap-2"
+              >
+                <Image
+                  src="/affordablepentestinglogo.svg"
+                  alt="Affordable Pentesting"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8"
+                />
+                <span
+                  className="font-semibold text-white text-sm"
+                  style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
+                >
+                  Affordable Pentesting
+                </span>
+              </Link>
+              <div className="w-10" /> {/* Spacer for centering */}
+            </header>
+          )}
+
+          {/* Page content */}
+          {!isLoadingAuth && !currentUser && (
+            <div className="bg-gray-700/40 border-b border-gray-600 text-gray-200 px-4 py-2 text-sm flex items-center justify-between gap-3">
+              <span>Your session has expired. Please sign in again.</span>
+              <Link
+                href={`/login?redirect=${encodeURIComponent(pathname || "/app/dashboard")}`}
+                className="text-gray-100 hover:text-white underline underline-offset-2 transition-colors font-medium"
+              >
+                Sign in
+              </Link>
+            </div>
+          )}
+          <main className="flex-1 overflow-x-hidden overflow-y-auto min-h-[100svh] font-light">
+            {children}
+          </main>
+        </div>
       </div>
+
+      <Footer />
     </div>
   );
 }

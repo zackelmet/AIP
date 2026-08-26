@@ -203,9 +203,9 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#0a141f] text-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden min-h-svh flex flex-col justify-center">
         <div className="absolute inset-0 bg-gradient-to-br from-[#34D399]/10 via-transparent to-transparent" />
-        <div className="max-w-7xl mx-auto px-6 py-20 lg:py-32 relative">
+        <div className="max-w-7xl w-full mx-auto px-6 py-20 lg:py-32 relative">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <h1 className="text-5xl lg:text-7xl font-light tracking-tight">
               <span className="block text-white">Penetration Testing</span>
