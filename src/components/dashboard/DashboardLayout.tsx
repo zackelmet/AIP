@@ -95,7 +95,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* First-run product tour (auto-starts once on the dashboard) */}
       <OnboardingTour />
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 lg:overflow-hidden">
         {/* Mobile overlay */}
         {sidebarOpen && (
           <div
@@ -300,7 +300,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </Link>
             </div>
           )}
-          <main className="flex-1 overflow-x-hidden overflow-y-auto min-h-[100svh] font-light">
+          <main className="flex-1 overflow-x-hidden overflow-y-auto font-light">
             {children}
           </main>
         </div>
