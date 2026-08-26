@@ -134,7 +134,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
           {/* Scrollable nav area */}
           <div className="flex-1 overflow-y-auto min-h-0">
-            {/* Navigation */}
             <nav className="px-4 py-6 space-y-1">
               {navItems.map((item) => {
                 const isActive =
@@ -159,9 +158,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 );
               })}
             </nav>
+          </div>
 
+          {/* Bottom section — pinned to sidebar bottom, no scroll */}
+          <div className="flex-shrink-0 px-4 pb-6 space-y-4">
             {/* Support links */}
-            <div className="px-4 space-y-1">
+            <div className="space-y-1">
               <button
                 type="button"
                 onClick={() => {
@@ -187,7 +189,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             {/* Account */}
             <div
-              className="relative border-t border-gray-700 mt-4 pt-4 px-4"
+              className="relative border-t border-gray-700 pt-4"
               ref={accountMenuRef}
             >
               <button
@@ -241,17 +243,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               )}
             </div>
 
-            {/* Buy Credits button — sticky at bottom, scrolls away when content overflows */}
-            <div className="sticky bottom-0 bg-[#0a141f] px-4 pb-6 pt-4">
-              <Link
-                href="/app/dashboard?purchase=web_app"
-                data-tour="buy-credits"
-                className="block w-full px-4 py-3 bg-[#34D399] text-[#041018] font-semibold rounded-lg text-center hover:bg-[#10b981] transition-colors"
-              >
-                Buy Credits
-                <FontAwesomeIcon icon={faPlus} className="ml-2" />
-              </Link>
-            </div>
+            {/* Buy Credits button */}
+            <Link
+              href="/app/dashboard?purchase=web_app"
+              data-tour="buy-credits"
+              className="block w-full px-4 py-3 bg-[#34D399] text-[#041018] font-semibold rounded-lg text-center hover:bg-[#10b981] transition-colors"
+            >
+              Buy Credits
+              <FontAwesomeIcon icon={faPlus} className="ml-2" />
+            </Link>
           </div>
         </aside>
 
