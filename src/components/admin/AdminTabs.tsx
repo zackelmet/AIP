@@ -4,20 +4,17 @@ import { useState } from "react";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import ReviewPentests from "@/components/admin/ReviewPentests";
 import ReportEngine from "@/components/admin/ReportEngine";
-import QuickReport from "@/components/admin/QuickReport";
 import {
   faGaugeHigh,
   faShieldHalved,
-  faFilePdf,
-  faBolt,
+  faFileWord,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const TABS = [
   { id: "dashboard", label: "Dashboard", icon: faGaugeHigh },
   { id: "review", label: "Review", icon: faShieldHalved },
-  { id: "report-engine", label: "Report Engine", icon: faFilePdf },
-  { id: "quick-report", label: "Quick Report", icon: faBolt },
+  { id: "report-engine", label: "Docx Reporting", icon: faFileWord },
 ];
 
 export default function AdminTabs({ defaultTab }: { defaultTab: string }) {
@@ -52,7 +49,6 @@ export default function AdminTabs({ defaultTab }: { defaultTab: string }) {
       {activeTab === "dashboard" && <AdminDashboard />}
       {activeTab === "review" && <ReviewPentests />}
       {activeTab === "report-engine" && <ReportEngine />}
-      {activeTab === "quick-report" && <QuickReport />}
     </>
   );
 }
