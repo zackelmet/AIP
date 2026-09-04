@@ -574,7 +574,7 @@ export async function buildReportPdf(payload: ReportPayload) {
     cover,
     PAGE_HEIGHT,
     PAGE_WIDTH - 160,
-    -220,
+    -292,
     600,
     676,
     deepEmerald,
@@ -582,17 +582,9 @@ export async function buildReportPdf(payload: ReportPayload) {
     true,
   );
   // Bottom-left (mirrored): in from off the left edge, out through the bottom edge.
-  drawWireWave(
-    cover,
-    PAGE_HEIGHT,
-    -200,
-    PAGE_HEIGHT - 320,
-    676,
-    600,
-    deepEmerald,
-    36,
-    true,
-  );
+  // Mirror of the page-2 wave: enters from off the left edge at the same
+  // vertical band, same dimensions, exits through the bottom.
+  drawWireWave(cover, PAGE_HEIGHT, -280, 430, 560, 520, deepEmerald, 36, true);
 
   // ════════════════════════ METADATA + CONFIDENTIAL ════════════════════════
   const meta = pdf.addPage(PAGE_SIZE);
