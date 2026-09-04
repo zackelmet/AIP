@@ -16,6 +16,8 @@ export interface ReportFinding {
   cvss40Vector?: string;
   severity?: "Critical" | "High" | "Medium" | "Low" | "Informational";
   references?: string[];
+  /** CWE identifier (e.g. "CWE-89"). */
+  cwe?: string;
   /** Strix: detailed technical breakdown of the vulnerability. */
   technicalAnalysis?: string;
   /** Strix: the affected URL or host. */

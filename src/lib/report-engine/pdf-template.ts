@@ -1,5 +1,16 @@
 import { PDFDocument, PDFFont, PDFImage, PDFPage, rgb } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
+import {
+  drawStatChips,
+  drawClassBars,
+  drawSeverityBars,
+  drawSeverityBarsHeight,
+  drawGradeGauge,
+  computeGrade,
+  classifyFindings,
+  drawWireWave,
+} from "@/lib/report-engine/charts";
+import { addPageLink } from "@/lib/report-engine/pdf-links";
 import { ReportPayload, ReportFinding } from "@/lib/report-engine/types";
 import { deriveLikelihoodImpact, Rating } from "@/lib/report-engine/cvss";
 import fs from "node:fs";
@@ -32,11 +43,11 @@ function hexToRgb(hex: string): ReturnType<typeof rgb> {
 }
 
 const SEV_TEXT: Record<string, ReturnType<typeof rgb>> = {
-  Critical: rgb(0.75, 0, 0),
-  High: rgb(0.95, 0, 0),
-  Medium: rgb(0.88, 0.63, 0.13),
-  Low: rgb(0.17, 0.66, 0.29),
-  Informational: rgb(0.18, 0.46, 0.71),
+  Critical: rgb(0.29, 0.08, 0.29), // dark purple #4A154B
+  High: rgb(0.55, 0.1, 0.1), // dark red #8B1A1A
+  Medium: rgb(0.98, 0.45, 0.09), // orange #F97316
+  Low: rgb(0.09, 0.64, 0.29), // green #16A34A
+  Informational: rgb(0.15, 0.39, 0.92), // blue #2563EB
 };
 
 type Severity = "Critical" | "High" | "Medium" | "Low" | "Informational";
@@ -551,91 +562,99 @@ export async function buildReportPdf(payload: ReportPayload) {
   );
   coverCenter(`Completed ${completedDate}`, PAGE_HEIGHT - 478, 13, font);
 
+  // Corner wire waves over the mint gradient — every line flows in from one
+  // edge and back out through another, so no line endings are visible.
+  const deepEmerald = {
+    r: primaryAccent.red * 0.55,
+    g: primaryAccent.green * 0.55,
+    b: primaryAccent.blue * 0.55,
+  };
+  // Top-right (mirrored): in from off the top edge, out through the right edge.
+  drawWireWave(
+    cover,
+    PAGE_HEIGHT,
+    PAGE_WIDTH - 160,
+    -220,
+    600,
+    676,
+    deepEmerald,
+    36,
+    true,
+  );
+  // Bottom-left (mirrored): in from off the left edge, out through the bottom edge.
+  drawWireWave(
+    cover,
+    PAGE_HEIGHT,
+    -200,
+    PAGE_HEIGHT - 320,
+    676,
+    600,
+    deepEmerald,
+    36,
+    true,
+  );
+
   // ════════════════════════ METADATA + CONFIDENTIAL ════════════════════════
   const meta = pdf.addPage(PAGE_SIZE);
   {
-    const cols = ["Version", "Date", "Tester", "Notes"];
-    const vals = [
-      payload.version ?? "1.0",
-      completedDate,
-      payload.tester ?? brandTester,
-      payload.notes ?? `Penetration Test for ${payload.clientName}`,
-    ];
-    const widths = [70, 90, 120, FULL_W - 280];
-    const headerH = 26;
-    const x0 = PAGE_MARGIN;
-    let yTop = PAGE_HEIGHT - 96;
-    let cx = x0;
-    // header row
-    cols.forEach((c, i) => {
-      meta.drawRectangle({
-        x: cx,
-        y: yTop - headerH,
-        width: widths[i],
-        height: headerH,
-        color: TEAL_DARK,
-      });
-      const tw = font.widthOfTextAtSize(c, 11);
-      meta.drawText(c, {
-        x: cx + (widths[i] - tw) / 2,
-        y: yTop - 17,
-        size: 11,
-        font,
-        color: rgb(0.85, 0.95, 0.9),
-      });
-      cx += widths[i];
-    });
-    // value row (height grows with Notes wrap)
-    const noteLines = wrapText(sanitize(vals[3]), font, 10, widths[3] - 12);
-    const rowH = Math.max(34, noteLines.length * 13 + 16);
-    cx = x0;
-    vals.forEach((v, i) => {
-      meta.drawRectangle({
-        x: cx,
-        y: yTop - headerH - rowH,
-        width: widths[i],
-        height: rowH,
-        color: rgb(1, 1, 1),
-        borderColor: TEAL_DARK,
-        borderWidth: 0.8,
-      });
-      if (i === 3) {
-        let ly = yTop - headerH - 16;
-        noteLines.forEach((ln) => {
-          meta.drawText(ln, { x: cx + 8, y: ly, size: 11, font, color: TEXT });
-          ly -= 13;
-        });
-      } else {
-        const tw = font.widthOfTextAtSize(sanitize(v), 11);
-        meta.drawText(sanitize(v), {
-          x: cx + (widths[i] - tw) / 2,
-          y: yTop - headerH - rowH / 2 - 4,
-          size: 11,
-          font,
-          color: TEXT,
-        });
-      }
-      cx += widths[i];
+    const conf =
+      "This report is confidential and intended solely for authorized recipients.";
+    const cw = font.widthOfTextAtSize(conf, 12.5);
+    meta.drawText(conf, {
+      x: (PAGE_WIDTH - cw) / 2,
+      y: PAGE_HEIGHT - 120,
+      size: 12.5,
+      font,
+      color: TEXT,
     });
 
-    const conf = "This report is confidential and intended solely for";
-    const conf2 = "authorized recipients.";
-    const cw1 = font.widthOfTextAtSize(conf, 14);
-    const cw2 = font.widthOfTextAtSize(conf2, 14);
-    meta.drawText(conf, {
-      x: (PAGE_WIDTH - cw1) / 2,
-      y: yTop - headerH - rowH - 120,
-      size: 14,
-      font,
-      color: TEXT,
-    });
-    meta.drawText(conf2, {
-      x: (PAGE_WIDTH - cw2) / 2,
-      y: yTop - headerH - rowH - 142,
-      size: 14,
-      font,
-      color: TEXT,
-    });
+    const stripScheme = (v: string) =>
+      v.replace(/^https?:\/\//, "").replace(/\/+$/, "");
+    const rows: Array<[string, string]> = [
+      ["Target", stripScheme(payload.target || payload.projectTitle || "—")],
+      ["Assessment Date", completedDate],
+      ["Tester", payload.tester ?? brandTester],
+      ["Version", payload.version ?? "1.0"],
+    ];
+    if (payload.notes?.trim()) rows.push(["Notes", payload.notes.trim()]);
+
+    const panelX = PAGE_MARGIN + 20;
+    const panelW = FULL_W - 140;
+    let my = PAGE_HEIGHT - 210;
+    for (const [label, value] of rows) {
+      meta.drawText(label.toUpperCase(), {
+        x: panelX,
+        y: my - 8,
+        size: 9,
+        font: bold,
+        color: rgb(0.45, 0.52, 0.6),
+      });
+      meta.drawText(sanitize(value), {
+        x: panelX,
+        y: my - 25,
+        size: 11.5,
+        font: bold,
+        color: TEXT,
+      });
+      meta.drawLine({
+        start: { x: panelX, y: my - 38 },
+        end: { x: panelX + panelW, y: my - 38 },
+        thickness: 0.6,
+        color: rgb(0.85, 0.88, 0.91),
+      });
+      my -= 52;
+    }
+
+    drawWireWave(
+      meta,
+      PAGE_HEIGHT,
+      PAGE_WIDTH - 280,
+      430,
+      560,
+      520,
+      { r: primaryAccent.red, g: primaryAccent.green, b: primaryAccent.blue },
+      32,
+    );
   }
 
   // ════════════════════════ RESERVE TOC PAGE(S) ════════════════════════
@@ -716,12 +735,18 @@ export async function buildReportPdf(payload: ReportPayload) {
   // link annotation
   try {
     const ctx = (state.page as any).doc.context;
-    const brandLinkRef = ctx.register(ctx.obj({
-      Type: "Annot",
-      Subtype: "Link",
-      Rect: [sigX, brandY - 2, sigX + brandW, brandY + 12],
-      A: { Type: "Action", S: "URI", URI: "https://ai.affordablepentesting.com" },
-    }));
+    const brandLinkRef = ctx.register(
+      ctx.obj({
+        Type: "Annot",
+        Subtype: "Link",
+        Rect: [sigX, brandY - 2, sigX + brandW, brandY + 12],
+        A: {
+          Type: "Action",
+          S: "URI",
+          URI: "https://ai.affordablepentesting.com",
+        },
+      }),
+    );
     (state.page as any).node.addAnnot(brandLinkRef);
   } catch (e) {
     console.error("Failed to add brand link:", e);
@@ -741,12 +766,18 @@ export async function buildReportPdf(payload: ReportPayload) {
     });
     try {
       const ctx = (state.page as any).doc.context;
-      const linkRef = ctx.register(ctx.obj({
-        Type: "Annot",
-        Subtype: "Link",
-        Rect: [iconX, iconY, iconX + iconW, iconY + iconH],
-        A: { Type: "Action", S: "URI", URI: "https://ai.affordablepentesting.com" },
-      }));
+      const linkRef = ctx.register(
+        ctx.obj({
+          Type: "Annot",
+          Subtype: "Link",
+          Rect: [iconX, iconY, iconX + iconW, iconY + iconH],
+          A: {
+            Type: "Action",
+            S: "URI",
+            URI: "https://ai.affordablepentesting.com",
+          },
+        }),
+      );
       (state.page as any).node.addAnnot(linkRef);
     } catch (e) {
       console.error("Failed to add link annotation:", e);
@@ -763,11 +794,7 @@ export async function buildReportPdf(payload: ReportPayload) {
       `A penetration test was conducted against ${payload.target || payload.projectTitle}. This report summarizes the confirmed findings, their risk ratings, and recommended remediations prioritized by impact.`,
     { size: 11.5, lineHeight: 17 },
   );
-
-  // ═══════════════════════════ FINDINGS SUMMARY ═══════════════════════════
-  const fsRef = newPage();
-  tocAdd("Findings Summary", fsRef);
-  centeredHeading("Findings Summary", 30);
+  // Grade gauge (top) + findings-by-severity bars (below), centered.
   gap(10);
   {
     const counts: Record<Severity, number> = {
@@ -778,57 +805,154 @@ export async function buildReportPdf(payload: ReportPayload) {
       Informational: 0,
     };
     findings.forEach((f) => counts[normalizeSeverity(f.severity, f.cvss)]++);
-    const order: Severity[] = [
-      "Critical",
-      "High",
-      "Medium",
-      "Low",
-      "Informational",
-    ];
-    const colW = FULL_W / 5;
-    const hH = 26;
-    const rH = 26;
-    ensure(hH + rH + 8);
-    const yTop = state.y;
-    order.forEach((sev, i) => {
-      const cx = PAGE_MARGIN + i * colW;
-      state.page.drawRectangle({
-        x: cx,
-        y: yTop - hH,
-        width: colW,
-        height: hH,
-        color: rgb(1, 1, 1),
-        borderColor: rgb(0.8, 0.82, 0.85),
-        borderWidth: 0.8,
-      });
-      state.page.drawText(sev, {
-        x: cx + 8,
-        y: yTop - 17,
-        size: 10.5,
-        font: bold,
-        color: severityColor(sev),
-      });
-      state.page.drawRectangle({
-        x: cx,
-        y: yTop - hH - rH,
-        width: colW,
-        height: rH,
-        color: rgb(1, 1, 1),
-        borderColor: rgb(0.8, 0.82, 0.85),
-        borderWidth: 0.8,
-      });
-      state.page.drawText(String(counts[sev]), {
-        x: cx + 8,
-        y: yTop - hH - 17,
-        size: 11,
-        font,
-        color: TEXT,
-      });
-    });
-    state.y = yTop - hH - rH - 22;
+    const grade = computeGrade(counts);
+    const barW = 360;
+    const barX = (PAGE_WIDTH - barW) / 2;
+    const barH = drawSeverityBarsHeight(counts);
+    ensure(110 + barH + 20);
+    drawGradeGauge(
+      state.page,
+      PAGE_HEIGHT,
+      PAGE_WIDTH / 2,
+      PAGE_HEIGHT - state.y + 8,
+      50,
+      grade.letter,
+      grade.color,
+      font,
+      bold,
+    );
+    state.y -= 108;
+    drawSeverityBars(
+      state.page,
+      PAGE_HEIGHT,
+      barX,
+      PAGE_HEIGHT - state.y + 6,
+      barW,
+      counts,
+      font,
+      bold,
+    );
+    state.y -= barH + 18;
   }
+
+  // ═══════════════════════════ FINDINGS SUMMARY ═══════════════════════════
+  const fsRef = newPage();
+  tocAdd("Findings Summary", fsRef);
+  centeredHeading("Findings Summary", 30);
+  gap(10);
   if (payload.detailedAnalysis) {
     paragraph(payload.detailedAnalysis, { size: 11.5, lineHeight: 17 });
+    gap(10);
+  } else {
+    paragraph(
+      "The following is a summary of the vulnerabilities identified during the assessment.",
+      { size: 11.5, lineHeight: 17 },
+    );
+    gap(10);
+  }
+
+  // Big-number stat chips.
+  {
+    const counts: Record<Severity, number> = {
+      Critical: 0,
+      High: 0,
+      Medium: 0,
+      Low: 0,
+      Informational: 0,
+    };
+    findings.forEach((f) => counts[normalizeSeverity(f.severity, f.cvss)]++);
+    const scopeTargets = payload.scopeTargets?.length
+      ? payload.scopeTargets
+      : payload.target
+        ? [payload.target]
+        : [];
+    ensure(75);
+    drawStatChips(
+      state.page,
+      PAGE_HEIGHT,
+      PAGE_MARGIN,
+      PAGE_HEIGHT - state.y,
+      FULL_W,
+      [
+        { value: String(findings.length), label: "Findings" },
+        { value: String(counts.Critical), label: "Critical" },
+        { value: String(counts.High), label: "High" },
+        { value: String(counts.Medium), label: "Medium" },
+        { value: String(scopeTargets.length), label: "Targets" },
+      ],
+      font,
+      bold,
+    );
+    state.y -= 72;
+  }
+
+  // Vuln-class bars.
+  {
+    const classes = classifyFindings(findings);
+    ensure(160);
+    const blockYTop = PAGE_HEIGHT - state.y;
+    drawClassBars(
+      state.page,
+      PAGE_HEIGHT,
+      PAGE_MARGIN + 60,
+      blockYTop + 8,
+      FULL_W - 120,
+      classes,
+      font,
+      bold,
+      { r: primaryAccent.red, g: primaryAccent.green, b: primaryAccent.blue },
+    );
+    state.y -= Math.min(classes.length, 6) * 24 + 20;
+  }
+
+  // Most Impactful Findings — Top-5 with severity pills.
+  {
+    const top5 = [...findings]
+      .sort((a, b) => {
+        const sa = SEVERITY_RANK[normalizeSeverity(a.severity, a.cvss)];
+        const sb = SEVERITY_RANK[normalizeSeverity(b.severity, b.cvss)];
+        if (sa !== sb) return sa - sb;
+        return b.cvss - a.cvss;
+      })
+      .slice(0, 5);
+    if (top5.length > 0) {
+      gap(4);
+      ensure(30);
+      subHeading("Most Impactful Findings", primaryAccent, 15);
+      gap(2);
+      top5.forEach((f, i) => {
+        ensure(24);
+        const sev = normalizeSeverity(f.severity, f.cvss);
+        state.page.drawText(`${i + 1}.`, {
+          x: BODY_X,
+          y: state.y - 11,
+          size: 11,
+          font: bold,
+          color: primaryAccent,
+        });
+        const numW = bold.widthOfTextAtSize(`${i + 1}. `, 11);
+        const pillW = drawPill(
+          state.page,
+          sev,
+          BODY_X + numW,
+          state.y - 16.5,
+          severityColor(sev),
+          6.5,
+        );
+        let title = sanitize(f.title);
+        const maxW = FULL_W - numW - pillW - 10;
+        while (bold.widthOfTextAtSize(title, 10.5) > maxW && title.length > 6)
+          title = title.slice(0, -2);
+        state.page.drawText(title, {
+          x: BODY_X + numW + pillW + 8,
+          y: state.y - 11,
+          size: 10.5,
+          font: bold,
+          color: BORDER,
+        });
+        state.y -= 24;
+      });
+    }
   }
 
   // ═══════════════════════════ ASSESSMENT OVERVIEW ═══════════════════════════
@@ -933,6 +1057,20 @@ export async function buildReportPdf(payload: ReportPayload) {
       state.y = yTop - headerH - bodyH;
     }
   }
+
+  // Wave — enters from off the lower-LEFT edge, sweeps down and flows out
+  // through the bottom-center of the methodology page.
+  drawWireWave(
+    state.page,
+    PAGE_HEIGHT,
+    -160,
+    320,
+    540,
+    470,
+    { r: primaryAccent.red, g: primaryAccent.green, b: primaryAccent.blue },
+    30,
+    true, // mirrored: left-edge entry, lines flow out through the bottom
+  );
 
   // ═══════════════════════════ TECHNICAL FINDINGS ═══════════════════════════
   const tfRef = newPage();
@@ -1070,15 +1208,18 @@ export async function buildReportPdf(payload: ReportPayload) {
     { size: 11, lineHeight: 16 },
   );
   gap(8);
+  // Critical / High / Medium on the first appendix page; Low + Informational
+  // start fresh on the second.
   SEVERITY_DESCRIPTIONS.forEach(([sev, desc]) => {
+    if (sev === "Low") newPage();
     subHeading(sev, severityColor(sev), 15);
     paragraph(desc, { size: 11, lineHeight: 16 });
     gap(8);
   });
 
   // ════════════════════════════════ RISK MATRIX ════════════════════════════════
-  const rmRef = newPage();
-  tocAdd("Risk Matrix", rmRef, 1);
+  // Risk Matrix flows on the same page as the Low/Informational descriptions.
+  tocAdd("Risk Matrix", state.page, 1);
   centeredHeading("Risk Matrix", 30);
   gap(10);
   {
@@ -1227,6 +1368,18 @@ export async function buildReportPdf(payload: ReportPayload) {
     });
   }
 
+  // ════════════ APPENDIX WAVE — Risk Matrix page (appendix p2), lower-right ════════════
+  drawWireWave(
+    state.page,
+    PAGE_HEIGHT,
+    PAGE_WIDTH - 280,
+    430,
+    560,
+    520,
+    { r: primaryAccent.red, g: primaryAccent.green, b: primaryAccent.blue },
+    32,
+  );
+
   // ════════════════ TABLE OF CONTENTS (fill reserved pages) ════════════════
   // Prepend TOC self-reference so it lists itself like the reference.
   const allPages = pdf.getPages();
@@ -1246,7 +1399,7 @@ export async function buildReportPdf(payload: ReportPayload) {
         y: ty - 30,
         size: 30,
         font,
-color: primaryAccent,
+        color: primaryAccent,
       });
       ty -= 30 + 28;
     };
@@ -1300,6 +1453,12 @@ color: primaryAccent,
         font: bold,
         color: rgb(0.1, 0.1, 0.1),
       });
+      addPageLink(
+        pdf,
+        tp,
+        { x: lx - 4, y: ty - 14, w: PAGE_WIDTH - PAGE_MARGIN - lx + 8, h: 16 },
+        e.ref,
+      );
       ty -= 18;
     }
   }

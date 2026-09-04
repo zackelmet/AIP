@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     const [bytes] = await file.download();
     const fileName = pentestDoc.data()?.reportFileName || "report.pdf";
 
-    return new NextResponse(bytes, {
+    return new NextResponse(new Uint8Array(bytes), {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
