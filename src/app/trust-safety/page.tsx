@@ -15,7 +15,7 @@ import {
 export const metadata = {
   title: "Trust + Safety Center — Affordable Pentesting",
   description:
-    "Our commitment to ethical penetration testing, data security, and responsible disclosure — read the policies that govern every engagement we run.",
+    "Our commitment to ethical pentesting, data security, and responsible disclosure — policies that govern every engagement.",
   metadataBase: new URL("https://ai.affordablepentesting.com"),
   openGraph: {
     title: "Trust + Safety Center — Affordable Pentesting",

@@ -5,7 +5,7 @@ import { getAllPosts } from "@/lib/blog/mdx";
 export const metadata = {
   title: "Blog - Affordable Pentesting",
   description:
-    "Security insights, pentesting tips, and vulnerability research from Affordable Pentesting — practical guides on compliance, scoping, and reports.",
+    "Security insights, pentesting tips, and vulnerability research — practical guides on compliance, scoping, and reports.",
   metadataBase: new URL("https://ai.affordablepentesting.com"),
   openGraph: {
     title: "Blog - Affordable Pentesting",

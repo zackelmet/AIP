@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import BlogLayout from "@/components/blog/BlogLayout";
+import { getAllPosts } from "@/lib/blog/mdx";
 import { notFound } from "next/navigation";
 
 const SITE = "https://ai.affordablepentesting.com";
@@ -88,6 +89,16 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
     image,
   };
 
+  const allPosts = getAllPosts(["slug", "title", "description"]);
+  const relatedPosts = allPosts
+    .filter((p) => p.slug !== params.slug)
+    .slice(0, 3)
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      description: p.description,
+    }));
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -131,7 +142,7 @@ export default function BlogPost({ params }: { params: { slug: string } }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <BlogLayout frontMatter={frontMatter}>
+      <BlogLayout frontMatter={frontMatter} relatedPosts={relatedPosts}>
         <MDXRemote
           source={content}
           options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
