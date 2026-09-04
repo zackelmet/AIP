@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
   faLifeRing,
+  faShieldHalved,
   faQuestionCircle,
   faBars,
   faRocket,
@@ -162,31 +163,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
           {/* Bottom section — pinned to sidebar bottom, no scroll */}
           <div className="flex-shrink-0 px-4 pb-6 space-y-4">
-            {/* Support links */}
-            <div className="space-y-1">
-              <button
-                type="button"
-                onClick={() => {
-                  setSidebarOpen(false);
-                  window.dispatchEvent(new Event(START_TOUR_EVENT));
-                }}
-                className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors text-sm"
-              >
-                <FontAwesomeIcon icon={faQuestionCircle} className="w-4 h-4" />
-                Take a tour
-              </button>
-              {bottomItems.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors text-sm"
-                >
-                  <FontAwesomeIcon icon={item.icon} className="w-4 h-4" />
-                  {item.label}
-                </a>
-              ))}
-            </div>
-
             {/* Account */}
             <div
               className="relative border-t border-gray-700 pt-4"
@@ -225,6 +201,41 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       <FontAwesomeIcon icon={faCog} className="w-4 h-4" />
                       Settings
                     </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        setSidebarOpen(false);
+                        window.dispatchEvent(new Event(START_TOUR_EVENT));
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+                    >
+                      <FontAwesomeIcon icon={faQuestionCircle} className="w-4 h-4" />
+                      Take a tour
+                    </button>
+                    <Link
+                      href="/support"
+                      className="flex items-center gap-3 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        setSidebarOpen(false);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faLifeRing} className="w-4 h-4" />
+                      Support
+                    </Link>
+                    <Link
+                      href="/trust-safety"
+                      className="flex items-center gap-3 px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        setSidebarOpen(false);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faShieldHalved} className="w-4 h-4" />
+                      Trust + Safety
+                    </Link>
+                    <div className="border-t border-gray-700 my-1" />
                     <button
                       onClick={() => {
                         handleLogout();
