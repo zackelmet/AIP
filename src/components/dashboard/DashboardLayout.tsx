@@ -70,7 +70,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const navItems = [
     { href: "/app/dashboard", label: "Dashboard", icon: faHome },
     { href: "/app/pentests", label: "Recent Tests", icon: faList },
-    { href: "/app/new-pentest", label: "Launch an AI Pentest", icon: faRocket },
+    { href: "/app/new-pentest", label: "Launch a Pentest", icon: faRocket },
     {
       href: "/app/scheduling",
       label: "Test Scheduling",
