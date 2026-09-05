@@ -1,10 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faRocket,
-  faCrosshairs,
-  faChartLine,
-  faDesktop,
-} from "@fortawesome/free-solid-svg-icons";
+import { faRocket } from "@fortawesome/free-solid-svg-icons/faRocket";
+import { faCrosshairs } from "@fortawesome/free-solid-svg-icons/faCrosshairs";
+import { faChartLine } from "@fortawesome/free-solid-svg-icons/faChartLine";
+import { faDesktop } from "@fortawesome/free-solid-svg-icons/faDesktop";
 
 export default function KeyFeaturesSection() {
   const keyFeatures = [

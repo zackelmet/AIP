@@ -2,19 +2,17 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-  faBullseye,
-  faLink,
-  faTag,
-  faEdit,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faBullseye } from "@fortawesome/free-solid-svg-icons/faBullseye";
+import { faLink } from "@fortawesome/free-solid-svg-icons/faLink";
+import { faTag } from "@fortawesome/free-solid-svg-icons/faTag";
+import { faEdit } from "@fortawesome/free-solid-svg-icons/faEdit";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { doc, updateDoc } from "firebase/firestore";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useUserData } from "@/lib/hooks/useUserData";
-import { db } from "@/lib/firebase/firebaseClient";
+import { getDb } from "@/lib/firebase/firebaseClient";
 import { SavedTarget } from "@/lib/types/user";
 
 const TARGET_TYPES: SavedTarget["type"][] = ["ip", "domain", "url", "group"];
@@ -103,7 +101,7 @@ export default function TargetsPage() {
     };
 
     try {
-      const userRef = doc(db, "users", currentUser.uid);
+      const userRef = doc(getDb(), "users", currentUser.uid);
       const updatedTargets = [...savedTargets, newTarget];
       await updateDoc(userRef, {
         savedTargets: updatedTargets,
@@ -185,7 +183,7 @@ export default function TargetsPage() {
     );
 
     try {
-      const userRef = doc(db, "users", currentUser.uid);
+      const userRef = doc(getDb(), "users", currentUser.uid);
       await updateDoc(userRef, { savedTargets: updatedTargets });
       setEditingTarget(null);
       setFeedback({ type: "success", message: "Target updated." });
@@ -202,7 +200,7 @@ export default function TargetsPage() {
     const confirm = window.confirm("Delete this target from your profile?");
     if (!confirm) return;
     try {
-      const userRef = doc(db, "users", currentUser.uid);
+      const userRef = doc(getDb(), "users", currentUser.uid);
       const remaining = savedTargets.filter((target) => target.id !== targetId);
       await updateDoc(userRef, { savedTargets: remaining });
       if (editingTarget?.id === targetId) {

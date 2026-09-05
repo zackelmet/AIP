@@ -1,19 +1,9 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans } from "next/font/google";
-import "@fontsource/ibm-plex-sans/300.css";
-import "@fontsource/ibm-plex-sans/400.css";
-import "@fontsource/ibm-plex-sans/500.css";
-import "@fontsource/ibm-plex-sans/600.css";
-import "@fontsource/ibm-plex-sans/700.css";
 import Script from "next/script";
 import "./globals.css";
-// ClientProviders and Navbar were temporarily disabled during prerender
-// diagnostics; restore them now.
 import ClientProviders from "@/lib/context/ClientProviders";
 import ConditionalNav from "@/components/nav/ConditionalNav";
-import { config } from "@fortawesome/fontawesome-svg-core";
-import "@fortawesome/fontawesome-svg-core/styles.css";
-config.autoAddCss = false;
 
 const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],

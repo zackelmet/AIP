@@ -10,23 +10,21 @@ import {
 } from "@/lib/hooks/useUserSchedules";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCalendarCheck,
-  faGlobe,
-  faServer,
-  faRocket,
-  faPlay,
-  faPause,
-  faBan,
-  faPlus,
-  faChevronDown,
-  faChevronUp,
-  faClock,
-  faCheck,
-  faXmark,
-  faTriangleExclamation,
-  faArrowRotateRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCalendarCheck } from "@fortawesome/free-solid-svg-icons/faCalendarCheck";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons/faGlobe";
+import { faServer } from "@fortawesome/free-solid-svg-icons/faServer";
+import { faRocket } from "@fortawesome/free-solid-svg-icons/faRocket";
+import { faPlay } from "@fortawesome/free-solid-svg-icons/faPlay";
+import { faPause } from "@fortawesome/free-solid-svg-icons/faPause";
+import { faBan } from "@fortawesome/free-solid-svg-icons/faBan";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons/faChevronDown";
+import { faChevronUp } from "@fortawesome/free-solid-svg-icons/faChevronUp";
+import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
+import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
+import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
+import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons/faTriangleExclamation";
+import { faArrowRotateRight } from "@fortawesome/free-solid-svg-icons/faArrowRotateRight";
 import toast from "react-hot-toast";
 
 type PentestType = "web_app" | "external_ip" | "pentest_plus";

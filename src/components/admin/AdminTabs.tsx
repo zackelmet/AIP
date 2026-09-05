@@ -4,11 +4,9 @@ import { useState } from "react";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import ReviewPentests from "@/components/admin/ReviewPentests";
 import ReportEngine from "@/components/admin/ReportEngine";
-import {
-  faGaugeHigh,
-  faShieldHalved,
-  faFileWord,
-} from "@fortawesome/free-solid-svg-icons";
+import { faGaugeHigh } from "@fortawesome/free-solid-svg-icons/faGaugeHigh";
+import { faShieldHalved } from "@fortawesome/free-solid-svg-icons/faShieldHalved";
+import { faFileWord } from "@fortawesome/free-solid-svg-icons/faFileWord";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const TABS = [

@@ -1,56 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "@/lib/firebase/firebaseClient";
+import useSWR from "swr";
+import { doc, getDoc } from "firebase/firestore";
+import { getDb } from "@/lib/firebase/firebaseClient";
 import { useAuth } from "@/lib/context/AuthContext";
 import { UserDocument } from "@/lib/types/user";
 
 export function useUserData() {
   const { currentUser } = useAuth();
-  const [userData, setUserData] = useState<UserDocument | null>(null);
-  const [loading, setLoading] = useState(true);
+  const uid = currentUser?.uid;
 
-  useEffect(() => {
-    if (!currentUser) {
-      setUserData(null);
-      setLoading(false);
-      return;
-    }
+  const { data, isLoading } = useSWR(
+    uid ? `users/${uid}` : null,
+    async () => {
+      const snapshot = await getDoc(doc(getDb(), "users", uid!));
+      return snapshot.exists() ? (snapshot.data() as UserDocument) : null;
+    },
+    { refreshInterval: 30_000 },
+  );
 
-    console.log(
-      "🔍 useUserData: Setting up listener for user:",
-      currentUser.uid,
-    );
-
-    const userRef = doc(db, "users", currentUser.uid);
-    const unsubscribe = onSnapshot(
-      userRef,
-      (doc) => {
-        if (doc.exists()) {
-          const data = doc.data() as UserDocument;
-          console.log("📊 useUserData: User data updated:", {
-            subscriptionStatus: data.subscriptionStatus,
-            monthlyScansLimit: data.monthlyScansLimit,
-          });
-          setUserData(data);
-        } else {
-          console.warn("⚠️ useUserData: User document does not exist");
-          setUserData(null);
-        }
-        setLoading(false);
-      },
-      (error) => {
-        console.error("❌ useUserData: Error fetching user data:", error);
-        setLoading(false);
-      },
-    );
-
-    return () => {
-      console.log("🔌 useUserData: Cleaning up listener");
-      unsubscribe();
-    };
-  }, [currentUser]);
-
-  return { userData, loading };
+  return { userData: data ?? null, loading: isLoading };
 }

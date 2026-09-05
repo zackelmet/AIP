@@ -1,6 +1,6 @@
 "use client";
 
-import { auth } from "@/lib/firebase/firebaseClient";
+import { getFirebaseAuth } from "@/lib/firebase/firebaseClient";
 import { confirmPasswordReset, verifyPasswordResetCode } from "firebase/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -28,10 +28,8 @@ export default function PasswordResetForm() {
     }
 
     try {
-      // Verify the password reset code is valid
-      await verifyPasswordResetCode(auth, oobCode as string);
-      // If valid, update the password
-      await confirmPasswordReset(auth, oobCode as string, newPassword);
+      await verifyPasswordResetCode(getFirebaseAuth(), oobCode as string);
+      await confirmPasswordReset(getFirebaseAuth(), oobCode as string, newPassword);
       showToast("success", "Password has been reset successfully!");
       router.push("/"); // Redirect to login page
     } catch (error) {

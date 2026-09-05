@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { faStar } from "@fortawesome/free-solid-svg-icons/faStar";
 
 const REVIEW_URL = process.env.NEXT_PUBLIC_REVIEW_URL || "";
 const HAPPY_THRESHOLD = 4; // 4–5 stars → public-review nudge

@@ -2,16 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-  faRocket,
-  faHistory,
-  faSatelliteDish,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faRocket } from "@fortawesome/free-solid-svg-icons/faRocket";
+import { faHistory } from "@fortawesome/free-solid-svg-icons/faHistory";
+import { faSatelliteDish } from "@fortawesome/free-solid-svg-icons/faSatelliteDish";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { useUserScans } from "@/lib/hooks/useUserScans";
 import { useAuth } from "@/lib/context/AuthContext";
-import { auth, db } from "@/lib/firebase/firebaseClient";
+import { getDb, getFirebaseAuth } from "@/lib/firebase/firebaseClient";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { doc, updateDoc } from "firebase/firestore";
 import { SavedTarget } from "@/lib/types/user";
@@ -143,7 +141,7 @@ export default function ScansPage() {
 
   const persistCustomTarget = async (addresses: string[]) => {
     if (!currentUser) return;
-    const userRef = doc(db, "users", currentUser.uid);
+    const userRef = doc(getDb(), "users", currentUser.uid);
     const parsedTags = customTargetTags
       .split(",")
       .map((tag) => tag.trim())
@@ -213,7 +211,7 @@ export default function ScansPage() {
     }
 
     try {
-      const user = auth.currentUser;
+      const user = getFirebaseAuth().currentUser;
       if (!user) throw new Error("Not authenticated");
 
       const token = await user.getIdToken(true);

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase/firebaseClient";
+import { getDb } from "@/lib/firebase/firebaseClient";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { tourSteps } from "@/lib/onboarding/tourSteps";
@@ -49,7 +49,7 @@ export default function OnboardingTour() {
       }
       if (markComplete && currentUser?.uid) {
         try {
-          await updateDoc(doc(db, "users", currentUser.uid), {
+          await updateDoc(doc(getDb(), "users", currentUser.uid), {
             onboardingCompleted: true,
             onboardingCompletedAt: serverTimestamp(),
           });

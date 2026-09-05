@@ -3,13 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHeadset,
-  faCircleCheck,
-  faTriangleExclamation,
-  faArrowLeft,
-  faShieldHalved,
-} from "@fortawesome/free-solid-svg-icons";
+import { faHeadset } from "@fortawesome/free-solid-svg-icons/faHeadset";
+import { faCircleCheck } from "@fortawesome/free-solid-svg-icons/faCircleCheck";
+import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons/faTriangleExclamation";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons/faArrowLeft";
+import { faShieldHalved } from "@fortawesome/free-solid-svg-icons/faShieldHalved";
 
 const TOPICS = [
   "Billing & Credits",

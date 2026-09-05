@@ -1,16 +1,14 @@
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faShieldHalved,
-  faFileContract,
-  faUserShield,
-  faGavel,
-  faBan,
-  faCircleInfo,
-  faLock,
-  faReceipt,
-  faTriangleExclamation,
-} from "@fortawesome/free-solid-svg-icons";
+import { faShieldHalved } from "@fortawesome/free-solid-svg-icons/faShieldHalved";
+import { faFileContract } from "@fortawesome/free-solid-svg-icons/faFileContract";
+import { faUserShield } from "@fortawesome/free-solid-svg-icons/faUserShield";
+import { faGavel } from "@fortawesome/free-solid-svg-icons/faGavel";
+import { faBan } from "@fortawesome/free-solid-svg-icons/faBan";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
+import { faLock } from "@fortawesome/free-solid-svg-icons/faLock";
+import { faReceipt } from "@fortawesome/free-solid-svg-icons/faReceipt";
+import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons/faTriangleExclamation";
 
 export const metadata = {
   title: "Trust + Safety Center — Affordable Pentesting",

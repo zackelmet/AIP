@@ -2,28 +2,26 @@
 
 import { useState, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-  faBug,
-  faSearch,
-  faFilter,
-  faExclamationTriangle,
-  faExclamationCircle,
-  faInfoCircle,
-  faCheckCircle,
-  faChevronRight,
-  faShieldAlt,
-  faPaste,
-  faEdit,
-  faTrash,
-  faSpinner,
-  faUpload,
-  faFileAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faBug } from "@fortawesome/free-solid-svg-icons/faBug";
+import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
+import { faFilter } from "@fortawesome/free-solid-svg-icons/faFilter";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons/faExclamationTriangle";
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons/faExclamationCircle";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons/faCheckCircle";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
+import { faShieldAlt } from "@fortawesome/free-solid-svg-icons/faShieldAlt";
+import { faPaste } from "@fortawesome/free-solid-svg-icons/faPaste";
+import { faEdit } from "@fortawesome/free-solid-svg-icons/faEdit";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
+import { faUpload } from "@fortawesome/free-solid-svg-icons/faUpload";
+import { faFileAlt } from "@fortawesome/free-solid-svg-icons/faFileAlt";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useFindings } from "@/lib/hooks/useFindings";
 import { useAuth } from "@/lib/context/AuthContext";
-import { auth } from "@/lib/firebase/firebaseClient";
+import { getFirebaseAuth } from "@/lib/firebase/firebaseClient";
 import { Severity, FindingStatus } from "@/lib/types/pentest";
 import {
   parseFindingsBlock,
@@ -131,7 +129,7 @@ export default function FindingsPage() {
 
     setSubmitting(true);
     try {
-      const token = await auth.currentUser?.getIdToken();
+      const token = await getFirebaseAuth().currentUser?.getIdToken();
       const response = await fetch("/api/findings", {
         method: "POST",
         headers: {
@@ -198,7 +196,7 @@ export default function FindingsPage() {
     setBulkSubmitting(true);
     setBulkError(null);
     try {
-      const token = await auth.currentUser?.getIdToken();
+      const token = await getFirebaseAuth().currentUser?.getIdToken();
       const errors: string[] = [];
       for (const f of parsedFindings) {
         const res = await fetch("/api/findings", {

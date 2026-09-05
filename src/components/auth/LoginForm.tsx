@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGoogle, faWindows } from "@fortawesome/free-brands-svg-icons";
+import { faGoogle } from "@fortawesome/free-brands-svg-icons/faGoogle";
+import { faWindows } from "@fortawesome/free-brands-svg-icons/faWindows";
 // Lazy-load react-hot-toast and Firebase auth at runtime to avoid DOM access during server prerender
 import { useRouter, useSearchParams } from "next/navigation";
 

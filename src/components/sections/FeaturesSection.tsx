@@ -1,12 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faShieldHalved,
-  faServer,
-  faNetworkWired,
-  faBolt,
-  faArrowsRotate,
-  faClock,
-} from "@fortawesome/free-solid-svg-icons";
+import { faShieldHalved } from "@fortawesome/free-solid-svg-icons/faShieldHalved";
+import { faServer } from "@fortawesome/free-solid-svg-icons/faServer";
+import { faNetworkWired } from "@fortawesome/free-solid-svg-icons/faNetworkWired";
+import { faBolt } from "@fortawesome/free-solid-svg-icons/faBolt";
+import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons/faArrowsRotate";
+import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
 
 export default function FeaturesSection() {
   const features = [

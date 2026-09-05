@@ -1,19 +1,17 @@
 "use client";
 
-import {
-  faUsers,
-  faUpload,
-  faFilePdf,
-  faCheckCircle,
-  faShieldHalved,
-  faArrowRight,
-  faArrowLeft,
-  faChevronDown,
-  faChevronUp,
-  faSpinner,
-  faClock,
-  faInbox,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUsers } from "@fortawesome/free-solid-svg-icons/faUsers";
+import { faUpload } from "@fortawesome/free-solid-svg-icons/faUpload";
+import { faFilePdf } from "@fortawesome/free-solid-svg-icons/faFilePdf";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons/faCheckCircle";
+import { faShieldHalved } from "@fortawesome/free-solid-svg-icons/faShieldHalved";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons/faArrowLeft";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons/faChevronDown";
+import { faChevronUp } from "@fortawesome/free-solid-svg-icons/faChevronUp";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
+import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
+import { faInbox } from "@fortawesome/free-solid-svg-icons/faInbox";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { normalizePentestStatus } from "@/lib/pentests/status";

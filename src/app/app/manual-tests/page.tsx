@@ -2,21 +2,19 @@
 
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlus,
-  faUser,
-  faPlay,
-  faCheck,
-  faPause,
-  faClock,
-  faSearch,
-  faFilter,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
+import { faPlay } from "@fortawesome/free-solid-svg-icons/faPlay";
+import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
+import { faPause } from "@fortawesome/free-solid-svg-icons/faPause";
+import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
+import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
+import { faFilter } from "@fortawesome/free-solid-svg-icons/faFilter";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useManualTests } from "@/lib/hooks/useManualTests";
 import { useAuth } from "@/lib/context/AuthContext";
-import { auth } from "@/lib/firebase/firebaseClient";
+import { getFirebaseAuth } from "@/lib/firebase/firebaseClient";
 import { ManualTestType } from "@/lib/types/pentest";
 
 const testTypeLabels: Record<ManualTestType, string> = {
@@ -76,7 +74,7 @@ export default function ManualTestsPage() {
 
     setSubmitting(true);
     try {
-      const token = await auth.currentUser?.getIdToken();
+      const token = await getFirebaseAuth().currentUser?.getIdToken();
       const response = await fetch("/api/manual-tests", {
         method: "POST",
         headers: {

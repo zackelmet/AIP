@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { AuthProvider } from "./AuthContext";
 import { SubscriptionModalProvider } from "./SubscriptionModalContext";
 import { AuthService } from "../auth/AuthService";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+config.autoAddCss = false;
 
 const authService = new AuthService();
 

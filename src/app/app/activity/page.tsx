@@ -3,18 +3,16 @@
 import { useState } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faClipboardList,
-  faFilter,
-  faSearch,
-  faUser,
-  faSatelliteDish,
-  faBug,
-  faFileAlt,
-  faBullseye,
-  faPlay,
-  faCheckCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faClipboardList } from "@fortawesome/free-solid-svg-icons/faClipboardList";
+import { faFilter } from "@fortawesome/free-solid-svg-icons/faFilter";
+import { faSearch } from "@fortawesome/free-solid-svg-icons/faSearch";
+import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
+import { faSatelliteDish } from "@fortawesome/free-solid-svg-icons/faSatelliteDish";
+import { faBug } from "@fortawesome/free-solid-svg-icons/faBug";
+import { faFileAlt } from "@fortawesome/free-solid-svg-icons/faFileAlt";
+import { faBullseye } from "@fortawesome/free-solid-svg-icons/faBullseye";
+import { faPlay } from "@fortawesome/free-solid-svg-icons/faPlay";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons/faCheckCircle";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useActivityLog } from "@/lib/hooks/useActivityLog";
 import { ActivityType } from "@/lib/types/pentest";

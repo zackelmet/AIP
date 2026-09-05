@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/context/AuthContext";
-import { db } from "@/lib/firebase/firebaseClient";
+import { getDb } from "@/lib/firebase/firebaseClient";
 import {
   collection,
   query,
@@ -26,7 +26,7 @@ export function useActivityLog(limitCount: number = 50) {
     }
 
     const q = query(
-      collection(db, "activityLogs"),
+      collection(getDb(), "activityLogs"),
       where("userId", "==", currentUser.uid),
       orderBy("timestamp", "desc"),
       limit(limitCount)

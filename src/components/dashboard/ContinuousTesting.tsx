@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faGlobe,
-  faServer,
-  faArrowsRotate,
-} from "@fortawesome/free-solid-svg-icons";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons/faGlobe";
+import { faServer } from "@fortawesome/free-solid-svg-icons/faServer";
+import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons/faArrowsRotate";
 import toast from "react-hot-toast";
 import { useAuth } from "@/lib/context/AuthContext";
 import {

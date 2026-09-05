@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/context/AuthContext";
-import { db } from "@/lib/firebase/firebaseClient";
+import { getDb } from "@/lib/firebase/firebaseClient";
 import {
   collection,
   query,
@@ -24,14 +24,14 @@ export function useFindings(engagementId?: string) {
     }
 
     let q = query(
-      collection(db, "findings"),
+      collection(getDb(), "findings"),
       where("userId", "==", currentUser.uid),
       orderBy("discoveredAt", "desc")
     );
 
     if (engagementId) {
       q = query(
-        collection(db, "findings"),
+collection(getDb(), "findings"),
         where("userId", "==", currentUser.uid),
         where("engagementId", "==", engagementId),
         orderBy("discoveredAt", "desc")

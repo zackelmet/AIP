@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
-import { db } from "@/lib/firebase/firebaseClient";
+import { getDb } from "@/lib/firebase/firebaseClient";
 
 export interface Schedule {
   id: string;
@@ -129,7 +129,7 @@ export function useScheduleRuns(scheduleId?: string | null) {
     }
 
     const q = query(
-      collection(db, "schedules", scheduleId, "runs"),
+      collection(getDb(), "schedules", scheduleId, "runs"),
       orderBy("ranAt", "desc"),
     );
 

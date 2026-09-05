@@ -1,10 +1,10 @@
-import { Auth, signOut, getAuth } from "firebase/auth";
-import firebase_app from "./firebaseClient";
+import { Auth, signOut } from "firebase/auth";
+import { getFirebaseAuth } from "./firebaseClient";
 
 function getDefaultAuth(): Auth | undefined {
   try {
     if (typeof window === "undefined") return undefined;
-    return getAuth(firebase_app as any);
+    return getFirebaseAuth();
   } catch (err) {
     return undefined;
   }

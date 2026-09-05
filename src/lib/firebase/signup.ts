@@ -1,13 +1,12 @@
 import {
   createUserWithEmailAndPassword,
-  getAuth,
   sendEmailVerification,
   signOut,
   UserCredential,
 } from "firebase/auth";
-import firebase_app from "./firebaseClient";
+import { getFirebaseAuth } from "./firebaseClient";
 
-const auth = getAuth(firebase_app);
+const auth = getFirebaseAuth();
 
 /**
  * Interface for the sign-up result

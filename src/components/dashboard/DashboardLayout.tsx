@@ -4,30 +4,32 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHome,
-  faLifeRing,
-  faShieldHalved,
-  faQuestionCircle,
-  faBars,
-  faRocket,
-  faSignOutAlt,
-  faCog,
-  faChevronUp,
-  faUser,
-  faPlus,
-  faList,
-  faUserShield,
-  faCalendarCheck,
-} from "@fortawesome/free-solid-svg-icons";
+import { faHome } from "@fortawesome/free-solid-svg-icons/faHome";
+import { faLifeRing } from "@fortawesome/free-solid-svg-icons/faLifeRing";
+import { faShieldHalved } from "@fortawesome/free-solid-svg-icons/faShieldHalved";
+import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons/faQuestionCircle";
+import { faBars } from "@fortawesome/free-solid-svg-icons/faBars";
+import { faRocket } from "@fortawesome/free-solid-svg-icons/faRocket";
+import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons/faSignOutAlt";
+import { faCog } from "@fortawesome/free-solid-svg-icons/faCog";
+import { faChevronUp } from "@fortawesome/free-solid-svg-icons/faChevronUp";
+import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faList } from "@fortawesome/free-solid-svg-icons/faList";
+import { faUserShield } from "@fortawesome/free-solid-svg-icons/faUserShield";
+import { faCalendarCheck } from "@fortawesome/free-solid-svg-icons/faCalendarCheck";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useUserData } from "@/lib/hooks/useUserData";
 import signout from "@/lib/firebase/signout";
 import Image from "next/image";
-import OnboardingTour, {
-  START_TOUR_EVENT,
-} from "@/components/onboarding/OnboardingTour";
+import dynamic from "next/dynamic";
 import Footer from "@/components/nav/Footer";
+
+const OnboardingTour = dynamic(
+  () => import("@/components/onboarding/OnboardingTour"),
+  { ssr: false },
+);
+export const START_TOUR_EVENT = "start-tour";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

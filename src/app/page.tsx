@@ -1,205 +1,8 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useAuth } from "@/lib/context/AuthContext";
-import { loadStripe } from "@stripe/stripe-js";
-import toast from "react-hot-toast";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBolt,
-  faChartLine,
-  faLock,
-  faBullseye,
-  faShield,
-  faCircleCheck,
-} from "@fortawesome/free-solid-svg-icons";
-import {
-  Cadence,
-  CADENCE_TESTS,
-  CONTINUOUS_PLANS,
-  ContinuousPlan,
-} from "@/lib/pricing/continuous";
-
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-);
-
-interface PricingTier {
-  id: string;
-  name: string;
-  price: number;
-  priceId: string;
-  description: string;
-  features: string[];
-  popular?: boolean;
-  type: "one-time" | "subscription";
-  cta: string;
-}
-
-const PRICING_TIERS: PricingTier[] = [
-  {
-    id: "external_ip",
-    name: "External IP Pentest",
-    price: 199,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_AI_SINGLE || "",
-    description: "Gateways, firewalls, and external infrastructure",
-    type: "one-time",
-    cta: "Purchase Credit",
-    features: [
-      "1 External IP pentest credit",
-      "Compliance ready reports",
-      "Powered by Anthropic Claude agents",
-      "Network vulnerability assessment",
-      "Firewall & gateway testing",
-      "GRC platform integration (Drata, Vanta)",
-      "Remediation guidance",
-      "Results within 48 hours",
-    ],
-  },
-  {
-    id: "web_app",
-    name: "Web Application Pentest",
-    price: 500,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_WEB_APP || "",
-    description: "Up to 3 user roles, 20 pages & 10 API endpoints",
-    type: "one-time",
-    cta: "Purchase Credit",
-    popular: true,
-    features: [
-      "1 Web Application pentest credit",
-      "Compliance ready reports",
-      "Powered by Anthropic Claude agents",
-      "Up to 3 user roles tested",
-      "Up to 20 pages covered",
-      "Up to 10 API endpoints",
-      "Authentication & authorization testing",
-      "GRC platform integration (Drata, Vanta)",
-      "Results within 48 hours",
-    ],
-  },
-  {
-    id: "pentest_plus",
-    name: "Pentest+",
-    price: 1500,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PENTEST_PLUS || "",
-    description: "Web app pentest — up to 5 domains/URLs & 50 IPs",
-    type: "one-time",
-    cta: "Purchase Credit",
-    features: [
-      "1 Pentest+ credit",
-      "Web application pentest",
-      "Up to 5 domains/URLs covered",
-      "Up to 50 external IPs included",
-      "Up to 100 API endpoints",
-      "Up to 10 user roles tested",
-      "Compliance ready reports",
-      "Powered by Anthropic Claude agents",
-      "Authentication & authorization testing",
-      "GRC platform integration (Drata, Vanta)",
-      "Results within 48 hours",
-    ],
-  },
-];
-
-// Continuous testing plan data is shared with the in-app dashboard so prices
-// never drift — see @/lib/pricing/continuous.
+import PricingWidget from "./PricingWidget";
 
 export default function Home() {
-  const { currentUser } = useAuth();
-  const [loadingCheckout, setLoadingCheckout] = useState<string | null>(null);
-  const [cadence, setCadence] = useState<Cadence>("quarterly");
-
-  const handleStartPentest = () => {
-    if (!currentUser) {
-      window.location.href = `/login?returnUrl=${encodeURIComponent("/app/new-pentest")}`;
-      return;
-    }
-    window.location.href = "/app/new-pentest";
-  };
-
-  const handleCheckout = async (tier: PricingTier) => {
-    if (!currentUser) {
-      window.location.href = `/login?returnUrl=${encodeURIComponent("/#pricing")}`;
-      return;
-    }
-
-    setLoadingCheckout(tier.id);
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          priceId: tier.priceId,
-          mode: "payment",
-          quantity: 1,
-          userId: currentUser.uid,
-          email: currentUser.email,
-          metadata: { pentestType: tier.id }, // 'web_app' or 'external_ip'
-        }),
-      });
-
-      const data = await response.json();
-      if (!response.ok)
-        throw new Error(data.error || "Failed to create checkout session");
-
-      // Redirect directly to Stripe-hosted checkout URL
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error: any) {
-      console.error("Checkout error:", error);
-      const { default: toast } = await import("react-hot-toast");
-      toast.error(error.message || "Failed to start checkout");
-    } finally {
-      setLoadingCheckout(null);
-    }
-  };
-
-  const handleBuyBundle = async (plan: ContinuousPlan) => {
-    if (!plan.priceId) {
-      toast.error("This plan isn't available yet — please check back soon.");
-      return;
-    }
-    if (!currentUser) {
-      window.location.href = `/login?returnUrl=${encodeURIComponent("/#continuous")}`;
-      return;
-    }
-
-    const quantity = CADENCE_TESTS[cadence];
-    const checkoutId = `${plan.id}_${cadence}`;
-    setLoadingCheckout(checkoutId);
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          priceId: plan.priceId,
-          mode: "payment",
-          quantity,
-          userId: currentUser.uid,
-          email: currentUser.email,
-          // Webhook grants `quantity` credits of this type on completion.
-          metadata: { pentestType: plan.id, continuousCadence: cadence },
-        }),
-      });
-
-      const data = await response.json();
-      if (!response.ok)
-        throw new Error(data.error || "Failed to create checkout session");
-
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error: any) {
-      console.error("Bundle checkout error:", error);
-      toast.error(error.message || "Failed to start checkout");
-    } finally {
-      setLoadingCheckout(null);
-    }
-  };
-
   return (
     <main className="min-h-screen bg-[#0a141f] text-white">
       {/* Hero Section */}
@@ -216,15 +19,15 @@ export default function Home() {
               &mdash; no subscriptions, no surprises.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <button
-                onClick={handleStartPentest}
-                className="px-10 py-5 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors text-xl"
+              <Link
+                href="/app/new-pentest"
+                className="inline-block px-10 py-5 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors text-xl"
               >
                 Launch an AI Pentest Now
-              </button>
+              </Link>
               <Link
                 href="/LaunchAPentest"
-                className="px-10 py-5 bg-white/5 hover:bg-white/10 text-white font-normal rounded-lg border border-white/20 transition-colors text-xl"
+                className="inline-block px-10 py-5 bg-white/5 hover:bg-white/10 text-white font-normal rounded-lg border border-white/20 transition-colors text-xl"
               >
                 Get a Manual Pentest
               </Link>
@@ -252,13 +55,13 @@ export default function Home() {
             {[
               {
                 name: "External",
-                img: "/environments/external.png",
+                img: "/environments/external.webp",
                 desc: "Simulate real-world attacks on your public-facing systems, IPs, and infrastructure.",
                 href: "https://www.affordablepentesting.com/environments/external-pentesting",
               },
               {
                 name: "Web Application",
-                img: "/environments/web-app.png",
+                img: "/environments/web-app.webp",
                 desc: "Find XSS, SQL injection, authentication gaps, and logic flaws in your web apps.",
                 href: "https://www.affordablepentesting.com/environments/web-app-pentesting",
               },
@@ -270,19 +73,19 @@ export default function Home() {
               },
               {
                 name: "Cloud",
-                img: "/environments/cloud.png",
+                img: "/environments/cloud.webp",
                 desc: "Identify IAM misconfigs, exposed buckets, and vulnerabilities across AWS, Azure & GCP.",
                 href: "https://www.affordablepentesting.com/environments/cloud-pentesting",
               },
               {
                 name: "WiFi",
-                img: "/environments/wifi.png",
+                img: "/environments/wifi.webp",
                 desc: "Detect weak encryption, rogue access points, and unauthorized wireless access.",
                 href: "https://www.affordablepentesting.com/environments/wifi-pentesting",
               },
               {
                 name: "API",
-                img: "/environments/api.png",
+                img: "/environments/api.webp",
                 desc: "Uncover broken auth, BOLA, data exposure, and injection flaws across your APIs.",
                 href: "https://www.affordablepentesting.com/environments/api-pentesting",
               },
@@ -382,45 +185,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section — hidden
-      <section className="py-20 bg-[#0a141f]/50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
-              Why Choose <span className="text-[#34D399]">Affordable Pentesting</span>
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Professional security testing without the complexity
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {features.map((feature, idx) => (
-              <div
-                key={idx}
-                className="bg-white/5 border border-[#34D399]/20 rounded-lg p-8 hover:border-[#34D399]/40 transition-colors"
-              >
-                <div className="text-[#34D399] mb-4">
-                  {feature.icon ? (
-                    <FontAwesomeIcon icon={feature.icon} className="text-4xl" />
-                  ) : (
-                    <Image src="/brain.png" alt="AI" width={40} height={40} className="w-10 h-10" />
-                  )}
-                </div>
-                <h3 className="text-2xl font-bold mb-3 text-white">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-300 leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-      */}
-
-      {/* Sample Report Section */}
+{/* Sample Report Section */}
       <section id="sample-report" className="py-20 bg-[#060e16] scroll-mt-20">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-10">
@@ -496,138 +261,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Simple <span className="text-[#34D399]">Pricing</span>
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Purchase credits for the pentests you need
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {PRICING_TIERS.map((tier) => (
-              <PricingCard
-                key={tier.id}
-                tier={tier}
-                onSelect={() => handleCheckout(tier)}
-                loading={loadingCheckout === tier.id}
-                currentUser={currentUser}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Continuous Testing Section */}
-      <section id="continuous" className="py-20 bg-[#060e16] scroll-mt-20">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest mb-3">
-              Stay Secure Year-Round
-            </p>
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">
-              Continuous <span className="text-[#34D399]">Testing</span>
-            </h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Buy a year of pentests up front and save 20%. Credits land
-              instantly &mdash; launch a fresh test each month or quarter as
-              your attack surface changes.
-            </p>
-          </div>
-
-          {/* Cadence toggle */}
-          <div className="flex items-center justify-center mb-10">
-            <div className="inline-flex rounded-lg border border-white/15 bg-white/5 p-1">
-              {(["quarterly", "monthly"] as Cadence[]).map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setCadence(c)}
-                  className={`px-6 py-2 rounded-md text-sm font-normal transition-colors ${
-                    cadence === c
-                      ? "bg-[#34D399] text-[#041018]"
-                      : "text-gray-300 hover:text-white"
-                  }`}
-                >
-                  {c === "quarterly"
-                    ? "Quarterly · 4 tests/yr"
-                    : "Monthly · 12 tests/yr"}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {CONTINUOUS_PLANS.map((plan) => {
-              const tests = CADENCE_TESTS[cadence];
-              const total = plan.perTestPrice * tests;
-              const checkoutId = `${plan.id}_${cadence}`;
-              const available = Boolean(plan.priceId);
-              return (
-                <div
-                  key={plan.id}
-                  className="relative flex flex-col h-full bg-white/5 rounded-xl p-8 border-2 border-white/10 hover:border-[#34D399]/40 transition-all"
-                >
-                  <div className="mb-6">
-                    <h3 className="text-2xl font-light mb-2">{plan.name}</h3>
-                    <p className="text-gray-400 text-sm mb-4">
-                      {plan.description}
-                    </p>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-5xl font-light text-white">
-                        ${total.toLocaleString()}
-                      </span>
-                      <span className="text-gray-400">/ {tests} tests</span>
-                    </div>
-                    <p className="text-[#34D399] text-xs mt-2">
-                      ${plan.perTestPrice}/test · 20% off the $
-                      {plan.oneTimePrice} standard price
-                    </p>
-                  </div>
-
-                  <ul className="space-y-3 mb-8">
-                    {plan.features.map((feature, idx) => (
-                      <li
-                        key={idx}
-                        className="flex items-start gap-3 text-gray-300"
-                      >
-                        <FontAwesomeIcon
-                          icon={faCircleCheck}
-                          className="text-[#34D399] mt-1 flex-shrink-0"
-                        />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <button
-                    onClick={() => handleBuyBundle(plan)}
-                    disabled={!available || loadingCheckout === checkoutId}
-                    className="mt-auto w-full py-4 rounded-lg font-normal text-lg transition-colors bg-[#34D399] hover:bg-[#10b981] text-[#041018] disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loadingCheckout === checkoutId
-                      ? "Processing..."
-                      : !available
-                        ? "Coming Soon"
-                        : currentUser
-                          ? `Buy ${tests} tests`
-                          : "Sign In to Buy"}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-
-          <p className="text-center text-gray-500 text-xs mt-8 max-w-2xl mx-auto">
-            One-time purchase &mdash; {CADENCE_TESTS[cadence]} pentest credits
-            added to your account immediately. Launch each test whenever you
-            like.
-          </p>
-        </div>
-      </section>
+      <PricingWidget currentUser={null} />
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-[#34D399]/20 to-[#34D399]/5">
@@ -639,12 +273,12 @@ export default function Home() {
             Get started with AI-powered penetration testing. Purchase credits
             and run your first test in minutes.
           </p>
-          <button
-            onClick={handleStartPentest}
+          <Link
+            href="/app/new-pentest"
             className="inline-block px-10 py-5 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors text-xl"
           >
-            {currentUser ? "Start Your Pentest" : "Get Started"}
-          </button>
+            Get Started
+          </Link>
         </div>
       </section>
 
@@ -769,115 +403,5 @@ export default function Home() {
         </div>
       </section>
     </main>
-  );
-}
-
-const features = [
-  {
-    icon: null,
-    title: "AI-Powered Pentests",
-    description:
-      "Advanced Anthropic Claude agentic systems autonomously conduct penetration tests, identifying vulnerabilities and security weaknesses across your infrastructure.",
-  },
-  {
-    icon: faBolt,
-    title: "Fast Results",
-    description:
-      "Complete comprehensive security assessments delivered within 48 hours of target submission.",
-  },
-  {
-    icon: faChartLine,
-    title: "Actionable Reports",
-    description:
-      "Get detailed findings with severity ratings, exploitation steps, and clear remediation guidance you can act on immediately.",
-  },
-  {
-    icon: faLock,
-    title: "Compliance Ready",
-    description:
-      "Meet PCI-DSS, HIPAA, SOC 2, and other compliance requirements with our comprehensive testing methodology.",
-  },
-  {
-    icon: faBullseye,
-    title: "Transparent Pricing",
-    description:
-      "$199 per External IP pentest or $500 per Web Application pentest. No subscriptions, no hidden fees, no surprises.",
-  },
-  {
-    icon: faShield,
-    title: "Complete Coverage",
-    description:
-      "Comprehensive AI-powered penetration testing performed by advanced Anthropic Claude agentic systems that autonomously identify and exploit vulnerabilities.",
-  },
-];
-
-interface PricingCardProps {
-  tier: PricingTier;
-  onSelect: () => void;
-  loading: boolean;
-  currentUser: any;
-}
-
-function PricingCard({
-  tier,
-  onSelect,
-  loading,
-  currentUser,
-}: PricingCardProps) {
-  return (
-    <div
-      className={`relative flex flex-col h-full bg-white/5 rounded-xl p-8 border-2 transition-all hover:scale-[1.02] ${
-        tier.popular
-          ? "border-[#34D399] shadow-lg shadow-[#34D399]/20"
-          : "border-white/10"
-      }`}
-    >
-      {tier.popular && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#34D399] text-[#041018] px-4 py-1 rounded-full text-sm font-normal">
-          MOST POPULAR
-        </div>
-      )}
-
-      <div className="mb-6">
-        <h3 className="text-2xl font-light mb-2">{tier.name}</h3>
-        <p className="text-gray-400 text-sm mb-4">{tier.description}</p>
-        <div className="flex items-baseline gap-2">
-          <span className="text-5xl font-light text-white">
-            ${tier.price.toLocaleString()}
-          </span>
-          {tier.type === "subscription" && (
-            <span className="text-gray-400">/month</span>
-          )}
-        </div>
-      </div>
-
-      <ul className="space-y-3 mb-8">
-        {tier.features.map((feature, idx) => (
-          <li key={idx} className="flex items-start gap-3 text-gray-300">
-            <FontAwesomeIcon
-              icon={faCircleCheck}
-              className="text-[#34D399] mt-1 flex-shrink-0"
-            />
-            <span>{feature}</span>
-          </li>
-        ))}
-      </ul>
-
-      <button
-        onClick={() => onSelect()}
-        disabled={loading}
-        className={`mt-auto w-full py-4 rounded-lg font-bold text-lg transition-colors ${
-          tier.popular
-            ? "bg-[#34D399] hover:bg-[#10b981] text-[#041018]"
-            : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
-        } disabled:opacity-50 disabled:cursor-not-allowed font-normal`}
-      >
-        {loading
-          ? "Processing..."
-          : currentUser
-            ? tier.cta
-            : "Sign In to Purchase"}
-      </button>
-    </div>
   );
 }

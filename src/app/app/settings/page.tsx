@@ -2,16 +2,14 @@
 
 import { useState, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUser,
-  faChartBar,
-  faShield,
-  faLock,
-  faCheckCircle,
-  faSpinner,
-  faClock,
-  faCoins,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
+import { faChartBar } from "@fortawesome/free-solid-svg-icons/faChartBar";
+import { faShield } from "@fortawesome/free-solid-svg-icons/faShield";
+import { faLock } from "@fortawesome/free-solid-svg-icons/faLock";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons/faCheckCircle";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
+import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
+import { faCoins } from "@fortawesome/free-solid-svg-icons/faCoins";
 import {
   updateProfile,
   updatePassword,

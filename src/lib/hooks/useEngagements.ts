@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/context/AuthContext";
-import { db } from "@/lib/firebase/firebaseClient";
+import { getDb } from "@/lib/firebase/firebaseClient";
 import {
   collection,
   query,
@@ -24,7 +24,7 @@ export function useEngagements() {
     }
 
     const q = query(
-      collection(db, "engagements"),
+      collection(getDb(), "engagements"),
       where("createdBy", "==", currentUser.uid),
       orderBy("createdAt", "desc")
     );

@@ -1,6 +1,5 @@
 import {
   signInWithEmailAndPassword,
-  getAuth,
   signInWithPopup,
   GoogleAuthProvider,
   OAuthProvider,
@@ -8,11 +7,11 @@ import {
   signOut,
   UserCredential,
 } from "firebase/auth";
-import firebase_app from "./firebaseClient";
+import { getFirebaseAuth } from "./firebaseClient";
 import { FirebaseError } from "firebase/app";
 import { getAuthErrorMessage } from "./getAuthErrorMessage";
 
-const auth = getAuth(firebase_app);
+const auth = getFirebaseAuth();
 
 /**
  * Represents the result of a sign-in operation

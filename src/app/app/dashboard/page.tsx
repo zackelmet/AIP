@@ -5,15 +5,13 @@ export const dynamic = "force-dynamic";
 import { useMemo, useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faShieldHalved,
-  faGlobe,
-  faServer,
-  faPlus,
-  faXmark,
-  faJetFighter,
-  faRocket,
-} from "@fortawesome/free-solid-svg-icons";
+import { faShieldHalved } from "@fortawesome/free-solid-svg-icons/faShieldHalved";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons/faGlobe";
+import { faServer } from "@fortawesome/free-solid-svg-icons/faServer";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
+import { faJetFighter } from "@fortawesome/free-solid-svg-icons/faJetFighter";
+import { faRocket } from "@fortawesome/free-solid-svg-icons/faRocket";
 import Link from "next/link";
 import { useUserData } from "@/lib/hooks/useUserData";
 import { useUserScans } from "@/lib/hooks/useUserScans";

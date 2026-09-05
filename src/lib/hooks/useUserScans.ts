@@ -8,7 +8,7 @@ import {
   orderBy,
   where,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase/firebaseClient";
+import { getDb } from "@/lib/firebase/firebaseClient";
 import { normalizePentestStatus } from "@/lib/pentests/status";
 
 const RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
@@ -27,7 +27,7 @@ export function useUserScans(uid?: string | null) {
     const cutoff = Date.now() - RETENTION_MS;
 
     const pentestsQ = query(
-      collection(db, "pentests"),
+      collection(getDb(), "pentests"),
       where("userId", "==", uid),
       orderBy("createdAt", "desc"),
     );

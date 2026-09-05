@@ -11,6 +11,7 @@ const withMDX = createMDX({
 
 const nextConfig = {
   images: {
+    formats: ["image/webp", "image/avif"],
     remotePatterns: [{ hostname: "images.ctfassets.net" }],
   },
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
