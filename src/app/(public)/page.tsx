@@ -189,7 +189,7 @@ export default function Home() {
       </section>
 
 {/* Sample Report Section */}
-      <section id="sample-report" className="py-20 bg-[#060e16] scroll-mt-20">
+          <section id="sample-report" className="py-20 bg-[#060e16] scroll-mt-20">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-10">
             <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest mb-3">
@@ -205,13 +205,15 @@ export default function Home() {
             </p>
           </div>
 
-          {/* PDF Viewer */}
+          {/* Report preview image */}
           <div className="rounded-xl overflow-hidden border border-white/10 shadow-2xl shadow-black/40 mb-8">
-            <iframe
-              src="/templates/AIP Sample Report - WebApp Pentest.docx.pdf"
-              className="w-full"
-              style={{ height: "780px" }}
-              title="AIP Sample Pentest Report"
+            <Image
+              src="/templates/sample-report-preview.webp"
+              alt="AIP Sample Pentest Report preview"
+              width={1200}
+              height={780}
+              className="w-full h-auto"
+              priority
             />
           </div>
 
