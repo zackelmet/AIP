@@ -204,14 +204,14 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-xl mx-auto">
             <div className="bg-[#0a141f] border border-white/10 rounded-xl overflow-hidden shadow-2xl shadow-black/40">
               {/* Window chrome */}
-              <div className="flex items-center gap-3 px-5 py-3 border-b border-white/10 bg-[#0a141f]/80">
+              <div className="flex items-center gap-3 px-4 py-2.5 border-b border-white/10 bg-[#0a141f]/80">
                 <span className="flex items-center gap-1.5" aria-hidden="true">
-                  <span className="w-3 h-3 rounded-full bg-red-500/80" />
-                  <span className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                  <span className="w-3 h-3 rounded-full bg-green-500/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
                 </span>
                 <span className="text-gray-400 text-xs font-mono truncate ml-2">
                   juice-shop.demo-labs.net — AI Pentest Report.pdf
@@ -222,15 +222,15 @@ export default function Home() {
               {/* Scrollable pages */}
               <div
                 className="overflow-y-auto"
-                style={{ maxHeight: "600px" }}
+                style={{ maxHeight: "520px" }}
               >
                 {[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43].map((n) => (
                   <img
                     key={n}
                     src={`/templates/sample-report/pg-${String(n).padStart(2, "0")}.webp`}
                     alt={`Sample report — page ${n}`}
-                    width={850}
-                    height={1100}
+                    width={800}
+                    height={1035}
                     className="w-full h-auto border-b border-white/5"
                     loading={n <= 3 ? "eager" : "lazy"}
                   />
