@@ -11,6 +11,9 @@ jest.mock("firebase/auth", () => ({
 jest.mock("../../../lib/firebase/firebaseClient", () => ({
   __esModule: true,
   default: {},
+  getFirebaseAuth: jest.fn(() => ({})),
+  getDb: jest.fn(),
+  getFirebaseApp: jest.fn(),
 }));
 
 describe("signout", () => {

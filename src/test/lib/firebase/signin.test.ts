@@ -21,6 +21,9 @@ jest.mock("../../../lib/firebase/getAuthErrorMessage", () => ({
 // Mock the Firebase client
 jest.mock("../../../lib/firebase/firebaseClient", () => ({
   default: {},
+  getFirebaseAuth: jest.fn(() => ({})),
+  getDb: jest.fn(),
+  getFirebaseApp: jest.fn(),
 }));
 
 describe("signIn function", () => {
