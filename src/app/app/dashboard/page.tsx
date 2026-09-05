@@ -222,10 +222,10 @@ function DashboardInner({
                 className="text-4xl text-[#041018]"
               />
             </div>
-            <p className="text-[#041018] font-light text-xl mb-1">
+            <p className="text-[#041018] font-bold text-xl mb-1">
               Start New Pentest
             </p>
-            <p className="text-[#041018]/70 text-sm">Configure and launch</p>
+            <p className="text-[#041018]/70 text-sm font-medium">Configure and launch</p>
           </Link>
 
           <div className="grid lg:grid-cols-3 gap-6" data-tour="credits">
@@ -254,7 +254,7 @@ function DashboardInner({
               </div>
               <div>
                 <p className="text-gray-400 text-sm mb-1">Web App Credits</p>
-                <p className="text-5xl font-bold text-white mb-2">
+                <p className="text-lg text-white mb-2">
                   {credits.web_app}
                 </p>
                 <p className="text-xs text-gray-500">$500 per credit</p>
@@ -288,7 +288,7 @@ function DashboardInner({
                 <p className="text-gray-400 text-sm mb-1">
                   External IP Credits
                 </p>
-                <p className="text-5xl font-bold text-white mb-2">
+                <p className="text-lg text-white mb-2">
                   {credits.external_ip}
                 </p>
                 <p className="text-xs text-gray-500">$199 per credit</p>
@@ -320,7 +320,7 @@ function DashboardInner({
               </div>
               <div>
                 <p className="text-gray-400 text-sm mb-1">Pentest+ Credits</p>
-                <p className="text-5xl font-bold text-white mb-2">
+                <p className="text-lg text-white mb-2">
                   {credits.pentest_plus}
                 </p>
                 <p className="text-xs text-gray-500">$1,500 per credit</p>
