@@ -61,16 +61,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={ibmPlexSans.variable}>
-      {/* Google Analytics */}
+      <link rel="preconnect" href="https://www.googletagmanager.com" />
       <Script
         src="https://www.googletagmanager.com/gtag/js?id=G-M5G1ZEH7SX"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
       />
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=AW-18028367660"
-        strategy="afterInteractive"
-      />
-      <Script id="gtag-init" strategy="afterInteractive">{`
+      <Script id="gtag-init" strategy="lazyOnload">{`
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
@@ -82,7 +78,7 @@ export default function RootLayout({
       <Script
         src="https://analytics.ahrefs.com/analytics.js"
         data-key="N4Mnpu+8JEJfzzJ4k33EyQ"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
       />
       {/* Change your theme HERE */}
       <body data-theme="cupcake" className={ibmPlexSans.className}>

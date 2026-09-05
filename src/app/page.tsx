@@ -1,6 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import PricingWidget from "./PricingWidget";
+import dynamic from "next/dynamic";
+import LazySection from "@/components/shared/LazySection";
+
+const PricingWidget = dynamic(() => import("./PricingWidget"), { ssr: false });
 
 export default function Home() {
   return (
@@ -261,7 +264,9 @@ export default function Home() {
         </div>
       </section>
 
-      <PricingWidget currentUser={null} />
+      <LazySection>
+        <PricingWidget currentUser={null} />
+      </LazySection>
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-[#34D399]/20 to-[#34D399]/5">
