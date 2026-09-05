@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
-import ClientProviders from "@/lib/context/ClientProviders";
-import ConditionalNav from "@/components/nav/ConditionalNav";
+import PageShell from "@/components/nav/PageShell";
 
 const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
@@ -74,17 +73,13 @@ export default function RootLayout({
         gtag('config', 'G-W7KR3XVQTY');
         gtag('config', 'AW-18028367660');
       `}</Script>
-      {/* Ahrefs Analytics */}
       <Script
         src="https://analytics.ahrefs.com/analytics.js"
         data-key="N4Mnpu+8JEJfzzJ4k33EyQ"
         strategy="lazyOnload"
       />
-      {/* Change your theme HERE */}
       <body data-theme="cupcake" className={ibmPlexSans.className}>
-        <ClientProviders>
-          <ConditionalNav>{children}</ConditionalNav>
-        </ClientProviders>
+        <PageShell>{children}</PageShell>
       </body>
     </html>
   );
