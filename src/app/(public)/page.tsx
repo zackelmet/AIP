@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import LazySection from "@/components/shared/LazySection";
+import SampleReportForm from "@/components/landing/SampleReportForm";
 
 const PricingWidget = dynamic(() => import("./PricingWidget"), { ssr: false });
 
@@ -200,68 +201,32 @@ export default function Home() {
             </h2>
             <p className="text-gray-300 text-lg max-w-2xl mx-auto">
               A real AI-powered pentest report — executive summary, severity breakdown, and
-              detailed findings with business impact, remediation, and verification steps.
+              detailed findings with business impact, remediation, and verification steps. Enter your
+              work email and we&apos;ll send the full PDF to your inbox.
             </p>
           </div>
 
-          <div className="max-w-xl mx-auto">
-            <div className="bg-[#0a141f] border border-white/10 rounded-xl overflow-hidden shadow-2xl shadow-black/40">
-              {/* Window chrome */}
-              <div className="flex items-center gap-3 px-4 py-2.5 border-b border-white/10 bg-[#0a141f]/80">
-                <span className="flex items-center gap-1.5" aria-hidden="true">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-                </span>
-                <span className="text-gray-400 text-xs font-mono truncate ml-2">
-                  juice-shop.demo-labs.net — AI Pentest Report.pdf
-                </span>
-                <span className="text-gray-500 text-xs ml-auto hidden sm:block">scroll ↓</span>
-              </div>
-
-              {/* Scrollable pages */}
-              <div
-                className="overflow-y-auto"
-                style={{ maxHeight: "520px" }}
-              >
-                {[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43].map((n) => (
-                  <img
-                    key={n}
-                    src={`/templates/sample-report/pg-${String(n).padStart(2, "0")}.webp`}
-                    alt={`Sample report — page ${n}`}
-                    width={800}
-                    height={1035}
-                    className="w-full h-auto border-b border-white/5"
-                    loading={n <= 3 ? "eager" : "lazy"}
-                  />
-                ))}
-              </div>
-            </div>
+          {/* 4-page preview grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10 max-w-4xl mx-auto">
+            {[
+              { src: "/templates/sample-report/pg-01.webp", alt: "Sample report cover" },
+              { src: "/templates/sample-report/pg-06.webp", alt: "Sample report executive summary" },
+              { src: "/templates/sample-report/pg-07.webp", alt: "Sample report findings by target" },
+              { src: "/templates/sample-report/pg-10.webp", alt: "Sample report finding detail" },
+            ].map((p) => (
+              <img
+                key={p.src}
+                src={p.src}
+                alt={p.alt}
+                width={800}
+                height={1035}
+                className="w-full h-auto rounded-lg border border-white/10 shadow-lg"
+                loading="lazy"
+              />
+            ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
-            <a
-              href="/templates/AIP Sample Report - WebApp Pentest.docx.pdf"
-              download="AIP Sample Pentest Report.pdf"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors text-base"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
-              </svg>
-              Download Full PDF (43 pages)
-            </a>
-            <a
-              href="/templates/AIP Sample Report - WebApp Pentest.docx.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white/5 hover:bg-white/10 text-white font-normal rounded-lg border border-white/20 transition-colors text-base"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-              Open in New Tab
-            </a>
-          </div>
+          <SampleReportForm />
         </div>
       </section>
 
