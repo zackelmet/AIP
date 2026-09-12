@@ -3,25 +3,18 @@
 import { useRef, useEffect } from "react";
 import { useTheme } from "@/lib/context/ThemeContext";
 
-interface Particle {
-  x: number;
-  y: number;
-  size: number;
+interface FlowLine {
+  points: { x: number; y: number }[];
   speed: number;
-  angle: number;
-  radius: number;
   offset: number;
   alpha: number;
-  pulseSpeed: number;
+  width: number;
+  phase: number;
 }
 
-export default function SwirlyParticles({
-  className = "",
-}: {
-  className?: string;
-}) {
+export default function SwirlyParticles({ className = "" }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const particlesRef = useRef<Particle[]>([]);
+  const linesRef = useRef<FlowLine[]>([]);
   const frameRef = useRef<number>(0);
   const { theme } = useTheme();
 
@@ -39,56 +32,66 @@ export default function SwirlyParticles({
     resize();
     window.addEventListener("resize", resize);
 
-    const COUNT = 80;
-    const particles: Particle[] = [];
+    const COUNT = 6;
+    const lines: FlowLine[] = [];
 
     for (let i = 0; i < COUNT; i++) {
-      const angle = (i / COUNT) * Math.PI * 2;
-      particles.push({
-        x: 0,
-        y: 0,
-        size: 1.5 + Math.random() * 2.5,
-        speed: 0.15 + Math.random() * 0.25,
-        angle,
-        radius: 60 + Math.random() * 200,
+      const pts: { x: number; y: number }[] = [];
+      const segments = 50;
+      for (let j = 0; j <= segments; j++) {
+        pts.push({ x: 0, y: 0 });
+      }
+      lines.push({
+        points: pts,
+        speed: 0.08 + Math.random() * 0.12,
         offset: Math.random() * Math.PI * 2,
-        alpha: 0.15 + Math.random() * 0.4,
-        pulseSpeed: 0.01 + Math.random() * 0.03,
+        alpha: 0.12 + Math.random() * 0.18,
+        width: 1 + Math.random() * 2,
+        phase: (i / COUNT) * Math.PI * 2,
       });
     }
-    particlesRef.current = particles;
-
-    const cx = canvas.width / 2;
-    const cy = canvas.height * 0.5;
+    linesRef.current = lines;
 
     let time = 0;
 
     const animate = () => {
-      time += 0.005;
+      time += 0.003;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const isDark = theme === "dark";
       const baseColor = isDark ? "52, 211, 153" : "52, 211, 153";
 
-      for (const p of particles) {
-        const a = p.angle + time * p.speed;
-        const r = p.radius + Math.sin(time * 0.3 + p.offset) * 30;
-        const px = cx + Math.cos(a) * r;
-        const py =
-          cy + Math.sin(a) * r * 0.5 + Math.sin(a * 1.5 + p.offset) * 20;
+      for (const line of lines) {
+        const w = canvas.width;
+        const h = canvas.height;
 
-        p.x = px;
-        p.y = py;
-        p.alpha =
-          0.15 +
-          Math.random() * 0.35 +
-          Math.sin(time * p.pulseSpeed + p.offset) * 0.15;
+        for (let j = 0; j < line.points.length; j++) {
+          const t = j / (line.points.length - 1);
+          const x = t * w + Math.sin(time * line.speed + t * 3 + line.phase) * 120 + Math.sin(time * 0.2 + t * 5 + line.offset) * 40;
+          const y = h * 0.3 + Math.sin(time * line.speed * 0.7 + t * 2 + line.phase + line.offset) * 80 + Math.sin(time * 0.15 + t * 4) * 30 + t * h * 0.3;
+          line.points[j] = { x, y };
+        }
 
-        const alpha = Math.max(0, Math.min(1, p.alpha));
         ctx.beginPath();
-        ctx.arc(px, py, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${baseColor}, ${alpha})`;
-        ctx.fill();
+        ctx.moveTo(line.points[0].x, line.points[0].y);
+
+        for (let j = 1; j < line.points.length - 2; j++) {
+          const xc = (line.points[j].x + line.points[j + 1].x) / 2;
+          const yc = (line.points[j].y + line.points[j + 1].y) / 2;
+          ctx.quadraticCurveTo(line.points[j].x, line.points[j].y, xc, yc);
+        }
+
+        const last = line.points.length - 1;
+        ctx.quadraticCurveTo(
+          line.points[last - 1].x,
+          line.points[last - 1].y,
+          line.points[last].x,
+          line.points[last].y,
+        );
+
+        ctx.strokeStyle = `rgba(${baseColor}, ${line.alpha})`;
+        ctx.lineWidth = line.width;
+        ctx.stroke();
       }
 
       frameRef.current = requestAnimationFrame(animate);

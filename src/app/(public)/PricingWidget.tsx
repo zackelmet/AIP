@@ -109,10 +109,10 @@ function PricingCard({
 }: PricingCardProps) {
   return (
     <div
-      className={`relative flex flex-col h-full bg-white/5 rounded-xl p-8 border-2 transition-all hover:scale-[1.02] ${
+      className={`relative flex flex-col h-full bg-theme-panel rounded-xl p-8 border-2 transition-all hover:scale-[1.02] ${
         tier.popular
           ? "border-[#34D399] shadow-lg shadow-[#34D399]/20"
-          : "border-white/10"
+          : "border-theme"
       }`}
     >
       {tier.popular && (
@@ -123,20 +123,20 @@ function PricingCard({
 
       <div className="mb-6">
         <h3 className="text-2xl font-light mb-2">{tier.name}</h3>
-        <p className="text-gray-400 text-sm mb-4">{tier.description}</p>
+        <p className="text-theme-muted text-sm mb-4">{tier.description}</p>
         <div className="flex items-baseline gap-2">
-          <span className="text-5xl font-light text-white">
+          <span className="text-5xl font-light text-theme">
             ${tier.price.toLocaleString()}
           </span>
           {tier.type === "subscription" && (
-            <span className="text-gray-400">/month</span>
+            <span className="text-theme-muted">/month</span>
           )}
         </div>
       </div>
 
       <ul className="space-y-3 mb-8">
         {tier.features.map((feature, idx) => (
-          <li key={idx} className="flex items-start gap-3 text-gray-300">
+          <li key={idx} className="flex items-start gap-3 text-theme-muted">
             <FontAwesomeIcon
               icon={faCircleCheck}
               className="text-[#34D399] mt-1 flex-shrink-0"
@@ -152,7 +152,7 @@ function PricingCard({
         className={`mt-auto w-full py-4 rounded-lg font-bold text-lg transition-colors ${
           tier.popular
             ? "bg-[#34D399] hover:bg-[#10b981] text-[#041018]"
-            : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
+            : "bg-theme-panel hover:bg-white/10 text-theme border border-theme"
         } disabled:opacity-50 disabled:cursor-not-allowed font-normal`}
       >
         {loading
@@ -271,7 +271,7 @@ export default function PricingWidget({
             <h2 className="text-4xl lg:text-5xl font-light mb-4">
               Simple <span className="text-[#34D399]">Pricing</span>
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-theme-muted max-w-3xl mx-auto">
               Purchase credits for the pentests you need
             </p>
           </div>
@@ -291,7 +291,7 @@ export default function PricingWidget({
       </section>
 
       {/* Continuous Testing Section */}
-      <section id="continuous" className="py-20 bg-[#060e16] scroll-mt-20">
+      <section id="continuous" className="py-20 bg-theme-alt scroll-mt-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
             <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest mb-3">
@@ -300,7 +300,7 @@ export default function PricingWidget({
             <h2 className="text-4xl lg:text-5xl font-light mb-4">
               Continuous <span className="text-[#34D399]">Testing</span>
             </h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            <p className="text-xl text-theme-muted max-w-2xl mx-auto">
               Buy a year of pentests up front and save 20%. Credits land
               instantly &mdash; launch a fresh test each month or quarter as
               your attack surface changes.
@@ -309,7 +309,7 @@ export default function PricingWidget({
 
           {/* Cadence toggle */}
           <div className="flex items-center justify-center mb-10">
-            <div className="inline-flex rounded-lg border border-white/15 bg-white/5 p-1">
+            <div className="inline-flex rounded-lg border border-theme bg-theme-panel p-1">
               {(["quarterly", "monthly"] as Cadence[]).map((c) => (
                 <button
                   key={c}
@@ -317,7 +317,7 @@ export default function PricingWidget({
                   className={`px-6 py-2 rounded-md text-sm font-normal transition-colors ${
                     cadence === c
                       ? "bg-[#34D399] text-[#041018]"
-                      : "text-gray-300 hover:text-white"
+                      : "text-theme-muted hover:text-theme"
                   }`}
                 >
                   {c === "quarterly"
@@ -337,18 +337,18 @@ export default function PricingWidget({
               return (
                 <div
                   key={plan.id}
-                  className="relative flex flex-col h-full bg-white/5 rounded-xl p-8 border-2 border-white/10 hover:border-[#34D399]/40 transition-all"
+                  className="relative flex flex-col h-full bg-theme-panel rounded-xl p-8 border-2 border-theme hover:border-[#34D399]/40 transition-all"
                 >
                   <div className="mb-6">
                     <h3 className="text-2xl font-light mb-2">{plan.name}</h3>
-                    <p className="text-gray-400 text-sm mb-4">
+                    <p className="text-theme-muted text-sm mb-4">
                       {plan.description}
                     </p>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-5xl font-light text-white">
+                      <span className="text-5xl font-light text-theme">
                         ${total.toLocaleString()}
                       </span>
-                      <span className="text-gray-400">/ {tests} tests</span>
+                      <span className="text-theme-muted">/ {tests} tests</span>
                     </div>
                     <p className="text-[#34D399] text-xs mt-2">
                       ${plan.perTestPrice}/test · 20% off the $
@@ -360,7 +360,7 @@ export default function PricingWidget({
                     {plan.features.map((feature, idx) => (
                       <li
                         key={idx}
-                        className="flex items-start gap-3 text-gray-300"
+                        className="flex items-start gap-3 text-theme-muted"
                       >
                         <FontAwesomeIcon
                           icon={faCircleCheck}
@@ -389,7 +389,7 @@ export default function PricingWidget({
             })}
           </div>
 
-          <p className="text-center text-gray-500 text-xs mt-8 max-w-2xl mx-auto">
+          <p className="text-center text-theme-muted text-xs mt-8 max-w-2xl mx-auto">
             One-time purchase &mdash; {CADENCE_TESTS[cadence]} pentest credits
             added to your account immediately. Launch each test whenever you
             like.

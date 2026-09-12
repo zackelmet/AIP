@@ -116,7 +116,7 @@ export default function PricingPage() {
   const renderProductCard = (p: Product) => (
     <div
       key={p.id}
-      className={`relative rounded-xl border ${p.popular ? "border-emerald-500 shadow-xl scale-105" : "border-white/10"} bg-white/5 p-8 flex flex-col`}
+      className={`relative rounded-xl border ${p.popular ? "border-emerald-500 shadow-xl scale-105" : "border-theme"} bg-theme-panel p-8 flex flex-col`}
     >
       {p.popular && (
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
@@ -124,13 +124,13 @@ export default function PricingPage() {
         </div>
       )}
       <div className="mb-6">
-        <h3 className="text-2xl font-bold text-white mb-2">{p.name}</h3>
-        <p className="text-gray-400 text-sm mb-4">{p.description}</p>
+        <h3 className="text-2xl font-bold text-theme mb-2">{p.name}</h3>
+        <p className="text-theme-muted text-sm mb-4">{p.description}</p>
         <div className="flex items-baseline gap-1">
-          <span className="text-5xl font-extrabold text-white">
+          <span className="text-5xl font-extrabold text-theme">
             ${p.price.toLocaleString()}
           </span>
-          <span className="text-gray-400 text-sm">/ credit</span>
+          <span className="text-theme-muted text-sm">/ credit</span>
         </div>
       </div>
       <ul className="space-y-3 mb-8 flex-grow">
@@ -147,12 +147,12 @@ export default function PricingPage() {
                 clipRule="evenodd"
               />
             </svg>
-            <span className="text-gray-300 text-sm">{f}</span>
+            <span className="text-theme-muted text-sm">{f}</span>
           </li>
         ))}
       </ul>
       <div className="flex items-center gap-3 mb-4">
-        <label className="text-gray-400 text-sm">Qty:</label>
+        <label className="text-theme-muted text-sm">Qty:</label>
         <input
           type="number"
           min={1}
@@ -164,13 +164,13 @@ export default function PricingPage() {
               [p.id]: Math.max(1, parseInt(e.target.value) || 1),
             }))
           }
-          className="w-16 px-2 py-1 rounded-lg bg-white/10 border border-white/20 text-white text-sm text-center"
+          className="w-16 px-2 py-1 rounded-lg bg-theme-panel border border-theme text-theme text-sm text-center"
         />
       </div>
       <button
         onClick={() => handleCheckout(p.id, p.priceId)}
         disabled={loading === p.id}
-        className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${p.popular ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "bg-white/10 hover:bg-white/20 text-white"} disabled:opacity-50 disabled:cursor-not-allowed`}
+        className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${p.popular ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "bg-theme-panel hover:bg-white/10 text-theme border border-theme"} disabled:opacity-50 disabled:cursor-not-allowed`}
       >
         {loading === p.id ? "Loading…" : "Buy Credits"}
       </button>
@@ -178,11 +178,11 @@ export default function PricingPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#0a141f] py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-theme py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-extrabold text-white mb-4">Pricing</h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <h1 className="text-5xl font-extrabold text-theme mb-4">Pricing</h1>
+          <p className="text-xl text-theme-muted max-w-2xl mx-auto">
             Buy pentest credits — no subscriptions, no surprises. Credits never
             expire.
           </p>
@@ -191,10 +191,10 @@ export default function PricingPage() {
         {/* AI Pentest Credits */}
         <div className="mb-20">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-white mb-2">
+            <h2 className="text-3xl font-bold text-theme mb-2">
               AI-Driven Automated Pentests
             </h2>
-            <p className="text-gray-400">
+            <p className="text-theme-muted">
               Lightning-fast vulnerability scanning powered by AI
             </p>
           </div>
@@ -205,7 +205,7 @@ export default function PricingPage() {
 
         {/* FAQ */}
         <div id="faq" className="max-w-3xl mx-auto mt-20 scroll-mt-20">
-          <h2 className="text-3xl font-bold text-white text-center mb-10">
+          <h2 className="text-3xl font-bold text-theme text-center mb-10">
             Frequently Asked Questions
           </h2>
           <div className="space-y-4">
@@ -233,10 +233,10 @@ export default function PricingPage() {
             ].map(({ q, a }) => (
               <div
                 key={q}
-                className="bg-white/5 border border-white/10 rounded-xl p-6"
+                className="bg-theme-panel border border-theme rounded-xl p-6"
               >
-                <h3 className="text-lg font-semibold text-white mb-2">{q}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{a}</p>
+                <h3 className="text-lg font-semibold text-theme mb-2">{q}</h3>
+                <p className="text-theme-muted text-sm leading-relaxed">{a}</p>
               </div>
             ))}
           </div>

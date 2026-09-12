@@ -7,7 +7,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#0a141f] border-t border-[#34D399] text-white">
+    <footer className="bg-theme border-t border-theme-accent text-theme">
       <div className="max-w-7xl mx-auto px-5 pt-10 pb-12 flex flex-col gap-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="flex items-center gap-3">
@@ -43,7 +43,7 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-sm text-[var(--text-muted)]">
-          <div className="flex items-center gap-0 divide-x divide-gray-600">
+          <div className="flex items-center gap-0 divide-x divide-theme">
             <Link href="/blog" className="hover:text-[var(--primary)] transition px-4">
               Blog
             </Link>
