@@ -65,11 +65,11 @@ export default function RateUsForm() {
   };
 
   const inputClass =
-    "w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#34D399]/40 focus:border-[#34D399]/40 transition";
+    "w-full rounded-lg border border-theme bg-theme-panel px-4 py-2.5 text-sm text-theme placeholder:text-theme-muted focus:outline-none focus:ring-2 focus:ring-[#34D399]/40 focus:border-[#34D399]/40 transition";
 
   const Wordmark = (
     <div className="flex items-center justify-center gap-2 mb-8">
-      <span className="text-lg font-semibold tracking-tight text-white">
+      <span className="text-lg font-semibold tracking-tight text-theme">
         Affordable Pentesting
       </span>
     </div>
@@ -80,14 +80,14 @@ export default function RateUsForm() {
     return (
       <div className="w-full max-w-md text-center">
         {Wordmark}
-        <div className="rounded-2xl border border-[#34D399]/30 bg-[#0f1f2e] p-8">
+        <div className="rounded-2xl border border-[#34D399]/30 bg-theme-panel p-8">
           <div className="text-5xl mb-4">{happy ? "🎉" : "🙏"}</div>
-          <h1 className="text-2xl font-light mb-3">
+          <h1 className="text-2xl font-light mb-3 text-theme">
             {happy ? "Thank you!" : "Thank you for the honest feedback"}
           </h1>
           {happy ? (
             <>
-              <p className="text-gray-400 text-sm mb-6">
+              <p className="text-theme-muted text-sm mb-6">
                 We&apos;re thrilled you had a great experience. If you have a
                 moment, a public review means the world to a small team.
               </p>
@@ -103,7 +103,7 @@ export default function RateUsForm() {
               )}
             </>
           ) : (
-            <p className="text-gray-400 text-sm">
+            <p className="text-theme-muted text-sm">
               We take this seriously and will use it to improve. Someone from our
               team may reach out to make things right.
             </p>
@@ -119,11 +119,11 @@ export default function RateUsForm() {
       {Wordmark}
       <form
         onSubmit={handleSubmit}
-        className="rounded-2xl border border-white/10 bg-[#0f1f2e] p-8 space-y-6"
+        className="rounded-2xl border border-theme bg-theme-panel p-8 space-y-6"
       >
         <div className="text-center">
-          <h1 className="text-2xl font-light mb-1">How did we do?</h1>
-          <p className="text-gray-400 text-sm">
+          <h1 className="text-2xl font-light mb-1 text-theme">How did we do?</h1>
+          <p className="text-theme-muted text-sm">
             {target
               ? `Your assessment of ${target} is complete.`
               : "Your penetration test is complete."}{" "}
@@ -146,7 +146,7 @@ export default function RateUsForm() {
               <FontAwesomeIcon
                 icon={faStar}
                 className={`text-3xl transition-colors ${
-                  (hover || rating) >= n ? "text-[#34D399]" : "text-white/15"
+                  (hover || rating) >= n ? "text-[#34D399]" : "text-theme-muted/30"
                 }`}
               />
             </button>
@@ -156,7 +156,7 @@ export default function RateUsForm() {
         {rating > 0 && (
           <div className="space-y-5">
             <label className="block space-y-1.5">
-              <span className="text-sm text-gray-300">
+              <span className="text-sm text-theme-muted">
                 {happy
                   ? "What stood out? (optional)"
                   : "What could we have done better?"}
@@ -177,7 +177,7 @@ export default function RateUsForm() {
             {/* Happy path → testimonial + permission */}
             {happy && (
               <div className="space-y-4 rounded-xl border border-[#34D399]/20 bg-[#34D399]/5 p-4">
-                <p className="text-sm text-gray-300">
+                <p className="text-sm text-theme-muted">
                   Mind if we share your words? Add your details and grant
                   permission below.
                 </p>
@@ -208,7 +208,7 @@ export default function RateUsForm() {
                     onChange={(e) => setPermission(e.target.checked)}
                     className="mt-0.5 h-4 w-4 accent-[#34D399]"
                   />
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-theme-muted">
                     I give Affordable Pentesting permission to publish my
                     feedback as a testimonial (name &amp; company included).
                   </span>
@@ -228,7 +228,7 @@ export default function RateUsForm() {
           </div>
         )}
       </form>
-      <p className="text-center text-gray-600 text-xs mt-4">
+      <p className="text-center text-theme-muted text-xs mt-4">
         Affordable Pentesting · Professional penetration testing
       </p>
     </div>

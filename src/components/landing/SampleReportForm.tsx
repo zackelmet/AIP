@@ -40,8 +40,8 @@ export default function SampleReportForm() {
         <p className="text-xl font-semibold text-[#34D399] mb-2">
           Check your inbox ✓
         </p>
-        <p className="text-gray-400 text-sm">
-          We just emailed the sample report to <strong className="text-white">{email}</strong>.
+        <p className="text-theme-muted text-sm">
+          We just emailed the sample report to <strong className="text-theme">{email}</strong>.
           If it doesn&apos;t arrive within a minute, check spam.
         </p>
       </div>
@@ -61,7 +61,7 @@ export default function SampleReportForm() {
           }}
           placeholder="you@company.com"
           aria-label="Work email"
-          className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-[#34D399] text-sm"
+          className="flex-1 px-4 py-3 bg-theme-panel border border-theme rounded-lg text-theme placeholder:text-theme-muted focus:outline-none focus:border-[#34D399] text-sm"
           autoComplete="email"
         />
         <button
@@ -72,7 +72,7 @@ export default function SampleReportForm() {
           {status === "loading" ? "Sending…" : "Email me the report"}
         </button>
       </div>
-      <p className={`text-xs mt-2 ${status === "error" ? "text-red-400" : "text-gray-500"}`}>
+      <p className={`text-xs mt-2 ${status === "error" ? "text-red-400" : "text-theme-muted"}`}>
         {status === "error"
           ? message
           : "Work email only. We'll send the full 43-page PDF straight to your inbox — no account needed."}
