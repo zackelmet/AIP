@@ -215,7 +215,7 @@ export default function AuthForm() {
             </p>
             <div className="flex flex-wrap gap-3 justify-center lg:justify-start text-sm text-[var(--text-muted)]">
               <span className="neon-chip">AI-Powered Pentesting</span>
-              <span className="neon-chip">Anthropic Claude Agents</span>
+              <span className="neon-chip">Latest SOTA AI Models</span>
               <span className="neon-chip">Compliance Ready Reports</span>
             </div>
           </div>

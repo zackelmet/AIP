@@ -41,7 +41,7 @@ const PRICING_TIERS: PricingTier[] = [
     features: [
       "1 External IP pentest credit",
       "Compliance ready reports",
-      "Powered by Anthropic Claude agents",
+      "Powered by the latest SOTA AI models",
       "Network vulnerability assessment",
       "Firewall & gateway testing",
       "GRC platform integration (Drata, Vanta)",
@@ -61,7 +61,7 @@ const PRICING_TIERS: PricingTier[] = [
     features: [
       "1 Web Application pentest credit",
       "Compliance ready reports",
-      "Powered by Anthropic Claude agents",
+      "Powered by the latest SOTA AI models",
       "Up to 3 user roles tested",
       "Up to 20 pages covered",
       "Up to 10 API endpoints",
@@ -86,7 +86,7 @@ const PRICING_TIERS: PricingTier[] = [
       "Up to 100 API endpoints",
       "Up to 10 user roles tested",
       "Compliance ready reports",
-      "Powered by Anthropic Claude agents",
+      "Powered by the latest SOTA AI models",
       "Authentication & authorization testing",
       "GRC platform integration (Drata, Vanta)",
       "Results within 48 hours",

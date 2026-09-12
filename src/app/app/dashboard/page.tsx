@@ -528,7 +528,7 @@ function DashboardInner({
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-[#34D399] mt-0.5">✓</span>
-                    <span>Powered by Anthropic Claude</span>
+                    <span>Powered by the latest SOTA AI models</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-[#34D399] mt-0.5">✓</span>
