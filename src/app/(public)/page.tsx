@@ -22,7 +22,7 @@ export default function Home() {
             </h1>
             <p className="text-xl lg:text-2xl text-theme-muted max-w-3xl mx-auto leading-relaxed">
               AI-powered pentests that find what attackers exploit &mdash;
-              delivered in days, not weeks. No subscriptions, no surprises.
+              delivered in hours, not weeks. No subscriptions, no surprises.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Link
