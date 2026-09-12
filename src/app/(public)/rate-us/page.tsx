@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function RateUsPage() {
   return (
-    <main className="min-h-screen bg-theme text-theme flex flex-col items-center justify-center px-4 py-12">
+    <main className="min-h-screen bg-gray-50 text-theme flex flex-col items-center justify-center px-4 py-12">
       <Suspense fallback={null}>
         <RateUsForm />
       </Suspense>
