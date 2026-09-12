@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AuthProvider } from "./AuthContext";
+import { ThemeProvider } from "./ThemeContext";
 import { SubscriptionModalProvider } from "./SubscriptionModalContext";
 import { AuthService } from "../auth/AuthService";
 import { config } from "@fortawesome/fontawesome-svg-core";
@@ -26,11 +27,13 @@ export default function ClientProviders({ children }: any) {
   }, []);
 
   return (
-    <AuthProvider authService={authService}>
-      <SubscriptionModalProvider>
-        {ToasterComp ? <ToasterComp /> : null}
-        {children}
-      </SubscriptionModalProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider authService={authService}>
+        <SubscriptionModalProvider>
+          {ToasterComp ? <ToasterComp /> : null}
+          {children}
+        </SubscriptionModalProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

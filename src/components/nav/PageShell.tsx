@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import PublicNav from "./PublicNav";
 import Footer from "./Footer";
+import { ThemeProvider } from "@/lib/context/ThemeContext";
 
 export default function PageShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -12,10 +13,10 @@ export default function PageShell({ children }: { children: React.ReactNode }) {
   if (isDashboard) return <>{children}</>;
 
   return (
-    <>
+    <ThemeProvider>
       <PublicNav />
       {children}
       <Footer />
-    </>
+    </ThemeProvider>
   );
 }

@@ -3,22 +3,24 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import LazySection from "@/components/shared/LazySection";
 import SampleReportForm from "@/components/landing/SampleReportForm";
+import SwirlyParticles from "@/components/landing/SwirlyParticles";
 
 const PricingWidget = dynamic(() => import("./PricingWidget"), { ssr: false });
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#0a141f] text-white">
+    <main className="min-h-screen bg-theme text-theme">
       {/* Hero Section */}
       <section className="relative overflow-hidden min-h-svh flex flex-col justify-center">
+        <SwirlyParticles />
         <div className="absolute inset-0 bg-gradient-to-br from-[#34D399]/10 via-transparent to-transparent" />
         <div className="max-w-7xl w-full mx-auto px-6 py-20 lg:py-32 relative">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <h1 className="text-5xl lg:text-7xl font-light tracking-tight">
-              <span className="block text-white">Penetration Testing</span>
+              <span className="block text-theme">Penetration Testing</span>
               <span className="block text-[#34D399] mt-2">Made Simple</span>
             </h1>
-            <p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl lg:text-2xl text-theme-muted max-w-3xl mx-auto leading-relaxed">
               AI-powered penetration testing. Flexible, transparent pricing
               &mdash; no subscriptions, no surprises.
             </p>
@@ -31,7 +33,7 @@ export default function Home() {
               </Link>
               <Link
                 href="/LaunchAPentest"
-                className="inline-block px-10 py-5 bg-white/5 hover:bg-white/10 text-white font-normal rounded-lg border border-white/20 transition-colors text-xl"
+                className="inline-block px-10 py-5 bg-theme-panel hover:bg-white/10 text-theme font-normal rounded-lg border border-theme transition-colors text-xl"
               >
                 Get a Manual Pentest
               </Link>
@@ -41,16 +43,16 @@ export default function Home() {
       </section>
 
       {/* Environments Section */}
-      <section className="py-20 bg-[#060e16]">
+      <section className="py-20 bg-theme-alt">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest mb-3">
               What We Test
             </p>
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">
+            <h2 className="text-4xl lg:text-5xl font-light mb-4 text-theme">
               Pentest <span className="text-[#34D399]">Environments</span>
             </h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            <p className="text-xl text-theme-muted max-w-2xl mx-auto">
               AI-powered and manual testing across every attack surface.
             </p>
           </div>
@@ -99,7 +101,7 @@ export default function Home() {
                 href={env.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group bg-white/5 border border-white/10 hover:border-[#34D399]/50 rounded-xl p-6 flex flex-col items-center text-center transition-all hover:bg-white/[0.07] hover:shadow-lg hover:shadow-[#34D399]/5"
+                className="group bg-theme-panel border border-theme hover:border-[#34D399]/50 rounded-xl p-6 flex flex-col items-center text-center transition-all hover:bg-white/[0.07] hover:shadow-lg hover:shadow-[#34D399]/5"
               >
                 <div className="w-20 h-20 mb-5 flex items-center justify-center">
                   <Image
@@ -110,10 +112,10 @@ export default function Home() {
                     className="object-contain w-full h-full drop-shadow-[0_0_8px_rgba(52,211,153,0.25)] group-hover:drop-shadow-[0_0_14px_rgba(52,211,153,0.45)] transition-all"
                   />
                 </div>
-                <h3 className="text-white font-normal text-lg mb-2">
+                <h3 className="text-theme font-normal text-lg mb-2">
                   {env.name}
                 </h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
+                <p className="text-theme-muted text-sm leading-relaxed">
                   {env.desc}
                 </p>
                 <span className="mt-4 text-[#34D399] text-xs font-normal uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
@@ -133,10 +135,10 @@ export default function Home() {
               <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest">
                 Audit-Ready Output
               </p>
-              <h2 className="text-4xl lg:text-5xl font-light text-white">
+              <h2 className="text-4xl lg:text-5xl font-light text-theme">
                 Compliance Ready Reports
               </h2>
-              <p className="text-gray-300 text-lg leading-relaxed">
+              <p className="text-theme-muted text-lg leading-relaxed">
                 Every pentest generates a structured report designed to satisfy
                 auditors — not just developers. Findings are mapped to common
                 control frameworks so your evidence package is ready the moment
@@ -156,7 +158,7 @@ export default function Home() {
                     <span className="text-[#34D399] text-lg font-bold mt-0.5 flex-shrink-0">
                       ✓
                     </span>
-                    <span className="text-gray-200 text-base leading-snug">
+                    <span className="text-theme-body text-base leading-snug">
                       {item}
                     </span>
                   </div>
@@ -189,30 +191,43 @@ export default function Home() {
         </div>
       </section>
 
-{/* Sample Report Section */}
-      <section id="sample-report" className="py-24 bg-[#060e16] scroll-mt-20">
+      {/* Sample Report Section */}
+      <section id="sample-report" className="py-24 bg-theme-alt scroll-mt-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest mb-3">
               See the deliverable
             </p>
-            <h2 className="text-4xl lg:text-5xl font-light mb-4">
+            <h2 className="text-4xl lg:text-5xl font-light mb-4 text-theme">
               Sample <span className="text-[#34D399]">Pentest Report</span>
             </h2>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-              A real AI-powered pentest report — executive summary, severity breakdown, and
-              detailed findings with business impact, remediation, and verification steps. Enter your
-              work email and we&apos;ll send the full PDF to your inbox.
+            <p className="text-theme-muted text-lg max-w-2xl mx-auto">
+              A real AI-powered pentest report — executive summary, severity
+              breakdown, and detailed findings with business impact,
+              remediation, and verification steps. Enter your work email and
+              we&apos;ll send the full PDF to your inbox.
             </p>
           </div>
 
           {/* 4-page preview grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10 max-w-4xl mx-auto">
             {[
-              { src: "/templates/sample-report/pg-01.webp", alt: "Sample report cover" },
-              { src: "/templates/sample-report/pg-06.webp", alt: "Sample report executive summary" },
-              { src: "/templates/sample-report/pg-07.webp", alt: "Sample report findings by target" },
-              { src: "/templates/sample-report/pg-10.webp", alt: "Sample report finding detail" },
+              {
+                src: "/templates/sample-report/pg-01.webp",
+                alt: "Sample report cover",
+              },
+              {
+                src: "/templates/sample-report/pg-06.webp",
+                alt: "Sample report executive summary",
+              },
+              {
+                src: "/templates/sample-report/pg-07.webp",
+                alt: "Sample report findings by target",
+              },
+              {
+                src: "/templates/sample-report/pg-10.webp",
+                alt: "Sample report finding detail",
+              },
             ].map((p) => (
               <img
                 key={p.src}
@@ -220,7 +235,7 @@ export default function Home() {
                 alt={p.alt}
                 width={800}
                 height={1035}
-                className="w-full h-auto rounded-lg border border-white/10 shadow-lg"
+                className="w-full h-auto rounded-lg border border-theme shadow-lg"
                 loading="lazy"
               />
             ))}
@@ -237,10 +252,10 @@ export default function Home() {
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-[#34D399]/20 to-[#34D399]/5">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-4xl lg:text-5xl font-light mb-6">
+          <h2 className="text-4xl lg:text-5xl font-light mb-6 text-theme">
             Ready to Secure Your Systems?
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-xl text-theme-muted mb-8">
             Get started with AI-powered penetration testing. Purchase credits
             and run your first test in minutes.
           </p>
@@ -254,7 +269,7 @@ export default function Home() {
       </section>
 
       {/* Affordable Pentesting.com Section */}
-      <section className="py-24 bg-[#060e16] border-t border-[#34D399]/20">
+      <section className="py-24 bg-theme-alt border-t border-[#34D399]/20">
         <div className="max-w-6xl mx-auto px-6">
           {/* Header */}
           <div className="text-center mb-14">
@@ -275,13 +290,13 @@ export default function Home() {
                 className="h-9 w-9"
               />
               <span
-                className="text-white font-light text-3xl tracking-wide"
+                className="text-theme font-light text-3xl tracking-wide"
                 style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
               >
                 Affordable Pentesting
               </span>
             </a>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-theme-muted text-lg max-w-2xl mx-auto">
               Human-led penetration testing for SOC 2, HIPAA, PCI DSS, ISO
               27001, and NIST — at prices built for startups, SMBs, and growing
               companies.
@@ -306,12 +321,12 @@ export default function Home() {
             ].map((item) => (
               <div
                 key={item.label}
-                className="bg-white/5 border border-white/10 hover:border-[#34D399]/40 rounded-xl p-6 transition-colors"
+                className="bg-theme-panel border border-theme hover:border-[#34D399]/40 rounded-xl p-6 transition-colors"
               >
-                <h3 className="text-white font-normal text-base mb-2">
+                <h3 className="text-theme font-normal text-base mb-2">
                   {item.label}
                 </h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
+                <p className="text-theme-muted text-sm leading-relaxed">
                   {item.desc}
                 </p>
               </div>
@@ -343,8 +358,8 @@ export default function Home() {
                   ✓
                 </span>
                 <div>
-                  <h3 className="text-white font-normal mb-1">{item.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">
+                  <h3 className="text-theme font-normal mb-1">{item.title}</h3>
+                  <p className="text-theme-muted text-sm leading-relaxed">
                     {item.desc}
                   </p>
                 </div>
@@ -366,7 +381,7 @@ export default function Home() {
               href="https://www.affordablepentesting.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white font-normal rounded-lg border border-white/20 transition-colors"
+              className="px-8 py-4 bg-theme-panel hover:bg-white/10 text-theme font-normal rounded-lg border border-theme transition-colors"
             >
               Learn More
             </a>

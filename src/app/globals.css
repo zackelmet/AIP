@@ -8,6 +8,12 @@
   --text-primary: #ffffff;
 }
 
+.light-mode {
+  --primary-bg: #ffffff;
+  --primary-accent: #34D399;
+  --text-primary: #1a202c;
+}
+
 * {
   font-family: 'IBM Plex Sans', sans-serif;
 }
@@ -34,6 +40,30 @@ body {
 	--danger: #ff5a67;
 	--info: #45b7ff;
   --shadow-glow: 0 0 35px rgba(52, 211, 153, 0.18);
+  --nav-bg: #0a141f;
+  --nav-text: #ffffff;
+  --nav-border: #34D399;
+}
+
+.light-mode {
+	--bg: #f8fafc;
+	--panel: #ffffff;
+	--panel-soft: rgba(0, 0, 0, 0.02);
+	--border: #e2e8f0;
+  --border-strong: rgba(52, 211, 153, 0.25);
+	--text: #1a202c;
+	--text-muted: #64748b;
+	--primary: #34D399;
+	--primary-strong: #10b981;
+	--secondary: #059669;
+	--success: #33ff99;
+	--warning: #f5a524;
+	--danger: #ff5a67;
+	--info: #45b7ff;
+  --shadow-glow: 0 0 35px rgba(52, 211, 153, 0.12);
+  --nav-bg: #ffffff;
+  --nav-text: #1a202c;
+  --nav-border: #e2e8f0;
 }
 
 body {
@@ -133,6 +163,16 @@ body[data-theme="cupcake"] {
 	transform: translateY(-1px);
 	box-shadow: 0 18px 45px rgba(52, 211, 153, 0.32);
 }
+
+/* Theme-aware utility classes */
+.bg-theme { background-color: var(--primary-bg); }
+.bg-theme-alt { background-color: var(--bg); }
+.bg-theme-panel { background-color: var(--panel); }
+.text-theme { color: var(--text-primary); }
+.text-theme-muted { color: var(--text-muted); }
+.text-theme-body { color: var(--text); }
+.border-theme { border-color: var(--border); }
+.border-theme-accent { border-color: var(--border-strong); }
 
 .neon-outline-btn {
 	border: 1px solid var(--primary);
