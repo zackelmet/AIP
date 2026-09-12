@@ -37,24 +37,24 @@ export default function BlogPage() {
   const posts = getAllPosts(["slug", "title", "date", "description", "image"]);
 
   return (
-    <main className="min-h-screen bg-[#0a141f] text-white">
+    <main className="min-h-screen bg-theme text-theme">
       <div className="max-w-5xl mx-auto px-5 py-20">
         {/* Header */}
         <div className="mb-14 text-center">
           <h1
-            className="text-5xl font-bold mb-4 text-white"
+            className="text-5xl font-bold mb-4 text-theme"
             style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
           >
             Blog
           </h1>
-          <p className="text-gray-400 text-lg max-w-xl mx-auto">
+          <p className="text-theme-muted text-lg max-w-xl mx-auto">
             Security insights, pentesting tips, and vulnerability research.
           </p>
         </div>
 
         {/* No posts yet */}
         {posts.length === 0 && (
-          <div className="text-center py-24 text-gray-500">
+          <div className="text-center py-24 text-theme-muted">
             <p className="text-xl mb-2">No posts yet.</p>
             <p className="text-sm">Check back soon.</p>
           </div>
@@ -67,7 +67,7 @@ export default function BlogPage() {
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
-                className="group flex flex-col bg-white/5 hover:bg-white/[0.08] border border-white/10 hover:border-[#4590e2]/40 rounded-xl overflow-hidden transition-all"
+                className="group flex flex-col bg-theme-panel hover:bg-white/[0.08] border border-theme hover:border-[#4590e2]/40 rounded-xl overflow-hidden transition-all"
               >
                 {post.image && (
                   <div className="relative aspect-[1200/630] w-full">
@@ -81,11 +81,11 @@ export default function BlogPage() {
                   </div>
                 )}
                 <div className="p-5 flex flex-col flex-1">
-                  <p className="text-xs text-gray-500 mb-2">{post.date}</p>
-                  <h2 className="text-white font-bold text-lg mb-2 group-hover:text-[#4590e2] transition-colors leading-snug">
+                  <p className="text-xs text-theme-muted mb-2">{post.date}</p>
+                  <h2 className="text-theme font-bold text-lg mb-2 group-hover:text-[#4590e2] transition-colors leading-snug">
                     {post.title}
                   </h2>
-                  <p className="text-gray-400 text-sm line-clamp-3 flex-1">
+                  <p className="text-theme-muted text-sm line-clamp-3 flex-1">
                     {post.description}
                   </p>
                   <span className="mt-4 text-sm font-semibold text-[#4590e2] group-hover:underline">

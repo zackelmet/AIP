@@ -52,20 +52,20 @@ export default function SupportPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0a141f] text-white">
+    <main className="min-h-screen bg-theme text-theme">
       {/* Hero */}
-      <div className="border-b border-[#34D399]/30 bg-gradient-to-b from-[#0a141f] to-[#0a1828]">
+      <div className="border-b border-[#34D399]/30" style={{ background: "linear-gradient(to bottom, var(--primary-bg), color-mix(in srgb, var(--bg) 80%, #0a1828))" }}>
         <div className="max-w-4xl mx-auto px-6 py-20 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#34D399]/20 border border-[#34D399]/40 mb-6">
             <FontAwesomeIcon icon={faHeadset} className="text-3xl text-[#34D399]" />
           </div>
           <h1
-            className="text-4xl lg:text-5xl font-bold text-white mb-4"
+            className="text-4xl lg:text-5xl font-bold text-theme mb-4"
             style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
           >
             Support
           </h1>
-          <p className="text-gray-400 text-lg max-w-xl mx-auto">
+          <p className="text-theme-muted text-lg max-w-xl mx-auto">
             Have a question or issue? Send us a message and we&apos;ll get back to you within one business day.
           </p>
         </div>
@@ -74,28 +74,28 @@ export default function SupportPage() {
       <div className="max-w-4xl mx-auto px-6 py-16 grid lg:grid-cols-3 gap-10">
         {/* Sidebar */}
         <aside className="space-y-4">
-          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-2">
+          <h2 className="text-sm font-semibold text-theme-muted uppercase tracking-widest mb-2">
             Quick Links
           </h2>
 
           <Link
             href="/trust-safety"
-            className="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#34D399]/40 rounded-xl transition-all group"
+            className="flex items-center gap-3 p-4 bg-theme-panel hover:bg-white/10 border border-theme hover:border-[#34D399]/40 rounded-xl transition-all group"
           >
             <div className="p-2 rounded-lg bg-[#34D399]/15 border border-[#34D399]/30">
               <FontAwesomeIcon icon={faShieldHalved} className="text-[#34D399]" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white group-hover:text-[#34D399] transition-colors">
+              <p className="text-sm font-semibold text-theme group-hover:text-[#34D399] transition-colors">
                 Trust + Safety
               </p>
-              <p className="text-xs text-gray-500">Policies &amp; legal</p>
+              <p className="text-xs text-theme-muted">Policies &amp; legal</p>
             </div>
           </Link>
 
-          <div className="mt-6 pt-6 border-t border-white/10">
-            <p className="text-xs text-gray-500 leading-relaxed">
-              Response time is typically within <span className="text-gray-300">1 business day</span>.
+          <div className="mt-6 pt-6 border-t border-theme">
+            <p className="text-xs text-theme-muted leading-relaxed">
+              Response time is typically within <span className="text-theme-muted">1 business day</span>.
             </p>
           </div>
         </aside>
@@ -108,13 +108,13 @@ export default function SupportPage() {
                 icon={faCircleCheck}
                 className="text-5xl text-green-400 mb-4"
               />
-              <h3 className="text-2xl font-bold text-white mb-2">Message Sent</h3>
-              <p className="text-gray-400 mb-6">
+              <h3 className="text-2xl font-bold text-theme mb-2">Message Sent</h3>
+              <p className="text-theme-muted mb-6">
                 Thanks for reaching out. We&apos;ll get back to you within one business day.
               </p>
               <button
                 onClick={() => setStatus("idle")}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg transition-colors text-sm"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-theme font-semibold rounded-lg transition-colors text-sm"
               >
                 <FontAwesomeIcon icon={faArrowLeft} />
                 Send another message
@@ -123,9 +123,9 @@ export default function SupportPage() {
           ) : (
             <form
               onSubmit={handleSubmit}
-              className="bg-white/5 border border-white/10 rounded-xl p-8 space-y-5"
+              className="bg-theme-panel border border-theme rounded-xl p-8 space-y-5"
             >
-              <h2 className="text-xl font-bold text-white mb-1">Send a Message</h2>
+              <h2 className="text-xl font-bold text-theme mb-1">Send a Message</h2>
 
               {status === "error" && (
                 <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-300">
@@ -136,7 +136,7 @@ export default function SupportPage() {
 
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-1.5">
+                  <label className="block text-sm font-semibold text-theme-muted mb-1.5">
                     Name <span className="text-[#34D399]">*</span>
                   </label>
                   <input
@@ -145,11 +145,11 @@ export default function SupportPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Jane Smith"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/15 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-[#34D399] transition-colors text-sm"
+                    className="w-full px-4 py-3 bg-theme-panel border border-theme rounded-lg text-theme placeholder-theme-muted focus:outline-none focus:border-[#34D399] transition-colors text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-300 mb-1.5">
+                  <label className="block text-sm font-semibold text-theme-muted mb-1.5">
                     Email <span className="text-[#34D399]">*</span>
                   </label>
                   <input
@@ -158,20 +158,20 @@ export default function SupportPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="jane@example.com"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/15 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-[#34D399] transition-colors text-sm"
+                    className="w-full px-4 py-3 bg-theme-panel border border-theme rounded-lg text-theme placeholder-theme-muted focus:outline-none focus:border-[#34D399] transition-colors text-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-1.5">
+                <label className="block text-sm font-semibold text-theme-muted mb-1.5">
                   Topic <span className="text-[#34D399]">*</span>
                 </label>
                 <select
                   required
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#0a141f] border border-white/15 rounded-lg text-white focus:outline-none focus:border-[#34D399] transition-colors text-sm appearance-none"
+                  className="w-full px-4 py-3 bg-theme-panel border border-theme rounded-lg text-theme focus:outline-none focus:border-[#34D399] transition-colors text-sm appearance-none"
                 >
                   <option value="" disabled>
                     Select a topic…
@@ -185,7 +185,7 @@ export default function SupportPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-1.5">
+                <label className="block text-sm font-semibold text-theme-muted mb-1.5">
                   Message <span className="text-[#34D399]">*</span>
                 </label>
                 <textarea
@@ -194,7 +194,7 @@ export default function SupportPage() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Describe your issue or question in as much detail as possible…"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/15 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-[#34D399] transition-colors text-sm resize-none"
+                  className="w-full px-4 py-3 bg-theme-panel border border-theme rounded-lg text-theme placeholder-theme-muted focus:outline-none focus:border-[#34D399] transition-colors text-sm resize-none"
                 />
               </div>
 

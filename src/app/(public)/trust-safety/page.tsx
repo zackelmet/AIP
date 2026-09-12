@@ -152,9 +152,9 @@ const sections = [
 
 export default function TrustSafetyPage() {
   return (
-    <main className="min-h-screen bg-[#0a141f] text-white">
+    <main className="min-h-screen bg-theme text-theme">
       {/* Hero */}
-      <div className="border-b border-[#34D399]/30 bg-gradient-to-b from-[#0a141f] to-[#071210]">
+      <div className="border-b border-[#34D399]/30" style={{ background: "linear-gradient(to bottom, var(--primary-bg), color-mix(in srgb, var(--bg) 85%, #071210))" }}>
         <div className="max-w-4xl mx-auto px-6 py-20 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#34D399]/20 border border-[#34D399]/40 mb-6">
             <FontAwesomeIcon
@@ -163,27 +163,29 @@ export default function TrustSafetyPage() {
             />
           </div>
           <h1
-            className="text-4xl lg:text-5xl font-light text-white mb-4"
+            className="text-4xl lg:text-5xl font-light text-theme mb-4"
             style={{ fontFamily: "var(--font-ibm-plex-sans)" }}
           >
             Trust + Safety Center
           </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+          <p className="text-theme-muted text-lg max-w-2xl mx-auto">
             Our policies governing the ethical, legal, and responsible use of
             Affordable Pentesting services.
           </p>
-          <p className="mt-3 text-sm text-gray-500">Last updated: March 2026</p>
+          <p className="mt-3 text-sm text-theme-muted">Last updated: March 2026</p>
         </div>
       </div>
 
       {/* Quick nav */}
-      <div className="border-b border-white/10 bg-[#0a141f]/80 sticky top-0 z-10 backdrop-blur-sm">
+      <div className="border-b border-theme sticky top-0 z-10 backdrop-blur-sm"
+          style={{ backgroundColor: "color-mix(in srgb, var(--bg) 80%, transparent)" }}
+        >
         <div className="max-w-4xl mx-auto px-6 py-3 flex flex-wrap gap-x-4 gap-y-1 text-sm overflow-hidden">
           {sections.map((s) => (
             <a
               key={s.anchor}
               href={`#${s.anchor}`}
-              className="whitespace-nowrap text-gray-400 hover:text-[#34D399] transition-colors"
+              className="whitespace-nowrap text-theme-muted hover:text-[#34D399] transition-colors"
             >
               {s.title}
             </a>
@@ -206,13 +208,13 @@ export default function TrustSafetyPage() {
                   className="text-[#34D399] text-lg"
                 />
               </div>
-              <h2 className="text-2xl font-normal text-white">
+              <h2 className="text-2xl font-normal text-theme">
                 {section.title}
               </h2>
             </div>
-            <div className="bg-white/5 border border-[#34D399]/10 rounded-xl p-6 space-y-4">
+            <div className="bg-theme-panel border border-[#34D399]/10 rounded-xl p-6 space-y-4">
               {section.content.map((para, i) => (
-                <p key={i} className="text-gray-300 leading-relaxed text-sm">
+                <p key={i} className="text-theme-muted leading-relaxed text-sm">
                   {para}
                 </p>
               ))}
@@ -222,10 +224,10 @@ export default function TrustSafetyPage() {
 
         {/* Contact CTA */}
         <div className="bg-[#34D399]/10 border border-[#34D399]/30 rounded-xl p-8 text-center">
-          <h3 className="text-xl font-normal text-white mb-2">
+          <h3 className="text-xl font-normal text-theme mb-2">
             Questions about our policies?
           </h3>
-          <p className="text-gray-400 mb-5 text-sm">
+          <p className="text-theme-muted mb-5 text-sm">
             Our team is happy to answer any questions about how we handle your
             data or operate our services.
           </p>
