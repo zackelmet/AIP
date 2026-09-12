@@ -272,7 +272,7 @@ export default function PricingWidget({
               Simple <span className="text-[#34D399]">Pricing</span>
             </h2>
             <p className="text-xl text-theme-muted max-w-3xl mx-auto">
-              Purchase credits for the pentests you need
+              One-time credits. Launch any test, anytime. No lock-in.
             </p>
           </div>
 

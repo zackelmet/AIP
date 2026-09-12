@@ -10,6 +10,7 @@ interface FlowLine {
   alpha: number;
   width: number;
   phase: number;
+  amp: number;
 }
 
 export default function SwirlyParticles({ className = "" }: { className?: string }) {
@@ -32,22 +33,23 @@ export default function SwirlyParticles({ className = "" }: { className?: string
     resize();
     window.addEventListener("resize", resize);
 
-    const COUNT = 6;
+    const COUNT = 10;
     const lines: FlowLine[] = [];
 
     for (let i = 0; i < COUNT; i++) {
       const pts: { x: number; y: number }[] = [];
-      const segments = 50;
+      const segments = 60;
       for (let j = 0; j <= segments; j++) {
         pts.push({ x: 0, y: 0 });
       }
       lines.push({
         points: pts,
-        speed: 0.08 + Math.random() * 0.12,
+        speed: 0.1 + Math.random() * 0.15,
         offset: Math.random() * Math.PI * 2,
-        alpha: 0.12 + Math.random() * 0.18,
-        width: 1 + Math.random() * 2,
+        alpha: 0.15 + Math.random() * 0.25,
+        width: 1.5 + Math.random() * 2,
         phase: (i / COUNT) * Math.PI * 2,
+        amp: 100 + Math.random() * 80,
       });
     }
     linesRef.current = lines;
@@ -55,7 +57,7 @@ export default function SwirlyParticles({ className = "" }: { className?: string
     let time = 0;
 
     const animate = () => {
-      time += 0.003;
+      time += 0.004;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const isDark = theme === "dark";
@@ -67,8 +69,11 @@ export default function SwirlyParticles({ className = "" }: { className?: string
 
         for (let j = 0; j < line.points.length; j++) {
           const t = j / (line.points.length - 1);
-          const x = t * w + Math.sin(time * line.speed + t * 3 + line.phase) * 120 + Math.sin(time * 0.2 + t * 5 + line.offset) * 40;
-          const y = h * 0.3 + Math.sin(time * line.speed * 0.7 + t * 2 + line.phase + line.offset) * 80 + Math.sin(time * 0.15 + t * 4) * 30 + t * h * 0.3;
+          const wave1 = Math.sin(time * line.speed + t * 3 + line.phase);
+          const wave2 = Math.sin(time * 0.3 + t * 5 + line.offset);
+          const wave3 = Math.sin(time * 0.15 + t * 2 + line.phase * 0.7);
+          const x = t * w + wave1 * line.amp * 0.5 + wave2 * 40 + wave3 * 30;
+          const y = h * 0.25 + wave1 * 60 + wave2 * 35 + wave3 * 25 + t * h * 0.35;
           line.points[j] = { x, y };
         }
 

@@ -17,12 +17,12 @@ export default function Home() {
         <div className="max-w-7xl w-full mx-auto px-6 py-20 lg:py-32 relative">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <h1 className="text-5xl lg:text-7xl font-light tracking-tight">
-              <span className="block text-theme">Penetration Testing</span>
-              <span className="block text-[#34D399] mt-2">Made Simple</span>
+              <span className="block text-theme">Penetration Testing,</span>
+              <span className="block text-[#34D399] mt-2">Reimagined</span>
             </h1>
             <p className="text-xl lg:text-2xl text-theme-muted max-w-3xl mx-auto leading-relaxed">
-              AI-powered penetration testing. Flexible, transparent pricing
-              &mdash; no subscriptions, no surprises.
+              AI-powered pentests that find what attackers exploit &mdash;
+              delivered in days, not weeks. No subscriptions, no surprises.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Link
@@ -202,10 +202,10 @@ export default function Home() {
               Sample <span className="text-[#34D399]">Pentest Report</span>
             </h2>
             <p className="text-theme-muted text-lg max-w-2xl mx-auto">
-              A real AI-powered pentest report — executive summary, severity
-              breakdown, and detailed findings with business impact,
-              remediation, and verification steps. Enter your work email and
-              we&apos;ll send the full PDF to your inbox.
+              See exactly what your auditor will receive. Every report includes
+              an executive summary, CVSS-scored findings with business impact,
+              remediation steps, and compliance mapping. Enter your work email
+              and we&apos;ll send the full PDF.
             </p>
           </div>
 
@@ -253,11 +253,11 @@ export default function Home() {
       <section className="py-20 bg-gradient-to-r from-[#34D399]/20 to-[#34D399]/5">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl lg:text-5xl font-light mb-6 text-theme">
-            Ready to Secure Your Systems?
+            Ready to lock in your security?
           </h2>
           <p className="text-xl text-theme-muted mb-8">
-            Get started with AI-powered penetration testing. Purchase credits
-            and run your first test in minutes.
+            Buy credits, launch a pentest, and get audit-ready results &mdash;
+            no calls, no waiting.
           </p>
           <Link
             href="/app/new-pentest"
@@ -297,9 +297,10 @@ export default function Home() {
               </span>
             </a>
             <p className="text-theme-muted text-lg max-w-2xl mx-auto">
-              Human-led penetration testing for SOC 2, HIPAA, PCI DSS, ISO
-              27001, and NIST — at prices built for startups, SMBs, and growing
-              companies.
+              Need a human-led assessment? Our parent company delivers
+              OSCP-certified manual pentesting for SOC 2, HIPAA, PCI DSS, ISO
+              27001, and NIST &mdash; at prices built for startups, SMBs, and
+              growing companies.
             </p>
           </div>
 
