@@ -190,11 +190,7 @@ export default function AuthForm() {
 
   return (
     <div
-      className="relative min-h-screen text-[--text] overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(135deg, rgba(52,211,153,0.06) 0%, transparent 50%), #0a141f",
-      }}
+      className="relative min-h-screen overflow-hidden bg-theme"
     >
       <div className="absolute inset-0 pointer-events-none opacity-60">
         <div className="absolute inset-6 neon-grid" />
@@ -221,7 +217,7 @@ export default function AuthForm() {
           </div>
 
           <div className="flex-1 w-full max-w-xl">
-            <div className="p-6 lg:p-7 space-y-6 rounded-[18px] bg-[rgba(255,255,255,0.06)] border border-white/10 backdrop-blur-sm">
+            <div className="p-6 lg:p-7 space-y-6 rounded-[18px] bg-theme-panel border border-theme backdrop-blur-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)] mb-1">

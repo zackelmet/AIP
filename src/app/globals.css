@@ -12,6 +12,22 @@
   --primary-bg: #ffffff;
   --primary-accent: #34D399;
   --text-primary: #1a202c;
+  --sidebar-bg: #ffffff;
+  --sidebar-text: #1a202c;
+  --sidebar-text-muted: #64748b;
+  --sidebar-border: #e2e8f0;
+  --sidebar-hover: rgba(0, 0, 0, 0.04);
+  --sidebar-active-bg: rgba(52, 211, 153, 0.1);
+  --sidebar-active-border: rgba(52, 211, 153, 0.3);
+  --card-bg: rgba(0, 0, 0, 0.02);
+  --card-border: rgba(0, 0, 0, 0.08);
+  --card-highlight: rgba(52, 211, 153, 0.15);
+  --badge-bg: rgba(0, 0, 0, 0.05);
+  --badge-border: rgba(0, 0, 0, 0.08);
+  --input-bg: rgba(0, 0, 0, 0.03);
+  --input-border: rgba(0, 0, 0, 0.12);
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+  --divider: rgba(0, 0, 0, 0.1);
 }
 
 * {
@@ -129,11 +145,19 @@ body[data-theme="cupcake"] {
 }
 
 .neon-grid {
-	background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-		linear-gradient(0deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-	background-size: 32px 32px;
-	border-radius: 18px;
-	border: 1px solid rgba(255, 255, 255, 0.04);
+  --grid-opacity: 0.6;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.light-mode .neon-grid {
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  border-color: rgba(0, 0, 0, 0.06);
 }
 
 .neon-chip {

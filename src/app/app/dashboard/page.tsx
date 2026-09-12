@@ -191,7 +191,7 @@ function DashboardInner({
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-screen">
-          <div className="text-gray-500">Loading...</div>
+          <div style={{ color: "var(--text-muted)" }}>Loading...</div>
         </div>
       </DashboardLayout>
     );
@@ -205,8 +205,8 @@ function DashboardInner({
       <div className="p-6 lg:p-8 space-y-8 max-w-7xl mx-auto">
         {/* Page Header */}
         <div>
-          <h1 className="text-3xl font-light text-white mb-2">Dashboard</h1>
-          <p className="text-gray-400">Manage your pentests and credits</p>
+          <h1 className="text-3xl font-light mb-2" style={{ color: "var(--text)" }}>Dashboard</h1>
+          <p style={{ color: "var(--text-muted)" }}>Manage your pentests and credits</p>
         </div>
 
         {/* Start CTA (full width) and Credits Grid underneath */}
@@ -230,7 +230,8 @@ function DashboardInner({
 
           <div className="grid lg:grid-cols-3 gap-6" data-tour="credits">
             {/* Web App Credits Card */}
-            <div className="bg-gradient-to-br from-[#0a141f] to-[#0a141f]/80 border border-[#34D399]/30 rounded-xl p-6 shadow-lg">
+            <div className="rounded-xl p-6 shadow-lg"
+              style={{ background: "var(--card-bg, linear-gradient(135deg, #0a141f, rgba(10,20,31,0.8)))", border: "1px solid var(--card-highlight, rgba(52,211,153,0.3))" }}>
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
                   <FontAwesomeIcon
@@ -253,16 +254,17 @@ function DashboardInner({
                 </button>
               </div>
               <div>
-                <p className="text-gray-400 text-sm mb-1">Web App Credits</p>
-                <p className="text-lg text-white mb-2">
+                <p className="text-sm mb-1" style={{ color: "var(--text-muted)" }}>Web App Credits</p>
+                <p className="text-lg mb-2" style={{ color: "var(--text)" }}>
                   {credits.web_app}
                 </p>
-                <p className="text-xs text-gray-500">$500 per credit</p>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>$500 per credit</p>
               </div>
             </div>
 
             {/* External IP Credits Card */}
-            <div className="bg-gradient-to-br from-[#0a141f] to-[#0a141f]/80 border border-[#34D399]/30 rounded-xl p-6 shadow-lg">
+            <div className="rounded-xl p-6 shadow-lg"
+              style={{ background: "var(--card-bg, linear-gradient(135deg, #0a141f, rgba(10,20,31,0.8)))", border: "1px solid var(--card-highlight, rgba(52,211,153,0.3))" }}>
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
                   <FontAwesomeIcon
@@ -285,18 +287,19 @@ function DashboardInner({
                 </button>
               </div>
               <div>
-                <p className="text-gray-400 text-sm mb-1">
+                <p className="text-sm mb-1" style={{ color: "var(--text-muted)" }}>
                   External IP Credits
                 </p>
-                <p className="text-lg text-white mb-2">
+                <p className="text-lg mb-2" style={{ color: "var(--text)" }}>
                   {credits.external_ip}
                 </p>
-                <p className="text-xs text-gray-500">$199 per credit</p>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>$199 per credit</p>
               </div>
             </div>
 
             {/* Pentest+ Credits Card */}
-            <div className="bg-gradient-to-br from-[#0a141f] to-[#0a141f]/80 border border-[#34D399]/30 rounded-xl p-6 shadow-lg">
+            <div className="rounded-xl p-6 shadow-lg"
+              style={{ background: "var(--card-bg, linear-gradient(135deg, #0a141f, rgba(10,20,31,0.8)))", border: "1px solid var(--card-highlight, rgba(52,211,153,0.3))" }}>
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
                   <FontAwesomeIcon
@@ -319,11 +322,11 @@ function DashboardInner({
                 </button>
               </div>
               <div>
-                <p className="text-gray-400 text-sm mb-1">Pentest+ Credits</p>
-                <p className="text-lg text-white mb-2">
+                <p className="text-sm mb-1" style={{ color: "var(--text-muted)" }}>Pentest+ Credits</p>
+                <p className="text-lg mb-2" style={{ color: "var(--text)" }}>
                   {credits.pentest_plus}
                 </p>
-                <p className="text-xs text-gray-500">$1,500 per credit</p>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>$1,500 per credit</p>
               </div>
             </div>
           </div>
