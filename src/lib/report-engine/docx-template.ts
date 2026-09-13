@@ -190,7 +190,7 @@ export function buildReportDocx(payload: ReportPayload): Buffer {
     // Metadata table
     REPORT_VERSION: payload.version ?? "1.0",
     REPORT_DATE: completedDate,
-    TESTER_NAME: payload.tester ?? "AIP",
+    TESTER_NAME: payload.tester ?? "Zack ElMetennani",
     REPORT_NOTES: payload.notes ?? `Penetration Test for ${payload.clientName}`,
 
     // Attestation
