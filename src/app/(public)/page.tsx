@@ -16,10 +16,12 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-br from-[#34D399]/10 via-transparent to-transparent" />
         <div className="max-w-7xl w-full mx-auto px-6 py-20 lg:py-32 relative">
           <div className="max-w-4xl mx-auto text-center space-y-8">
-            <h1 className="text-5xl lg:text-7xl font-semibold tracking-tight">
-              <span className="block text-theme">Penetration Testing</span>
-              <span className="block text-[#34D399] mt-2">Made Simple</span>
-            </h1>
+            <div className="inline-block px-8 py-4 rounded-full backdrop-blur-xl bg-white/[0.04] border border-white/[0.06] shadow-lg">
+              <h1 className="text-5xl lg:text-7xl font-light tracking-tight">
+                <span className="block text-theme">Penetration Testing</span>
+                <span className="block text-[#34D399] mt-2">Made Simple</span>
+              </h1>
+            </div>
             <p className="text-xl lg:text-2xl text-theme-muted max-w-3xl mx-auto leading-relaxed">
               AI-powered pentests that find what attackers exploit &mdash;
               delivered in hours, not weeks. No subscriptions, no surprises.

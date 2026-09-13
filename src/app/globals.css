@@ -225,7 +225,7 @@ body[data-theme="cupcake"] {
 }
 
 .neon-input {
-	background: #0f162b;
+	background: var(--panel);
 	border: 1px solid var(--border);
 	border-radius: 12px;
 	color: var(--text);
