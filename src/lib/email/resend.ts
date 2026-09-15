@@ -27,14 +27,14 @@ const logoAttachment = {
 
 // Brand palette (mirrors tailwind.config.ts).
 const COLORS = {
-  bg: "#ffffff", // outer email page background
-  headerText: "#0a141f", // wordmark/footer text on the white page
-  card: "#0f1f2e",
-  border: "#1d3140",
+  bg: "#ffffff",
+  headerText: "#0a141f",
+  card: "#ffffff",
+  border: "#e5e7eb",
   green: "#34D399",
-  text: "#e8f1f0",
-  muted: "#8aa0a4",
-  faint: "#5f7178",
+  text: "#0a141f",
+  muted: "#374151",
+  faint: "#6b7280",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -107,7 +107,7 @@ function renderEmail({
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="light" />
   </head>
   <body style="margin:0;padding:0;background:${COLORS.bg};">
     <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:${COLORS.bg};">${preheader}</div>

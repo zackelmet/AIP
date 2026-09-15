@@ -172,7 +172,7 @@ export default function TrustSafetyPage() {
             Our policies governing the ethical, legal, and responsible use of
             Affordable Pentesting services.
           </p>
-          <p className="mt-3 text-sm text-theme-muted">Last updated: March 2026</p>
+          <p className="mt-3 text-sm text-theme-muted">Last updated: September 2026</p>
         </div>
       </div>
 
@@ -214,7 +214,7 @@ export default function TrustSafetyPage() {
             </div>
             <div className="bg-theme-panel border border-[#34D399]/10 rounded-xl p-6 space-y-4">
               {section.content.map((para, i) => (
-                <p key={i} className="text-theme-muted leading-relaxed text-sm">
+                <p key={i} className="text-theme leading-relaxed text-sm">
                   {para}
                 </p>
               ))}

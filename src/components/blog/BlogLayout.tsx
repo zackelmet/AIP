@@ -15,9 +15,9 @@ interface BlogLayoutProps {
 
 const BlogLayout: React.FC<BlogLayoutProps> = ({ children, frontMatter, relatedPosts }) => {
   return (
-    <div className="flex flex-col items-center w-full overflow-x-hidden bg-[#0a141f]">
+    <div className="flex flex-col items-center w-full overflow-x-hidden bg-theme">
       <div className="w-full max-w-4xl mx-auto px-6 py-12">
-        <div className="relative w-full aspect-[1200/630] mb-10 rounded-xl overflow-hidden border border-white/10">
+        <div className="relative w-full aspect-[1200/630] mb-10 rounded-xl overflow-hidden border border-theme">
           <Image
             src={frontMatter.image}
             alt={frontMatter.title}
@@ -27,29 +27,29 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({ children, frontMatter, relatedP
             priority
           />
         </div>
-        <article className="prose prose-lg prose-invert mx-auto mb-12 max-w-none
-          prose-headings:text-white prose-headings:font-semibold
-          prose-p:text-gray-300 prose-p:leading-relaxed
+        <article className="prose prose-lg mx-auto mb-12 max-w-none
+          prose-headings:text-theme prose-headings:font-semibold
+          prose-p:text-theme prose-p:leading-relaxed
           prose-a:text-[#34D399] prose-a:no-underline hover:prose-a:underline
-          prose-strong:text-white
-          prose-li:text-gray-300
-          prose-code:text-[#34D399] prose-code:bg-white/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-          prose-pre:bg-white/5 prose-pre:border prose-pre:border-white/10
-          prose-blockquote:border-[#34D399] prose-blockquote:text-gray-400
-          prose-hr:border-white/10
-          prose-th:text-white prose-th:border-white/20 prose-th:bg-white/5
-          prose-td:text-gray-300 prose-td:border-white/10
+          prose-strong:text-theme
+          prose-li:text-theme
+          prose-code:text-[#34D399] prose-code:bg-theme-panel prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
+          prose-pre:bg-theme-panel prose-pre:border prose-pre:border-theme
+          prose-blockquote:border-[#34D399] prose-blockquote:text-theme-muted
+          prose-hr:border-theme
+          prose-th:text-theme prose-th:border-theme prose-th:bg-theme-panel
+          prose-td:text-theme prose-td:border-theme
           [&_table]:w-full [&_table]:border-collapse
           [&_th]:px-4 [&_th]:py-3 [&_th]:text-left [&_th]:font-semibold
           [&_td]:px-4 [&_td]:py-3
-          [&_tr:not(:last-child)_td]:border-b [&_tr:not(:last-child)_td]:border-white/5">
-          <h1 className="text-center font-bold text-4xl text-white mb-4">
+          [&_tr:not(:last-child)_td]:border-b [&_tr:not(:last-child)_td]:border-theme">
+          <h1 className="text-center font-bold text-4xl text-theme mb-4">
             {frontMatter.title}
           </h1>
-          <p className="text-lg font-semibold text-center text-gray-300 mb-2">
+          <p className="text-lg font-semibold text-center text-theme mb-2">
             {frontMatter.description}
           </p>
-          <p className="text-sm text-gray-500 text-center mb-10">
+          <p className="text-sm text-theme-muted text-center mb-10">
             {frontMatter.date}
           </p>
 
@@ -57,19 +57,19 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({ children, frontMatter, relatedP
         </article>
 
         {relatedPosts && relatedPosts.length > 0 && (
-          <div className="border-t border-white/10 pt-10">
-            <h2 className="text-2xl font-semibold text-white mb-6">Related Posts</h2>
+          <div className="border-t border-theme pt-10">
+            <h2 className="text-2xl font-semibold text-theme mb-6">Related Posts</h2>
             <div className="grid sm:grid-cols-3 gap-4">
               {relatedPosts.map((post) => (
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className="group bg-white/5 hover:bg-white/[0.08] border border-white/10 hover:border-[#34D399]/40 rounded-lg p-4 transition-all"
+                  className="group bg-theme-panel hover:bg-black/[0.04] hover:dark:bg-white/[0.08] border border-theme hover:border-[#34D399]/40 rounded-lg p-4 transition-all"
                 >
-                  <h3 className="text-white font-medium text-sm group-hover:text-[#34D399] transition-colors leading-snug">
+                  <h3 className="text-theme font-medium text-sm group-hover:text-[#34D399] transition-colors leading-snug">
                     {post.title}
                   </h3>
-                  <p className="text-gray-400 text-xs mt-1 line-clamp-2">
+                  <p className="text-theme-muted text-xs mt-1 line-clamp-2">
                     {post.description}
                   </p>
                 </Link>

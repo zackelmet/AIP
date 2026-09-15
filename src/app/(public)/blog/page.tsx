@@ -67,7 +67,7 @@ export default function BlogPage() {
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
-                className="group flex flex-col bg-theme-panel hover:bg-white/[0.08] border border-theme hover:border-[#4590e2]/40 rounded-xl overflow-hidden transition-all"
+                className="group flex flex-col bg-theme-panel hover:bg-black/[0.03] hover:dark:bg-white/[0.08] border border-theme hover:border-[#4590e2]/40 rounded-xl overflow-hidden transition-all"
               >
                 {post.image && (
                   <div className="relative aspect-[1200/630] w-full">
