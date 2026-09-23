@@ -14,7 +14,8 @@
   --text-primary: #1a202c;
   --sidebar-bg: #ffffff;
   --sidebar-text: #1a202c;
-  --sidebar-text-muted: #64748b;
+  --sidebar-text-muted: #1e293b;
+  --sidebar-text-muted-weight: 500;
   --sidebar-border: #e2e8f0;
   --sidebar-hover: rgba(0, 0, 0, 0.04);
   --sidebar-active-bg: rgba(52, 211, 153, 0.1);
@@ -68,7 +69,8 @@ body {
 	--border: #e2e8f0;
   --border-strong: rgba(52, 211, 153, 0.25);
 	--text: #1a202c;
-	--text-muted: #64748b;
+	--text-muted: #1e293b;
+  --text-muted-weight: 500;
 	--primary: #34D399;
 	--primary-strong: #10b981;
 	--secondary: #059669;
@@ -186,7 +188,8 @@ body[data-theme="cupcake"] {
 .light-mode .text-gray-400,
 .light-mode .text-gray-500,
 .light-mode .text-gray-600 {
-  color: var(--sidebar-text-muted, #64748b) !important;
+  color: var(--sidebar-text-muted, #1e293b) !important;
+  font-weight: var(--sidebar-text-muted-weight, 400) !important;
 }
 
 .light-mode .text-gray-200 {
@@ -249,29 +252,53 @@ body[data-theme="cupcake"] {
 
 /* Green text readability in light mode */
 .light-mode .text-\[#34D399\] {
-  color: #059669 !important;
+  color: #047857 !important;
+  font-weight: 600 !important;
 }
 
 .light-mode .text-green-400,
 .light-mode .text-emerald-300,
 .light-mode .text-emerald-400 {
-  color: #059669 !important;
+  color: #047857 !important;
+  font-weight: 600 !important;
 }
 
 .light-mode .bg-emerald-500\/10 {
-  background-color: rgba(5, 150, 105, 0.08) !important;
+  background-color: rgba(5, 150, 105, 0.18) !important;
 }
 
 .light-mode .border-emerald-500\/30 {
-  border-color: rgba(5, 150, 105, 0.2) !important;
+  border-color: rgba(5, 150, 105, 0.4) !important;
 }
 
 .light-mode .hover\:text-emerald-200:hover {
-  color: #059669 !important;
+  color: #047857 !important;
 }
 
 .light-mode .bg-\[#34D399\]\/10 {
-  background-color: rgba(5, 150, 105, 0.1) !important;
+  background-color: rgba(5, 150, 105, 0.18) !important;
+}
+
+.light-mode .bg-\[#34D399\]\/20 {
+  background-color: rgba(5, 150, 105, 0.22) !important;
+}
+
+.light-mode .border-\[#34D399\]\/30,
+.light-mode .border-\[#34D399\]\/40,
+.light-mode .border-\[#34D399\]\/50 {
+  border-color: rgba(5, 150, 105, 0.4) !important;
+}
+
+.light-mode .hover\:bg-\[#34D399\]\/25:hover {
+  background-color: rgba(5, 150, 105, 0.28) !important;
+}
+
+.light-mode .hover\:bg-\[#34D399\]\/30:hover {
+  background-color: rgba(5, 150, 105, 0.35) !important;
+}
+
+.light-mode .hover\:border-\[#34D399\]:hover {
+  border-color: #047857 !important;
 }
 
 .light-mode .disabled\:bg-gray-700:disabled {
@@ -336,7 +363,7 @@ body[data-theme="cupcake"] {
 .bg-theme-alt { background-color: var(--bg); }
 .bg-theme-panel { background-color: var(--panel); }
 .text-theme { color: var(--text-primary); }
-.text-theme-muted { color: var(--text-muted); }
+.text-theme-muted { color: var(--text-muted); font-weight: var(--text-muted-weight, 400); }
 .text-theme-body { color: var(--text); }
 .border-theme { border-color: var(--border); }
 .border-theme-accent { border-color: var(--border-strong); }
@@ -365,6 +392,7 @@ body[data-theme="cupcake"] {
 
 .neon-subtle {
 	color: var(--text-muted);
+	font-weight: var(--text-muted-weight, 400);
 }
 
 .neon-input {
