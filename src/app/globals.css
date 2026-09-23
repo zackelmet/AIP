@@ -20,13 +20,13 @@
   --sidebar-hover: rgba(0, 0, 0, 0.04);
   --sidebar-active-bg: rgba(52, 211, 153, 0.1);
   --sidebar-active-border: rgba(52, 211, 153, 0.3);
-  --card-bg: rgba(0, 0, 0, 0.02);
-  --card-border: rgba(0, 0, 0, 0.08);
+  --card-bg: rgba(0, 0, 0, 0.06);
+  --card-border: rgba(0, 0, 0, 0.12);
   --card-highlight: rgba(52, 211, 153, 0.15);
-  --badge-bg: rgba(0, 0, 0, 0.05);
-  --badge-border: rgba(0, 0, 0, 0.08);
-  --input-bg: rgba(0, 0, 0, 0.03);
-  --input-border: rgba(0, 0, 0, 0.12);
+  --badge-bg: rgba(0, 0, 0, 0.08);
+  --badge-border: rgba(0, 0, 0, 0.12);
+  --input-bg: #f1f5f9;
+  --input-border: #cbd5e1;
   --modal-overlay: rgba(0, 0, 0, 0.5);
   --divider: rgba(0, 0, 0, 0.1);
 }
@@ -141,6 +141,12 @@ body[data-theme="cupcake"] {
 	border-radius: 18px;
 }
 
+.light-mode .neon-card {
+	background: var(--panel) !important;
+	border-color: var(--border) !important;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
 .neon-border {
 	border: 1px solid var(--border);
 	border-radius: 14px;
@@ -170,7 +176,7 @@ body[data-theme="cupcake"] {
 .light-mode .bg-white\/10,
 .light-mode .bg-white\/15,
 .light-mode .bg-white\/20 {
-  background-color: var(--card-bg, rgba(0,0,0,0.04)) !important;
+  background-color: var(--card-bg, rgba(0,0,0,0.07)) !important;
 }
 
 .light-mode .border-white\/10,
@@ -248,6 +254,19 @@ body[data-theme="cupcake"] {
 
 .light-mode [class*="to-[#0a141f]\/80"] {
   --tw-gradient-to: var(--card-bg, #f0f4f8) !important;
+}
+
+.light-mode [class*="from-[#0f1e2b]"] {
+  --tw-gradient-from: var(--card-bg, #f8fafc) !important;
+}
+
+.light-mode [class*="to-[#0f1e2b]"] {
+  --tw-gradient-to: var(--card-bg, #f0f4f8) !important;
+}
+
+/* ContinuousTesting container — make solid in light mode */
+.light-mode .bg-gradient-to-br.from-\[#0a141f\].to-\[#0a141f\]\/80 {
+  background: var(--panel) !important;
 }
 
 /* Green text readability in light mode */
