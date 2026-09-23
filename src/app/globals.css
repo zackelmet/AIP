@@ -269,55 +269,59 @@ body[data-theme="cupcake"] {
   background: var(--panel) !important;
 }
 
-/* Green text readability in light mode */
+/* Green text and backgrounds — light mode readability */
 .light-mode .text-\[#34D399\] {
-  color: #047857 !important;
+  color: #065f46 !important;
   font-weight: 600 !important;
 }
 
 .light-mode .text-green-400,
 .light-mode .text-emerald-300,
 .light-mode .text-emerald-400 {
-  color: #047857 !important;
+  color: #065f46 !important;
   font-weight: 600 !important;
 }
 
 .light-mode .bg-emerald-500\/10 {
-  background-color: rgba(5, 150, 105, 0.18) !important;
+  background-color: rgba(6, 95, 70, 0.18) !important;
 }
 
 .light-mode .border-emerald-500\/30 {
-  border-color: rgba(5, 150, 105, 0.4) !important;
+  border-color: rgba(6, 95, 70, 0.4) !important;
 }
 
 .light-mode .hover\:text-emerald-200:hover {
-  color: #047857 !important;
+  color: #065f46 !important;
 }
 
 .light-mode .bg-\[#34D399\]\/10 {
-  background-color: rgba(5, 150, 105, 0.18) !important;
+  background-color: rgba(6, 95, 70, 0.18) !important;
+}
+
+.light-mode .bg-\[#34D399\]\/15 {
+  background-color: rgba(6, 95, 70, 0.22) !important;
 }
 
 .light-mode .bg-\[#34D399\]\/20 {
-  background-color: rgba(5, 150, 105, 0.22) !important;
+  background-color: rgba(6, 95, 70, 0.25) !important;
 }
 
 .light-mode .border-\[#34D399\]\/30,
 .light-mode .border-\[#34D399\]\/40,
 .light-mode .border-\[#34D399\]\/50 {
-  border-color: rgba(5, 150, 105, 0.4) !important;
+  border-color: rgba(6, 95, 70, 0.45) !important;
 }
 
 .light-mode .hover\:bg-\[#34D399\]\/25:hover {
-  background-color: rgba(5, 150, 105, 0.28) !important;
+  background-color: rgba(6, 95, 70, 0.3) !important;
 }
 
 .light-mode .hover\:bg-\[#34D399\]\/30:hover {
-  background-color: rgba(5, 150, 105, 0.35) !important;
+  background-color: rgba(6, 95, 70, 0.35) !important;
 }
 
 .light-mode .hover\:border-\[#34D399\]:hover {
-  border-color: #047857 !important;
+  border-color: #065f46 !important;
 }
 
 .light-mode .disabled\:bg-gray-700:disabled {
