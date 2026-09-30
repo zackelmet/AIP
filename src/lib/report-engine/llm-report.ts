@@ -222,3 +222,97 @@ function buildFallbackSections(
     toolsAndTestCases: toolParts.join(" "),
   };
 }
+
+export interface CleanRunSurface {
+  target: string;
+  scanMode?: string | null;
+  openPorts?: number[];
+  services?: {
+    port: number;
+    protocol: string;
+    service: string;
+    product: string;
+  }[];
+  agentSummary?: string | null;
+}
+
+export function buildCleanRunDescription(surface: CleanRunSurface): string {
+  const svcs = surface.services || [];
+  const tcpScope =
+    surface.scanMode === "deep"
+      ? "65,535 TCP ports"
+      : "the 1,000 most common TCP ports";
+  const portFacts = svcs.length
+    ? `External enumeration identified ${svcs.length} exposed service${svcs.length === 1 ? "" : "s"}: ` +
+      svcs
+        .map((s) => `${s.protocol}/${s.port} (${s.product || s.service})`)
+        .join(", ") +
+      `. All ${tcpScope} were swept.`
+    : `External enumeration identified no open services. All ${tcpScope} were swept and returned no responses.`;
+  const posture = svcs.length
+    ? "The exposed surface is minimal; no exploitable vulnerabilities were identified and the observed configuration is consistent with a hardened posture."
+    : "The host presents no accessible external services; no exploitable vulnerabilities were identified.";
+  return `${portFacts} ${posture}`;
+}
+
+export async function generateCleanRunDescription(
+  surface: CleanRunSurface,
+): Promise<string> {
+  const fallback = () => buildCleanRunDescription(surface);
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) return fallback();
+
+  const svcs = (surface.services || [])
+    .map((s) => `- ${s.protocol}/${s.port}: ${s.product || s.service}`)
+    .join("\n");
+
+  const prompt = `You are a cybersecurity report writer. A clean (zero-vulnerability) penetration test was performed on ${surface.target} by autonomous AI agents.
+
+STRUCTURED SCAN DATA (authoritative facts — use these):
+- Scan mode: ${surface.scanMode || "deep"} (deep = full 65,535-port TCP sweep + top-100 UDP; quick = top-1000 TCP + top-100 UDP)
+- Open/discovered services:
+${svcs || "- none (no open ports found)"}
+
+ASSESSMENT CONTEXT from the scanner agent (background — extract posture and context, do NOT copy wording):
+${(surface.agentSummary || "(unavailable)").slice(0, 1500)}
+
+Write the description field for the report's informational "Attack Surface Assessment" finding. Requirements:
+- 3-5 sentences: first the factual exposed surface (which services/ports are open, or that all ports are filtered), then context a reader needs (what the host appears to be, protocol specifics), then ONE sentence giving the security posture verdict.
+- Grounded in the structured scan data; enrich with context from the assessment (e.g. if it says the IP belongs to a residential ISP and hosts a VPN appliance, say so in your own words).
+- Plain prose, no markdown, no headers. Do not copy sentences from the assessment context.
+
+Output ONLY the description text itself — no JSON, no quotes, no preamble, no explanations.`;
+
+  try {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: process.env.GROQ_MODEL || "qwen/qwen3.6-27b",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.3,
+        max_tokens: 600,
+        reasoning_effort: "none",
+      }),
+    });
+    if (!res.ok) {
+      console.error("generateCleanRunDescription: Groq error", res.status);
+      return fallback();
+    }
+    const data = await res.json();
+    let content: string | undefined = data.choices?.[0]?.message?.content;
+    if (!content) return fallback();
+    content = content.replace(/<\/think>/gi, "").trim();
+    const looksLeaky =
+      /^(thinking|ok|let me|so |first|step 1)/i.test(content) ||
+      content.includes("Deconstruct") ||
+      content.length < 80;
+    return looksLeaky ? fallback() : content;
+  } catch (err) {
+    console.error("generateCleanRunDescription failed:", err);
+    return fallback();
+  }
+}
