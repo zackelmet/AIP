@@ -31,6 +31,10 @@
   --divider: rgba(0, 0, 0, 0.1);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 * {
   font-family: 'IBM Plex Sans', sans-serif;
 }
