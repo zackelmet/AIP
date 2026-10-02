@@ -232,7 +232,7 @@ body[data-theme="cupcake"] {
 }
 
 .light-mode .bg-\[#0a141f\]\/80 {
-  background-color: color-mix(in srgb, var(--sidebar-bg, #ffffff) 80%, transparent) !important;
+  background-color: rgba(248, 250, 252, 0.9) !important;
 }
 
 .light-mode .hover\:bg-white\/5:hover {
@@ -375,6 +375,11 @@ body[data-theme="cupcake"] {
 .light-mode .bg-black\/30,
 .light-mode .bg-black\/80 {
   background-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Solid green button background — go darker in light mode */
+.light-mode .bg-\[#34D399\] {
+  background-color: #059669 !important;
 }
 
 /* Admin page — light mode button text and dropdown colors */
