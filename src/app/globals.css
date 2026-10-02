@@ -353,6 +353,30 @@ body[data-theme="cupcake"] {
   border-color: #065f46 !important;
 }
 
+/* Status badge backgrounds — light mode */
+.light-mode .bg-emerald-500\/20 {
+  background-color: rgba(6, 95, 70, 0.22) !important;
+}
+
+.light-mode .bg-green-500\/20 {
+  background-color: rgba(6, 95, 70, 0.22) !important;
+}
+
+.light-mode .bg-amber-500\/10 {
+  background-color: rgba(180, 83, 9, 0.15) !important;
+}
+
+.light-mode .text-amber-300 {
+  color: #b45309 !important;
+  font-weight: 600 !important;
+}
+
+/* Dark overlay backgrounds — light mode */
+.light-mode .bg-black\/30,
+.light-mode .bg-black\/80 {
+  background-color: rgba(0, 0, 0, 0.15) !important;
+}
+
 /* Admin page — light mode button text and dropdown colors */
 .light-mode .text-\[#041018\] {
   color: var(--text) !important;
