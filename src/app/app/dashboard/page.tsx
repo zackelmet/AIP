@@ -505,7 +505,7 @@ function DashboardInner({
       {/* Purchase Modal */}
       {showPurchaseModal && selectedPentestType && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0a141f] border border-[#34D399]/30 rounded-xl p-8 max-w-lg w-full shadow-2xl">
+          <div className="bg-theme-panel border border-green-theme rounded-xl p-8 max-w-lg w-full shadow-2xl">
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h2 className="text-3xl font-bold text-white mb-2">
