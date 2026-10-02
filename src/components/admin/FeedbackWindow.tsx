@@ -33,7 +33,7 @@ function Stars({ n }: { n: number | null }) {
         <FontAwesomeIcon
           key={i}
           icon={faStar}
-          className={`text-xs ${i <= r ? "text-[#34D399]" : "text-white/15"}`}
+          className={`text-xs ${i <= r ? "text-green-theme" : "text-white/15"}`}
         />
       ))}
     </span>
@@ -54,7 +54,9 @@ export default function FeedbackWindow() {
         if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
         setItems(data.items ?? []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load feedback");
+        setError(
+          err instanceof Error ? err.message : "Failed to load feedback",
+        );
       } finally {
         setLoading(false);
       }
@@ -93,10 +95,10 @@ export default function FeedbackWindow() {
     <div className="neon-card p-5 space-y-4 max-w-4xl">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
-          <FontAwesomeIcon icon={faStar} className="text-[#34D399]" />
+          <FontAwesomeIcon icon={faStar} className="text-green-theme" />
           <h2 className="text-lg font-semibold text-[var(--text)]">Feedback</h2>
           {!loading && (
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#34D399]/15 text-[#34D399]">
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#34D399]/15 text-green-theme">
               {items.length}
               {avg ? ` · ${avg.toFixed(1)}★` : ""}
               {publishable ? ` · ${publishable} publishable` : ""}
@@ -142,7 +144,7 @@ export default function FeedbackWindow() {
               <div className="flex items-center gap-2">
                 <Stars n={f.rating} />
                 {f.permissionToPublish && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#34D399]/15 text-[#34D399] border border-[#34D399]/30">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#34D399]/15 text-green-theme border border-[#34D399]/30">
                     Publishable
                   </span>
                 )}
@@ -157,7 +159,7 @@ export default function FeedbackWindow() {
               </p>
             )}
             {f.permissionToPublish && (f.name || f.company) && (
-              <p className="text-xs text-[#34D399]">
+              <p className="text-xs text-green-theme">
                 {[f.name, f.role, f.company].filter(Boolean).join(" · ")}
               </p>
             )}

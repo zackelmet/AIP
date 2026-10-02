@@ -85,7 +85,7 @@ function formatAge(iso: string | null) {
   else if (hours < 24) label = `${hours}h ago`;
   else label = `${Math.floor(hours / 24)}d ago`;
   // Color-code by SLA age: fresh < 1d, aging 1–3d, stale > 3d.
-  let className = "text-[#34D399]";
+  let className = "text-green-theme";
   if (hours >= 72) className = "text-red-400";
   else if (hours >= 24) className = "text-yellow-400";
   return { label, className };
@@ -94,7 +94,7 @@ function formatAge(iso: string | null) {
 function statusBadge(status: string) {
   const normalized = normalizePentestStatus(status);
   const map: Record<string, string> = {
-    completed: "text-[#34D399]",
+    completed: "text-green-theme",
     running: "text-yellow-400",
     review: "text-yellow-400",
     pending_dispatch: "text-yellow-400",
@@ -437,7 +437,7 @@ export default function AdminDashboard() {
       <div className="flex items-center gap-3">
         <FontAwesomeIcon
           icon={faShieldHalved}
-          className="text-[#34D399] text-2xl"
+          className="text-green-theme text-2xl"
         />
         <div>
           <h1 className="text-2xl font-black text-[var(--text)]">
@@ -455,13 +455,13 @@ export default function AdminDashboard() {
           <div className="flex items-center gap-2">
             <FontAwesomeIcon
               icon={faInbox}
-              className="text-[#34D399] text-lg"
+              className="text-green-theme text-lg"
             />
             <h2 className="text-lg font-bold text-[var(--text)]">
               Delivery Queue
             </h2>
             {!loadingActive && (
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#34D399]/15 text-[#34D399]">
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#34D399]/15 text-green-theme">
                 {activePentests.length}
               </span>
             )}
@@ -489,7 +489,10 @@ export default function AdminDashboard() {
           <p className="text-sm text-red-400">{activeError}</p>
         ) : activePentests.length === 0 ? (
           <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] py-2">
-            <FontAwesomeIcon icon={faCheckCircle} className="text-[#34D399]" />
+            <FontAwesomeIcon
+              icon={faCheckCircle}
+              className="text-green-theme"
+            />
             All caught up — no pentests awaiting delivery.
           </div>
         ) : (
@@ -568,7 +571,7 @@ export default function AdminDashboard() {
         <div className="flex items-center gap-2">
           <FontAwesomeIcon
             icon={faFilePdf}
-            className="text-[#34D399] text-lg"
+            className="text-green-theme text-lg"
           />
           <h2 className="text-lg font-bold text-[var(--text)]">
             Upload Pentest Report
@@ -585,7 +588,7 @@ export default function AdminDashboard() {
                     step === s.n
                       ? "bg-[#34D399] text-[#041018]"
                       : step > s.n
-                        ? "bg-[#34D399]/20 text-[#34D399]"
+                        ? "bg-[#34D399]/20 text-green-theme"
                         : "bg-white/5 text-[var(--text-muted)]"
                   }`}
                 >
@@ -794,10 +797,10 @@ export default function AdminDashboard() {
             <div className="flex items-start gap-3 text-sm bg-[#34D399]/10 border border-[#34D399]/30 rounded-lg px-4 py-3">
               <FontAwesomeIcon
                 icon={faCheckCircle}
-                className="text-[#34D399] mt-0.5 flex-shrink-0"
+                className="text-green-theme mt-0.5 flex-shrink-0"
               />
               <div className="flex-1 min-w-0">
-                <p className="text-[#34D399] font-semibold truncate">
+                <p className="text-green-theme font-semibold truncate">
                   {selectedPentest.target}
                 </p>
                 <p className="text-[var(--text-muted)] text-xs mt-0.5">
@@ -863,11 +866,11 @@ export default function AdminDashboard() {
             <div className="w-16 h-16 rounded-full bg-[#34D399]/10 flex items-center justify-center mx-auto">
               <FontAwesomeIcon
                 icon={faCheckCircle}
-                className="text-[#34D399] text-3xl"
+                className="text-green-theme text-3xl"
               />
             </div>
             <div>
-              <p className="text-lg font-bold text-[#34D399]">
+              <p className="text-lg font-bold text-green-theme">
                 Report uploaded successfully
               </p>
               <p className="text-sm text-[var(--text-muted)] mt-1">
@@ -891,10 +894,10 @@ export default function AdminDashboard() {
       <div className="neon-card p-5 space-y-4 max-w-4xl">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <FontAwesomeIcon icon={faUsers} className="text-[#34D399]" />
+            <FontAwesomeIcon icon={faUsers} className="text-green-theme" />
             <h2 className="text-lg font-semibold text-[var(--text)]">Users</h2>
             {!loadingUsers && totalUsers !== null && (
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#34D399]/15 text-[#34D399]">
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#34D399]/15 text-green-theme">
                 {totalUsers}
                 {newUsers30Days > 0 ? ` · +${newUsers30Days} in 30d` : ""}
               </span>

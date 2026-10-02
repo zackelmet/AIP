@@ -56,7 +56,7 @@ export default function AdminAnalytics() {
       <div className="flex items-center gap-2">
         <FontAwesomeIcon
           icon={faChartLine}
-          className="text-[#34D399] text-lg"
+          className="text-green-theme text-lg"
         />
         <h2 className="text-lg font-bold text-[var(--text)]">Analytics</h2>
       </div>
@@ -76,7 +76,7 @@ export default function AdminAnalytics() {
               {stats.totalPentests}
             </p>
             <p className="text-xs text-[var(--text-muted)] mt-2">
-              <span className="text-[#34D399] font-semibold">
+              <span className="text-green-theme font-semibold">
                 {stats.pentestStatusCounts.completed}
               </span>{" "}
               completed ·{" "}

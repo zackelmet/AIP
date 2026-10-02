@@ -282,7 +282,7 @@ export default function ReportEngine() {
       )}
 
       {submitStatus === "success" && (
-        <div className="neon-card p-5 border border-[#34D399]/30 bg-[#34D399]/10 text-[#34D399] text-sm flex items-center justify-between gap-4 flex-wrap">
+        <div className="neon-card p-5 border border-[#34D399]/30 bg-[#34D399]/10 text-green-theme text-sm flex items-center justify-between gap-4 flex-wrap">
           <span>Report generated successfully.</span>
           {generatedReportUrl && (
             <a
@@ -343,10 +343,14 @@ export default function ReportEngine() {
 
           {brand === "whitelabel" && (
             <div className="p-4 rounded-lg border border-white/10 bg-white/[0.03] space-y-4">
-              <h3 className="text-base text-gray-300 font-medium">White-Label Branding</h3>
+              <h3 className="text-base text-gray-300 font-medium">
+                White-Label Branding
+              </h3>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <span className="text-sm text-gray-400">Logo (PNG, WebP, JPEG)</span>
+                  <span className="text-sm text-gray-400">
+                    Logo (PNG, WebP, JPEG)
+                  </span>
                   <input
                     type="file"
                     accept="image/png,image/webp,image/jpeg"
@@ -367,10 +371,10 @@ export default function ReportEngine() {
                       };
                       img.src = url;
                     }}
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-[#34D399]/20 file:text-[#34D399] file:text-sm hover:file:bg-[#34D399]/30 transition"
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-[#34D399]/20 file:text-green-theme file:text-sm hover:file:bg-[#34D399]/30 transition"
                   />
                   {brandLogoBase64 && (
-                    <p className="text-xs text-[#34D399]">Logo loaded</p>
+                    <p className="text-xs text-green-theme">Logo loaded</p>
                   )}
                 </div>
                 <div className="space-y-1.5">

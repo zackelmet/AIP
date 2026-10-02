@@ -177,7 +177,11 @@ export default function QuickReport() {
         </div>
       )}
 
-      <form id="quick-report-form" onSubmit={handleSubmit} className="space-y-6">
+      <form
+        id="quick-report-form"
+        onSubmit={handleSubmit}
+        className="space-y-6"
+      >
         {/* ── Step 1: findings CSV ── */}
         <section className="neon-card p-6 space-y-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -213,7 +217,7 @@ export default function QuickReport() {
           {findings.length > 0 ? (
             <div className="text-sm text-gray-300 space-y-1">
               <p>
-                <span className="text-[#34D399] font-medium">
+                <span className="text-green-theme font-medium">
                   {findings.length}
                 </span>{" "}
                 finding{findings.length === 1 ? "" : "s"} imported

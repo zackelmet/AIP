@@ -23,7 +23,7 @@ export default function AdminTabs({ defaultTab }: { defaultTab: string }) {
   return (
     <>
       {/* Tab Navigation */}
-      <div className="bg-[#041018] border-b border-white/10">
+      <div className="bg-theme-panel border-b border-theme">
         <div className="flex overflow-x-auto gap-1 px-4 sm:px-6 pt-6 sm:pt-8">
           {TABS.map((tab) => (
             <button
@@ -32,8 +32,8 @@ export default function AdminTabs({ defaultTab }: { defaultTab: string }) {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? "border-[#34D399] text-[#34D399]"
-                  : "border-transparent text-[var(--text-muted)] hover:text-[var(--text)]"
+                  ? "border-green-theme text-green-theme"
+                  : "border-transparent text-theme-muted hover:text-[var(--text)]"
               }`}
             >
               <FontAwesomeIcon icon={tab.icon} className="text-sm" />
