@@ -66,7 +66,7 @@ export default function ContinuousTesting() {
     <div className="bg-gradient-to-br from-[#0a141f] to-[#0a141f]/80 border border-[#34D399]/30 rounded-xl p-5 shadow-lg">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
-          <FontAwesomeIcon icon={faArrowsRotate} className="text-[#34D399]" />
+          <FontAwesomeIcon icon={faArrowsRotate} className="text-green-theme" />
           <h2 className="text-lg font-semibold text-white">
             Continuous Testing
           </h2>
@@ -107,14 +107,14 @@ export default function ContinuousTesting() {
               <div className="p-2.5 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40 flex-shrink-0">
                 <FontAwesomeIcon
                   icon={plan.id === "web_app" ? faGlobe : faServer}
-                  className="text-lg text-[#34D399]"
+                  className="text-lg text-green-theme"
                 />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">
                   {plan.id === "web_app" ? "Web App" : "External IP"}
                 </p>
-                <p className="text-[#34D399] text-xs">
+                <p className="text-green-theme text-xs">
                   ${total.toLocaleString()} / {tests} tests · 20% off
                 </p>
               </div>

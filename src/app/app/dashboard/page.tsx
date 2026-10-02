@@ -205,8 +205,15 @@ function DashboardInner({
       <div className="p-6 lg:p-8 space-y-8 max-w-7xl mx-auto">
         {/* Page Header */}
         <div>
-          <h1 className="text-3xl font-light mb-2" style={{ color: "var(--text)" }}>Dashboard</h1>
-          <p style={{ color: "var(--text-muted)" }}>Manage your pentests and credits</p>
+          <h1
+            className="text-3xl font-light mb-2"
+            style={{ color: "var(--text)" }}
+          >
+            Dashboard
+          </h1>
+          <p style={{ color: "var(--text-muted)" }}>
+            Manage your pentests and credits
+          </p>
         </div>
 
         {/* Start CTA (full width) and Credits Grid underneath */}
@@ -225,18 +232,26 @@ function DashboardInner({
             <p className="text-[#041018] font-bold text-xl mb-1">
               Start New Pentest
             </p>
-            <p className="text-[#041018]/70 text-sm font-medium">Configure and launch</p>
+            <p className="text-[#041018]/70 text-sm font-medium">
+              Configure and launch
+            </p>
           </Link>
 
           <div className="grid lg:grid-cols-3 gap-6" data-tour="credits">
             {/* Web App Credits Card */}
-            <div className="rounded-xl p-6 shadow-lg"
-              style={{ background: "var(--card-bg, linear-gradient(135deg, #0a141f, rgba(10,20,31,0.8)))", border: "1px solid var(--card-highlight, rgba(52,211,153,0.3))" }}>
+            <div
+              className="rounded-xl p-6 shadow-lg"
+              style={{
+                background:
+                  "var(--card-bg, linear-gradient(135deg, #0a141f, rgba(10,20,31,0.8)))",
+                border: "1px solid var(--card-highlight, rgba(52,211,153,0.3))",
+              }}
+            >
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
                   <FontAwesomeIcon
                     icon={faGlobe}
-                    className="text-2xl text-[#34D399]"
+                    className="text-2xl text-green-theme"
                   />
                 </div>
                 <button
@@ -244,32 +259,45 @@ function DashboardInner({
                   className="buy-credits-btn flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#34D399]/10 hover:bg-[#34D399]/25 border border-[#34D399]/50 hover:border-[#34D399] transition-colors cursor-pointer"
                   title="Purchase Web App credits"
                 >
-                  <span className="text-sm font-light text-[#34D399]">
+                  <span className="text-sm font-light text-green-theme">
                     Buy Pentest
                   </span>
                   <FontAwesomeIcon
                     icon={faPlus}
-                    className="text-[#34D399] text-xs"
+                    className="text-green-theme text-xs"
                   />
                 </button>
               </div>
               <div>
-                <p className="text-sm mb-1" style={{ color: "var(--text-muted)" }}>Web App Credits</p>
+                <p
+                  className="text-sm mb-1"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Web App Credits
+                </p>
                 <p className="text-lg mb-2" style={{ color: "var(--text)" }}>
                   {credits.web_app}
                 </p>
-                <p className="text-xs" style={{ color: "var(--text-muted)" }}>$500 per credit</p>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  $500 per credit
+                </p>
               </div>
             </div>
 
             {/* External IP Credits Card */}
-            <div className="rounded-xl p-6 shadow-lg"
-              style={{ background: "var(--card-bg, linear-gradient(135deg, #0a141f, rgba(10,20,31,0.8)))", border: "1px solid var(--card-highlight, rgba(52,211,153,0.3))" }}>
+            <div
+              className="rounded-xl p-6 shadow-lg"
+              style={{
+                background:
+                  "var(--card-bg, linear-gradient(135deg, #0a141f, rgba(10,20,31,0.8)))",
+                border: "1px solid var(--card-highlight, rgba(52,211,153,0.3))",
+              }}
+            >
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
                   <FontAwesomeIcon
                     icon={faServer}
-                    className="text-2xl text-[#34D399]"
+                    className="text-2xl text-green-theme"
                   />
                 </div>
                 <button
@@ -277,34 +305,45 @@ function DashboardInner({
                   className="buy-credits-btn flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#34D399]/10 hover:bg-[#34D399]/25 border border-[#34D399]/50 hover:border-[#34D399] transition-colors cursor-pointer"
                   title="Purchase External IP credits"
                 >
-                  <span className="text-sm font-semibold text-[#34D399]">
+                  <span className="text-sm font-semibold text-green-theme">
                     Buy Pentest
                   </span>
                   <FontAwesomeIcon
                     icon={faPlus}
-                    className="text-[#34D399] text-xs"
+                    className="text-green-theme text-xs"
                   />
                 </button>
               </div>
               <div>
-                <p className="text-sm mb-1" style={{ color: "var(--text-muted)" }}>
+                <p
+                  className="text-sm mb-1"
+                  style={{ color: "var(--text-muted)" }}
+                >
                   External IP Credits
                 </p>
                 <p className="text-lg mb-2" style={{ color: "var(--text)" }}>
                   {credits.external_ip}
                 </p>
-                <p className="text-xs" style={{ color: "var(--text-muted)" }}>$199 per credit</p>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  $199 per credit
+                </p>
               </div>
             </div>
 
             {/* Pentest+ Credits Card */}
-            <div className="rounded-xl p-6 shadow-lg"
-              style={{ background: "var(--card-bg, linear-gradient(135deg, #0a141f, rgba(10,20,31,0.8)))", border: "1px solid var(--card-highlight, rgba(52,211,153,0.3))" }}>
+            <div
+              className="rounded-xl p-6 shadow-lg"
+              style={{
+                background:
+                  "var(--card-bg, linear-gradient(135deg, #0a141f, rgba(10,20,31,0.8)))",
+                border: "1px solid var(--card-highlight, rgba(52,211,153,0.3))",
+              }}
+            >
               <div className="flex items-start justify-between mb-4">
                 <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
                   <FontAwesomeIcon
                     icon={faJetFighter}
-                    className="text-2xl text-[#34D399]"
+                    className="text-2xl text-green-theme"
                   />
                 </div>
                 <button
@@ -312,21 +351,28 @@ function DashboardInner({
                   className="buy-credits-btn flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#34D399]/10 hover:bg-[#34D399]/25 border border-[#34D399]/50 hover:border-[#34D399] transition-colors cursor-pointer"
                   title="Purchase Pentest+ credits"
                 >
-                  <span className="text-sm font-semibold text-[#34D399]">
+                  <span className="text-sm font-semibold text-green-theme">
                     Buy Pentest
                   </span>
                   <FontAwesomeIcon
                     icon={faPlus}
-                    className="text-[#34D399] text-xs"
+                    className="text-green-theme text-xs"
                   />
                 </button>
               </div>
               <div>
-                <p className="text-sm mb-1" style={{ color: "var(--text-muted)" }}>Pentest+ Credits</p>
+                <p
+                  className="text-sm mb-1"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  Pentest+ Credits
+                </p>
                 <p className="text-lg mb-2" style={{ color: "var(--text)" }}>
                   {credits.pentest_plus}
                 </p>
-                <p className="text-xs" style={{ color: "var(--text-muted)" }}>$1,500 per credit</p>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  $1,500 per credit
+                </p>
               </div>
             </div>
           </div>
@@ -344,7 +390,7 @@ function DashboardInner({
                 <div className="p-3 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40">
                   <FontAwesomeIcon
                     icon={faShieldHalved}
-                    className="text-2xl text-[#34D399]"
+                    className="text-2xl text-green-theme"
                   />
                 </div>
                 <div className="flex-1">
@@ -388,7 +434,7 @@ function DashboardInner({
               <h2 className="text-2xl font-bold text-white">Recent Pentests</h2>
               <Link
                 href="/app/pentests"
-                className="text-[#34D399] hover:text-[#10b981] text-sm font-semibold transition-colors"
+                className="text-green-theme hover:text-[#10b981] text-sm font-semibold transition-colors"
               >
                 View All →
               </Link>
@@ -417,7 +463,7 @@ function DashboardInner({
                     </div>
                     <Link
                       href={`/app/pentests#${scan.scanId}`}
-                      className="px-4 py-2 bg-[#34D399]/20 hover:bg-[#34D399]/30 text-[#34D399] font-semibold rounded-lg border border-[#34D399]/30 transition-colors text-sm"
+                      className="px-4 py-2 bg-[#34D399]/20 hover:bg-[#34D399]/30 text-green-theme font-semibold rounded-lg border border-[#34D399]/30 transition-colors text-sm"
                     >
                       View
                     </Link>
@@ -496,7 +542,7 @@ function DashboardInner({
                           ? faJetFighter
                           : faServer
                     }
-                    className="text-2xl text-[#34D399]"
+                    className="text-2xl text-green-theme"
                   />
                 </div>
                 <div>
@@ -526,19 +572,19 @@ function DashboardInner({
                 </p>
                 <ul className="space-y-2 text-sm text-gray-300">
                   <li className="flex items-start gap-2">
-                    <span className="text-[#34D399] mt-0.5">✓</span>
+                    <span className="text-green-theme mt-0.5">✓</span>
                     <span>Autonomous AI penetration testing</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-[#34D399] mt-0.5">✓</span>
+                    <span className="text-green-theme mt-0.5">✓</span>
                     <span>Powered by the latest SOTA AI models</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-[#34D399] mt-0.5">✓</span>
+                    <span className="text-green-theme mt-0.5">✓</span>
                     <span>Results within 48 hours</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-[#34D399] mt-0.5">✓</span>
+                    <span className="text-green-theme mt-0.5">✓</span>
                     <span>Detailed vulnerability report</span>
                   </li>
                 </ul>
@@ -584,7 +630,7 @@ function DashboardInner({
               </div>
               <p className="text-center mt-6 text-xl text-gray-300">
                 Total:{" "}
-                <span className="text-[#34D399] font-bold text-4xl">
+                <span className="text-green-theme font-bold text-4xl">
                   $
                   {(
                     (selectedPentestType === "web_app"
