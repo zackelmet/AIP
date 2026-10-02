@@ -353,6 +353,71 @@ body[data-theme="cupcake"] {
   border-color: #065f46 !important;
 }
 
+/* Admin page — light mode button text and dropdown colors */
+.light-mode .text-\[#041018\] {
+  color: var(--text) !important;
+}
+
+.light-mode .bg-\[#0d1f2d\] {
+  background-color: var(--panel) !important;
+}
+
+.light-mode .border-\[#0d1f2d\] {
+  border-color: var(--border) !important;
+}
+
+/* Admin severity badge colors — ensure readability in light mode */
+.light-mode .text-red-400 {
+  color: #dc2626 !important;
+  font-weight: 600 !important;
+}
+
+.light-mode .text-orange-400,
+.light-mode .text-yellow-400 {
+  color: #b45309 !important;
+  font-weight: 600 !important;
+}
+
+.light-mode .text-blue-400 {
+  color: #2563eb !important;
+  font-weight: 600 !important;
+}
+
+.light-mode .bg-red-500\/10,
+.light-mode .bg-red-500\/20 {
+  background-color: rgba(220, 38, 38, 0.15) !important;
+}
+
+.light-mode .bg-orange-500\/10,
+.light-mode .bg-orange-500\/20,
+.light-mode .bg-yellow-400\/10,
+.light-mode .bg-yellow-400\/15 {
+  background-color: rgba(180, 83, 9, 0.15) !important;
+}
+
+.light-mode .bg-blue-500\/10,
+.light-mode .bg-blue-500\/20 {
+  background-color: rgba(37, 99, 235, 0.15) !important;
+}
+
+/* Neon button light-mode overrides */
+.light-mode .neon-primary-btn {
+  background: linear-gradient(135deg, #059669, #047857) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+.light-mode .neon-primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.light-mode .neon-outline-btn {
+  color: var(--text) !important;
+  background: var(--panel) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
 .light-mode .disabled\:bg-gray-700:disabled {
   background-color: var(--card-bg, rgba(0,0,0,0.05)) !important;
 }
