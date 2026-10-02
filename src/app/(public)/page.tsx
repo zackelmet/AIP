@@ -247,7 +247,7 @@ export default function Home() {
         </div>
       </section>
 
-      <LazySection>
+      <LazySection id="pricing">
         <PricingWidget currentUser={null} />
       </LazySection>
 
