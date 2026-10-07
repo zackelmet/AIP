@@ -250,15 +250,15 @@ export default function ReportEngine() {
             onChange={(event) =>
               setBrand(event.target.value as "aip" | "msp" | "whitelabel")
             }
-            className="rounded-lg border border-white/20 bg-[#0a1929] px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#34D399]/40 transition cursor-pointer"
+            className="rounded-lg border border-[var(--input-border,#ffffff20)] bg-[var(--input-bg,#0a1929)] px-3 py-2.5 text-sm text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[#34D399]/40 transition cursor-pointer"
           >
-            <option value="aip" className="bg-[#0a1929] text-white">
+            <option value="aip" className="bg-[var(--input-bg,#0a1929)] text-[var(--text)]">
               Affordable Pentesting
             </option>
-            <option value="msp" className="bg-[#0a1929] text-white">
+            <option value="msp" className="bg-[var(--input-bg,#0a1929)] text-[var(--text)]">
               MSP Pentesting
             </option>
-            <option value="whitelabel" className="bg-[#0a1929] text-white">
+            <option value="whitelabel" className="bg-[var(--input-bg,#0a1929)] text-[var(--text)]">
               White Label
             </option>
           </select>
