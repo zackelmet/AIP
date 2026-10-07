@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebase/firebaseAdmin";
 import { FieldValue } from "firebase-admin/firestore";
 import { Resend } from "resend";
+import { addToAudience } from "@/lib/email/audience";
 import fs from "fs";
 import path from "path";
 
@@ -133,6 +134,15 @@ export async function POST(req: NextRequest) {
     });
 
     console.log(`[sample-report] sent to ${email} — resend id: ${"data" in sent && sent.data ? sent.data.id : "unknown"}`);
+
+    // Push to Resend Broadcasts nurture audience (fire-and-forget)
+    addToAudience("sample_report", {
+      email,
+      first_name: email.split("@")[0] || "",
+      data: { source: "landing-sample-report", signed_up_at: new Date().toISOString() },
+    }).then((r) => {
+      if (!r.ok) console.warn(`[audience] sample_report push failed for ${email}: ${r.error}`);
+    });
   } catch (err) {
     console.error("Failed to send sample report email:", err);
     return NextResponse.json({ error: "We couldn't send the report. Please try again." }, { status: 500 });
