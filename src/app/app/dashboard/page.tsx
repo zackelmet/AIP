@@ -18,7 +18,6 @@ import { useUserScans } from "@/lib/hooks/useUserScans";
 import { useAuth } from "@/lib/context/AuthContext";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ContinuousTesting from "@/components/dashboard/ContinuousTesting";
-import EmailVerificationBanner from "@/components/auth/EmailVerificationBanner";
 import toast from "react-hot-toast";
 
 export default function DashboardPage() {
@@ -115,7 +114,6 @@ export default function DashboardPage() {
         recentScans={recentScans}
         loading={loading}
         scansLoading={scansLoading}
-        emailVerified={currentUser?.emailVerified}
       />
     </Suspense>
   );
@@ -172,7 +170,6 @@ function DashboardInner({
   recentScans,
   loading,
   scansLoading,
-  emailVerified,
 }: {
   openPurchaseModal: (type: "web_app" | "external_ip" | "pentest_plus") => void;
   showPurchaseModal: boolean;
@@ -189,7 +186,6 @@ function DashboardInner({
   recentScans: any[];
   loading: boolean;
   scansLoading: boolean;
-  emailVerified: boolean | undefined | null;
 }) {
   if (loading) {
     return (
@@ -219,10 +215,6 @@ function DashboardInner({
             Manage your pentests and credits
           </p>
         </div>
-
-        {emailVerified === false && (
-          <EmailVerificationBanner />
-        )}
 
         {/* Start CTA (full width) and Credits Grid underneath */}
         <div className="space-y-6">
