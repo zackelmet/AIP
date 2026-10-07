@@ -23,15 +23,6 @@ export async function POST(request: NextRequest) {
     const admin = initializeAdmin();
     const decoded = await admin.auth().verifyIdToken(idToken);
 
-    const signInProvider = (decoded as any)?.firebase?.sign_in_provider;
-    const isPasswordUser = signInProvider === "password";
-    if (isPasswordUser && decoded.email_verified !== true) {
-      return NextResponse.json(
-        { error: "Email not verified" },
-        { status: 403 },
-      );
-    }
-
     const expiresIn = MAX_AGE * 1000;
     const sessionCookie = await admin.auth().createSessionCookie(idToken, {
       expiresIn,
