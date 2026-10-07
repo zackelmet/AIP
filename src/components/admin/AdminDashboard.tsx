@@ -76,6 +76,11 @@ function formatDate(iso: string | null) {
   });
 }
 
+function monthLabel(monthStr: string) {
+  const [y, m] = monthStr.split("-").map(Number);
+  return new Date(y, m - 1, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+}
+
 function formatAge(iso: string | null) {
   if (!iso) return { label: "—", className: "text-[var(--text-muted)]" };
   const elapsedMs = Date.now() - new Date(iso).getTime();
@@ -653,13 +658,13 @@ export default function AdminDashboard() {
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="rounded-lg border border-white/10 bg-black/20 p-4">
                 <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
-                  New Users
+                  New Sign Ups
                 </p>
                 <p className="text-3xl font-black text-[var(--text)] mt-1">
                   {analyticsData.newUsersThisMonth}
                 </p>
                 <p className="text-xs text-[var(--text-muted)] mt-2">
-                  {new Date(analyticsMonth + "-01").toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                  {monthLabel(analyticsMonth)}
                 </p>
               </div>
               <div className="rounded-lg border border-white/10 bg-black/20 p-4">
