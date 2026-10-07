@@ -6,6 +6,7 @@
   --primary-bg: #0a141f;
   --primary-accent: #34D399;
   --text-primary: #ffffff;
+  --calendar-scheme: dark;
 }
 
 .light-mode {
@@ -28,6 +29,7 @@
   --input-bg: #f1f5f9;
   --input-border: #cbd5e1;
   --modal-overlay: rgba(0, 0, 0, 0.5);
+  --calendar-scheme: light;
   --divider: rgba(0, 0, 0, 0.1);
 }
 

@@ -599,7 +599,7 @@ export default function AdminDashboard() {
 
       {/* Monthly Analytics */}
       <div className="neon-card p-6 space-y-4 max-w-4xl">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <FontAwesomeIcon
               icon={faChartLine}
@@ -609,12 +609,38 @@ export default function AdminDashboard() {
               Monthly Analytics
             </h2>
           </div>
-          <input
-            type="month"
-            value={analyticsMonth}
-            onChange={(e) => setAnalyticsMonth(e.target.value)}
-            className="neon-input w-40 py-1.5 px-3 text-sm"
-          />
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => {
+                const [y, m] = analyticsMonth.split("-").map(Number);
+                const d = new Date(y, m - 2, 1);
+                setAnalyticsMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+              }}
+              className="neon-outline-btn px-2 py-1 text-sm"
+              title="Previous month"
+            >
+              ‹
+            </button>
+            <input
+              type="month"
+              value={analyticsMonth}
+              onChange={(e) => setAnalyticsMonth(e.target.value)}
+              className="w-36 py-1.5 px-2 text-sm text-center font-semibold rounded-lg border border-white/10 bg-white/5 text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[#34D399]/40 [color-scheme:var(--calendar-scheme)]"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const [y, m] = analyticsMonth.split("-").map(Number);
+                const d = new Date(y, m, 1);
+                setAnalyticsMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+              }}
+              className="neon-outline-btn px-2 py-1 text-sm"
+              title="Next month"
+            >
+              ›
+            </button>
+          </div>
         </div>
 
         {analyticsLoading ? (
@@ -661,35 +687,54 @@ export default function AdminDashboard() {
             </div>
 
             {analyticsData.pentests.length > 0 && (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-[var(--text-muted)]">
-                      <th className="text-left py-2 pr-3 font-semibold">User</th>
-                      <th className="text-left py-2 pr-3 font-semibold">Target Org</th>
-                      <th className="text-left py-2 pr-3 font-semibold">Target URL / IP</th>
-                      <th className="text-right py-2 font-semibold">Price</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {analyticsData.pentests.map((p: any) => (
-                      <tr key={p.pentestId} className="border-b border-white/5 hover:bg-white/5">
-                        <td className="py-2 pr-3 text-[var(--text)] truncate max-w-40">
-                          {p.userEmail}
-                        </td>
-                        <td className="py-2 pr-3 text-[var(--text-muted)] truncate max-w-32">
-                          {p.targetOrg || "—"}
-                        </td>
-                        <td className="py-2 pr-3 text-[var(--text-muted)] truncate max-w-48">
-                          {p.target}
-                        </td>
-                        <td className="py-2 text-right text-[var(--text)]">
-                          ${(p.amountCents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                        </td>
+              <div>
+                <div className="flex items-center justify-end gap-3 mb-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const rows = [["User", "Target Org", "Target URL / IP", "Price"]];
+                      for (const p of analyticsData.pentests) {
+                        rows.push([p.userEmail, p.targetOrg || "", p.target, `$${(p.amountCents / 100).toFixed(2)}`]);
+                      }
+                      const text = rows.map(r => r.join("\t")).join("\n");
+                      navigator.clipboard.writeText(text);
+                      import("react-hot-toast").then(m => m.toast.success("Table copied"));
+                    }}
+                    className="neon-outline-btn px-3 py-1 text-xs font-semibold"
+                  >
+                    Copy table
+                  </button>
+                </div>
+                <div className="overflow-x-auto select-all" style={{ userSelect: "text" }}>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-[var(--text-muted)]">
+                        <th className="text-left py-2 pr-3 font-semibold">User</th>
+                        <th className="text-left py-2 pr-3 font-semibold">Target Org</th>
+                        <th className="text-left py-2 pr-3 font-semibold">Target URL / IP</th>
+                        <th className="text-right py-2 font-semibold">Price</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {analyticsData.pentests.map((p: any) => (
+                        <tr key={p.pentestId} className="border-b border-white/5 hover:bg-white/5">
+                          <td className="py-2 pr-3 text-[var(--text)] truncate max-w-40" style={{ userSelect: "text" }}>
+                            {p.userEmail}
+                          </td>
+                          <td className="py-2 pr-3 text-[var(--text-muted)] truncate max-w-32" style={{ userSelect: "text" }}>
+                            {p.targetOrg || "—"}
+                          </td>
+                          <td className="py-2 pr-3 text-[var(--text-muted)] truncate max-w-48" style={{ userSelect: "text" }}>
+                            {p.target}
+                          </td>
+                          <td className="py-2 text-right text-[var(--text)]" style={{ userSelect: "text" }}>
+                            ${(p.amountCents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </>
