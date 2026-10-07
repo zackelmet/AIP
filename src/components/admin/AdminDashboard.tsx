@@ -12,10 +12,10 @@ import { faChevronUp } from "@fortawesome/free-solid-svg-icons/faChevronUp";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
 import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
 import { faInbox } from "@fortawesome/free-solid-svg-icons/faInbox";
+import { faChartLine } from "@fortawesome/free-solid-svg-icons/faChartLine";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { normalizePentestStatus } from "@/lib/pentests/status";
-import AdminAnalytics from "./AdminAnalytics";
 import FeedbackWindow from "./FeedbackWindow";
 
 const showToast = (type: "error" | "success", message: string) => {
@@ -105,7 +105,6 @@ function statusBadge(status: string) {
 
 export default function AdminDashboard() {
   const [totalUsers, setTotalUsers] = useState<number | null>(null);
-  const [newUsers30Days, setNewUsers30Days] = useState<number>(0);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loadingUserDirectory, setLoadingUserDirectory] = useState(true);
@@ -121,13 +120,26 @@ export default function AdminDashboard() {
   const [usersPage, setUsersPage] = useState(1);
   const usersPerPage = 12;
 
-  // Active pentest queue (launched but not yet delivered)
+  // Active pentest queue
   const [activePentests, setActivePentests] = useState<ActivePentest[]>([]);
   const [loadingActive, setLoadingActive] = useState(true);
   const [activeError, setActiveError] = useState<string | null>(null);
   const [uploadingByPentest, setUploadingByPentest] = useState<
     Record<string, boolean>
   >({});
+
+  // Monthly analytics
+  const [analyticsMonth, setAnalyticsMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  });
+  const [analyticsData, setAnalyticsData] = useState<{
+    newUsersThisMonth: number;
+    newPentestsThisMonth: number;
+    revenueThisMonthCents: number;
+    pentests: any[];
+  } | null>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
 
   // Wizard state
   const [step, setStep] = useState<Step>(1);
@@ -157,14 +169,28 @@ export default function AdminDashboard() {
       .then((r) => r.json())
       .then((d) => {
         setTotalUsers(d.totalUsers ?? 0);
-        setNewUsers30Days(d.newUsers30Days ?? 0);
       })
       .catch(() => {
         setTotalUsers(0);
-        setNewUsers30Days(0);
       })
       .finally(() => setLoadingUsers(false));
   }, []);
+
+  // Monthly analytics
+  const loadAnalytics = async () => {
+    setAnalyticsLoading(true);
+    try {
+      const res = await fetch(`/api/admin/monthly-stats?month=${analyticsMonth}`);
+      const data = await res.json();
+      if (res.ok) setAnalyticsData(data);
+    } catch {} finally {
+      setAnalyticsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadAnalytics();
+  }, [analyticsMonth]);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -174,7 +200,12 @@ export default function AdminDashboard() {
         if (!response.ok) {
           throw new Error(data.error || "Failed to load users");
         }
-        setUsers(data.users || []);
+        const sorted = (data.users || []).sort((a: AdminUser, b: AdminUser) => {
+          const ta = a.createdAt || "";
+          const tb = b.createdAt || "";
+          return tb.localeCompare(ta); // most recent first
+        });
+        setUsers(sorted);
       } catch (error: any) {
         setUsers([]);
         setUsersError(error.message || "Failed to load users");
@@ -566,6 +597,275 @@ export default function AdminDashboard() {
         )}
       </div>
 
+      {/* Monthly Analytics */}
+      <div className="neon-card p-6 space-y-4 max-w-4xl">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <FontAwesomeIcon
+              icon={faChartLine}
+              className="text-green-theme text-lg"
+            />
+            <h2 className="text-lg font-bold text-[var(--text)]">
+              Monthly Analytics
+            </h2>
+          </div>
+          <input
+            type="month"
+            value={analyticsMonth}
+            onChange={(e) => setAnalyticsMonth(e.target.value)}
+            className="neon-input w-40 py-1.5 px-3 text-sm"
+          />
+        </div>
+
+        {analyticsLoading ? (
+          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
+            <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+            Loading…
+          </div>
+        ) : analyticsData ? (
+          <>
+            <div className="grid sm:grid-cols-3 gap-4">
+              <div className="rounded-lg border border-white/10 bg-black/20 p-4">
+                <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
+                  New Users
+                </p>
+                <p className="text-3xl font-black text-[var(--text)] mt-1">
+                  {analyticsData.newUsersThisMonth}
+                </p>
+                <p className="text-xs text-[var(--text-muted)] mt-2">
+                  {new Date(analyticsMonth + "-01").toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+                </p>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-black/20 p-4">
+                <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
+                  Pentests Launched
+                </p>
+                <p className="text-3xl font-black text-[var(--text)] mt-1">
+                  {analyticsData.newPentestsThisMonth}
+                </p>
+                <p className="text-xs text-[var(--text-muted)] mt-2">
+                  This month
+                </p>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-black/20 p-4">
+                <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
+                  Revenue
+                </p>
+                <p className="text-3xl font-black text-[var(--text)] mt-1">
+                  ${(analyticsData.revenueThisMonthCents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                </p>
+                <p className="text-xs text-[var(--text-muted)] mt-2">
+                  This month
+                </p>
+              </div>
+            </div>
+
+            {analyticsData.pentests.length > 0 && (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-[var(--text-muted)]">
+                      <th className="text-left py-2 pr-3 font-semibold">User</th>
+                      <th className="text-left py-2 pr-3 font-semibold">Target Org</th>
+                      <th className="text-left py-2 pr-3 font-semibold">Target URL / IP</th>
+                      <th className="text-right py-2 font-semibold">Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {analyticsData.pentests.map((p: any) => (
+                      <tr key={p.pentestId} className="border-b border-white/5 hover:bg-white/5">
+                        <td className="py-2 pr-3 text-[var(--text)] truncate max-w-40">
+                          {p.userEmail}
+                        </td>
+                        <td className="py-2 pr-3 text-[var(--text-muted)] truncate max-w-32">
+                          {p.targetOrg || "—"}
+                        </td>
+                        <td className="py-2 pr-3 text-[var(--text-muted)] truncate max-w-48">
+                          {p.target}
+                        </td>
+                        <td className="py-2 text-right text-[var(--text)]">
+                          ${(p.amountCents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        ) : (
+          <p className="text-sm text-[var(--text-muted)]">
+            No data available for this month.
+          </p>
+        )}
+      </div>
+
+      <div className="neon-card p-5 space-y-4 max-w-4xl">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <FontAwesomeIcon icon={faUsers} className="text-green-theme" />
+            <h2 className="text-lg font-semibold text-[var(--text)]">Users</h2>
+            {!loadingUsers && totalUsers !== null && (
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#34D399]/15 text-green-theme">
+                {totalUsers}
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-[var(--text-muted)]">
+            Click a user to view pentest history
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+          <input
+            type="text"
+            value={userSearch}
+            onChange={(event) => setUserSearch(event.target.value)}
+            placeholder="Search users by email or name"
+            className="neon-input w-full sm:max-w-sm py-2.5 px-4 text-sm"
+          />
+          <p className="text-xs text-[var(--text-muted)]">
+            Showing {filteredUsers.length} user
+            {filteredUsers.length === 1 ? "" : "s"}
+          </p>
+        </div>
+
+        {loadingUserDirectory ? (
+          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
+            <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+            Loading users…
+          </div>
+        ) : usersError ? (
+          <p className="text-sm text-red-400">{usersError}</p>
+        ) : filteredUsers.length === 0 ? (
+          <p className="text-sm text-[var(--text-muted)]">No users found.</p>
+        ) : (
+          <div className="space-y-2">
+            {pagedUsers.map((user) => {
+              const isExpanded = expandedUserId === user.uid;
+              const isHistoryLoading = loadingHistoryByUser[user.uid] === true;
+              const history = historyByUser[user.uid] || [];
+
+              return (
+                <div
+                  key={user.uid}
+                  className="rounded-lg border border-white/10"
+                >
+                  <button
+                    type="button"
+                    onClick={() => handleToggleUser(user.uid)}
+                    className="w-full px-4 py-3 text-left flex items-center justify-between gap-3 hover:bg-white/5 transition-colors"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm text-[var(--text)] truncate">
+                        {user.email}
+                      </p>
+                      <p className="text-xs text-[var(--text-muted)] truncate">
+                        {user.name || "Unnamed user"}
+                        {user.isAdmin ? " • Admin" : ""}
+                      </p>
+                    </div>
+                    <div className="hidden sm:block text-right w-20 shrink-0">
+                      <p className="text-sm font-semibold text-[var(--text)]">
+                        {user.pentestCount}
+                      </p>
+                      <p className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">
+                        Pentests
+                      </p>
+                    </div>
+                    <div className="hidden sm:block text-right w-32 shrink-0">
+                      <p className="text-xs text-[var(--text)] truncate">
+                        {user.lastPentestAt
+                          ? formatDate(user.lastPentestAt)
+                          : "—"}
+                      </p>
+                      <p className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">
+                        Last pentest
+                      </p>
+                    </div>
+                    <FontAwesomeIcon
+                      icon={isExpanded ? faChevronUp : faChevronDown}
+                      className="text-[var(--text-muted)] shrink-0"
+                    />
+                  </button>
+
+                  {isExpanded && (
+                    <div className="px-4 pb-4">
+                      {isHistoryLoading ? (
+                        <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                          <FontAwesomeIcon
+                            icon={faSpinner}
+                            className="animate-spin"
+                          />
+                          Loading pentest history…
+                        </div>
+                      ) : history.length === 0 ? (
+                        <p className="text-xs text-[var(--text-muted)]">
+                          No pentests found for this user.
+                        </p>
+                      ) : (
+                        <div className="space-y-2">
+                          {history.map((pentest) => (
+                            <div
+                              key={pentest.pentestId}
+                              className="rounded-md bg-white/5 border border-white/10 px-3 py-2"
+                            >
+                              <div className="flex items-center justify-between gap-3 text-xs">
+                                <span className="text-[var(--text)] truncate">
+                                  {pentest.target}
+                                </span>
+                                <span className="text-[var(--text-muted)] whitespace-nowrap">
+                                  {formatDate(pentest.createdAt)}
+                                </span>
+                              </div>
+                              <p
+                                className={`text-xs mt-1 font-semibold ${statusBadge(pentest.status)}`}
+                              >
+                                {normalizePentestStatus(pentest.status)}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            <div className="pt-2 flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() =>
+                  setUsersPage((previous) => Math.max(1, previous - 1))
+                }
+                disabled={usersPage <= 1}
+                className="neon-outline-btn px-3 py-1.5 text-xs disabled:opacity-40"
+              >
+                Previous
+              </button>
+              <p className="text-xs text-[var(--text-muted)]">
+                Page {usersPage} of {totalUserPages}
+              </p>
+              <button
+                type="button"
+                onClick={() =>
+                  setUsersPage((previous) =>
+                    Math.min(totalUserPages, previous + 1),
+                  )
+                }
+                disabled={usersPage >= totalUserPages}
+                className="neon-outline-btn px-3 py-1.5 text-xs disabled:opacity-40"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <FeedbackWindow />
+
       {/* Upload Wizard */}
       <div className="neon-card p-6 space-y-6 max-w-2xl">
         <div className="flex items-center gap-2">
@@ -702,7 +1002,6 @@ export default function AdminDashboard() {
                 </span>
               </label>
 
-              {/* Custom dropdown */}
               <div className="relative" ref={dropdownRef}>
                 <button
                   type="button"
@@ -888,176 +1187,6 @@ export default function AdminDashboard() {
           </div>
         )}
       </div>
-
-      <FeedbackWindow />
-
-      <div className="neon-card p-5 space-y-4 max-w-4xl">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <FontAwesomeIcon icon={faUsers} className="text-green-theme" />
-            <h2 className="text-lg font-semibold text-[var(--text)]">Users</h2>
-            {!loadingUsers && totalUsers !== null && (
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#34D399]/15 text-green-theme">
-                {totalUsers}
-                {newUsers30Days > 0 ? ` · +${newUsers30Days} in 30d` : ""}
-              </span>
-            )}
-          </div>
-          <p className="text-xs text-[var(--text-muted)]">
-            Click a user to view pentest history
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-          <input
-            type="text"
-            value={userSearch}
-            onChange={(event) => setUserSearch(event.target.value)}
-            placeholder="Search users by email or name"
-            className="neon-input w-full sm:max-w-sm py-2.5 px-4 text-sm"
-          />
-          <p className="text-xs text-[var(--text-muted)]">
-            Showing {filteredUsers.length} user
-            {filteredUsers.length === 1 ? "" : "s"}
-          </p>
-        </div>
-
-        {loadingUserDirectory ? (
-          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
-            <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
-            Loading users…
-          </div>
-        ) : usersError ? (
-          <p className="text-sm text-red-400">{usersError}</p>
-        ) : filteredUsers.length === 0 ? (
-          <p className="text-sm text-[var(--text-muted)]">No users found.</p>
-        ) : (
-          <div className="space-y-2">
-            {pagedUsers.map((user) => {
-              const isExpanded = expandedUserId === user.uid;
-              const isHistoryLoading = loadingHistoryByUser[user.uid] === true;
-              const history = historyByUser[user.uid] || [];
-
-              return (
-                <div
-                  key={user.uid}
-                  className="rounded-lg border border-white/10"
-                >
-                  <button
-                    type="button"
-                    onClick={() => handleToggleUser(user.uid)}
-                    className="w-full px-4 py-3 text-left flex items-center justify-between gap-3 hover:bg-white/5 transition-colors"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm text-[var(--text)] truncate">
-                        {user.email}
-                      </p>
-                      <p className="text-xs text-[var(--text-muted)] truncate">
-                        {user.name || "Unnamed user"}
-                        {user.isAdmin ? " • Admin" : ""}
-                      </p>
-                    </div>
-                    <div className="hidden sm:block text-right w-20 shrink-0">
-                      <p className="text-sm font-semibold text-[var(--text)]">
-                        {user.pentestCount}
-                      </p>
-                      <p className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">
-                        Pentests
-                      </p>
-                    </div>
-                    <div className="hidden sm:block text-right w-32 shrink-0">
-                      <p className="text-xs text-[var(--text)] truncate">
-                        {user.lastPentestAt
-                          ? formatDate(user.lastPentestAt)
-                          : "—"}
-                      </p>
-                      <p className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">
-                        Last pentest
-                      </p>
-                    </div>
-                    <FontAwesomeIcon
-                      icon={isExpanded ? faChevronUp : faChevronDown}
-                      className="text-[var(--text-muted)] shrink-0"
-                    />
-                  </button>
-
-                  {isExpanded && (
-                    <div className="px-4 pb-4">
-                      {isHistoryLoading ? (
-                        <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-                          <FontAwesomeIcon
-                            icon={faSpinner}
-                            className="animate-spin"
-                          />
-                          Loading pentest history…
-                        </div>
-                      ) : history.length === 0 ? (
-                        <p className="text-xs text-[var(--text-muted)]">
-                          No pentests found for this user.
-                        </p>
-                      ) : (
-                        <div className="space-y-2">
-                          {history.map((pentest) => (
-                            <div
-                              key={pentest.pentestId}
-                              className="rounded-md bg-white/5 border border-white/10 px-3 py-2"
-                            >
-                              <div className="flex items-center justify-between gap-3 text-xs">
-                                <span className="text-[var(--text)] truncate">
-                                  {pentest.target}
-                                </span>
-                                <span className="text-[var(--text-muted)] whitespace-nowrap">
-                                  {formatDate(pentest.createdAt)}
-                                </span>
-                              </div>
-                              <p
-                                className={`text-xs mt-1 font-semibold ${statusBadge(pentest.status)}`}
-                              >
-                                {normalizePentestStatus(pentest.status)}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-
-            <div className="pt-2 flex items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={() =>
-                  setUsersPage((previous) => Math.max(1, previous - 1))
-                }
-                disabled={usersPage <= 1}
-                className="neon-outline-btn px-3 py-1.5 text-xs disabled:opacity-40"
-              >
-                Previous
-              </button>
-              <p className="text-xs text-[var(--text-muted)]">
-                Page {usersPage} of {totalUserPages}
-              </p>
-              <button
-                type="button"
-                onClick={() =>
-                  setUsersPage((previous) =>
-                    Math.min(totalUserPages, previous + 1),
-                  )
-                }
-                disabled={usersPage >= totalUserPages}
-                className="neon-outline-btn px-3 py-1.5 text-xs disabled:opacity-40"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Analytics — concise stats window, bottom of the admin page */}
-      <AdminAnalytics />
     </div>
   );
 }
