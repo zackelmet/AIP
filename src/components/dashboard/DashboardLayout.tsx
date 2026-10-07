@@ -29,7 +29,7 @@ const OnboardingTour = dynamic(
   () => import("@/components/onboarding/OnboardingTour"),
   { ssr: false },
 );
-export const START_TOUR_EVENT = "start-tour";
+export const START_TOUR_EVENT = "aip:start-tour";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

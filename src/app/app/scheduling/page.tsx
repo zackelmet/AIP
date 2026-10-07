@@ -489,7 +489,7 @@ export default function SchedulingPage() {
                     $500/credit · Up to 3 roles, 10 endpoints
                   </p>
                   {webAppCredits > 0 && (
-                    <p className="text-green-400 text-xs mt-1">
+                    <p className="text-green-theme text-xs mt-1">
                       {webAppCredits} credit{webAppCredits !== 1 ? "s" : ""}{" "}
                       available
                     </p>
@@ -515,7 +515,7 @@ export default function SchedulingPage() {
                     $199/credit per target · comma-separated targets supported
                   </p>
                   {externalIpCredits > 0 && (
-                    <p className="text-green-400 text-xs mt-1">
+                    <p className="text-green-theme text-xs mt-1">
                       {externalIpCredits} credit
                       {externalIpCredits !== 1 ? "s" : ""} available
                     </p>
@@ -541,7 +541,7 @@ export default function SchedulingPage() {
                     $1500/credit · advanced app/API coverage
                   </p>
                   {pentestPlusCredits > 0 && (
-                    <p className="text-green-400 text-xs mt-1">
+                    <p className="text-green-theme text-xs mt-1">
                       {pentestPlusCredits} credit
                       {pentestPlusCredits !== 1 ? "s" : ""} available
                     </p>
