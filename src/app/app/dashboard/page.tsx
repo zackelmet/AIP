@@ -428,11 +428,11 @@ function DashboardInner({
             </div>
           )}
 
-        {/* Recent Pentests */}
+        {/* Order History */}
         {recentScans.length > 0 && (
           <div className="bg-gradient-to-br from-[#0a141f] to-[#0a141f]/80 border border-white/10 rounded-xl p-6 shadow-lg">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-white">Recent Pentests</h2>
+              <h2 className="text-2xl font-bold text-white">Order History</h2>
               <Link
                 href="/app/pentests"
                 className="text-green-theme hover:text-[#10b981] text-sm font-semibold transition-colors"
