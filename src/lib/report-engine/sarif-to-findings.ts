@@ -107,6 +107,13 @@ export function sarifToFindings(sarifDoc: SarifDoc): ReportFinding[] {
     const strix = result.properties?.strix;
     const rule = rules[result.ruleIndex ?? -1];
 
+    // Skip coverage/test-case items — these have no strix data, cvss=0,
+    // and generic "Coverage of" descriptions. They're status reports, not findings.
+    const cvss = parseCvssValue(
+      strix?.cvss ?? result.properties?.["security-severity"],
+    );
+    if (cvss === 0 && !strix) continue;
+
     const title =
       rule?.shortDescription?.text ??
       result.message?.text?.split("\n")[0] ??
@@ -116,10 +123,6 @@ export function sarifToFindings(sarifDoc: SarifDoc): ReportFinding[] {
       rule?.fullDescription?.text ?? result.message?.text ?? "";
 
     const severity = normalizeSeverity(strix?.severity ?? result.level);
-    const cvss = parseCvssValue(
-      strix?.cvss ?? result.properties?.["security-severity"],
-    );
-
     const pocParts: string[] = [];
     if (strix?.poc?.description) pocParts.push(strix.poc.description);
 
