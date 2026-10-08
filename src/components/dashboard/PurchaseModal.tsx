@@ -75,17 +75,17 @@ export default function PurchaseModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-[var(--card-bg,#0a141f)] border border-[var(--card-border,#ffffff20)] rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-y-auto max-h-[95vh]">
+      <div className="bg-theme-panel border border-green-theme rounded-xl p-8 max-w-lg w-full shadow-2xl overflow-y-auto max-h-[95vh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--card-border,#ffffff20)]">
+        <div className="flex items-start justify-between mb-6">
           <div>
-            <h2 className="text-xl font-bold text-[var(--text)]">
+            <h2 className="text-3xl font-bold text-white mb-2">
               Buy Credits
             </h2>
-            <p className="text-sm text-[var(--text-muted)] mt-1">
+            <p className="text-gray-400">
               Select a pentest type and quantity
             </p>
           </div>
@@ -95,32 +95,32 @@ export default function PurchaseModal({ onClose }: { onClose: () => void }) {
           >
             <FontAwesomeIcon
               icon={faXmark}
-              className="text-[var(--text-muted)] hover:text-[var(--text)] text-xl"
+              className="text-gray-400 hover:text-white text-xl"
             />
           </button>
         </div>
 
         {/* Type selection — all 3 side by side */}
-        <div className="px-6 py-5 space-y-5">
-          <div className="grid grid-cols-3 gap-3">
+        <div className="space-y-5">
+          <div className="grid grid-cols-3 gap-4">
             {PLANS.map((p) => (
               <button
                 key={p.type}
                 type="button"
                 onClick={() => { setSelectedType(p.type); setQuantity(1); }}
-                className={`p-4 rounded-xl text-left transition-all ${
+                className={`p-5 rounded-xl text-center transition-all flex flex-col items-center ${
                   selectedType === p.type
-                    ? "bg-[#34D399]/15 border-2 border-[#34D399]"
-                    : "bg-[var(--card-bg,#ffffff08)] border border-[var(--card-border,#ffffff20)] hover:border-[#34D399]/50"
+                    ? "bg-[#34D399]/20 border-2 border-[#34D399]"
+                    : "bg-white/5 border border-white/10 hover:border-[#34D399]/50"
                 }`}
               >
-                <div className="p-2 rounded-lg bg-[#34D399]/20 border border-[#34D399]/40 mx-auto mb-2" style={{ width: 44, height: 44 }}>
-                  <FontAwesomeIcon icon={p.icon} className="text-green-theme text-lg block mx-auto" />
+                <div className="w-14 h-14 rounded-xl bg-[#34D399]/15 border border-[#34D399]/30 flex items-center justify-center mx-auto mb-3">
+                  <FontAwesomeIcon icon={p.icon} className="text-green-theme text-xl" />
                 </div>
-                <p className="text-xs font-semibold text-[var(--text)] text-center">
+                <p className="text-sm font-semibold text-white">
                   {p.label}
                 </p>
-                <p className="text-xs text-[var(--text-muted)] text-center mt-0.5">
+                <p className="text-xs text-gray-400 mt-0.5">
                   ${p.price}
                 </p>
               </button>
@@ -128,61 +128,63 @@ export default function PurchaseModal({ onClose }: { onClose: () => void }) {
           </div>
 
           {/* Quantity */}
-          <div className="flex items-center justify-between gap-4 bg-[var(--card-bg,#ffffff08)] border border-[var(--card-border,#ffffff20)] rounded-lg px-5 py-4">
-            <div>
-              <p className="text-sm font-semibold text-[var(--text)]">
-                {typeLabels[selectedType]}
-              </p>
-              <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                {plan.desc}
-              </p>
+          <div className="bg-white/5 border border-[#34D399]/20 rounded-lg p-5">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-base font-semibold text-white">
+                  {typeLabels[selectedType]}
+                </p>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {plan.desc}
+                </p>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="w-9 h-9 rounded-lg border border-white/20 bg-white/5 text-white text-base font-bold hover:bg-[#34D399]/20 transition-colors flex items-center justify-center"
+                >
+                  −
+                </button>
+                <span className="w-10 text-center text-xl font-bold text-white">
+                  {quantity}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                  className="w-9 h-9 rounded-lg border border-white/20 bg-white/5 text-white text-base font-bold hover:bg-[#34D399]/20 transition-colors flex items-center justify-center"
+                >
+                  +
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-8 h-8 rounded-lg border border-[var(--card-border,#ffffff20)] bg-[var(--card-bg,#ffffff08)] text-[var(--text)] text-sm font-semibold hover:bg-[#34D399]/20 transition-colors"
-              >
-                −
-              </button>
-              <span className="w-10 text-center text-lg font-bold text-[var(--text)]">
-                {quantity}
-              </span>
-              <button
-                type="button"
-                onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                className="w-8 h-8 rounded-lg border border-[var(--card-border,#ffffff20)] bg-[var(--card-bg,#ffffff08)] text-[var(--text)] text-sm font-semibold hover:bg-[#34D399]/20 transition-colors"
-              >
-                +
-              </button>
-            </div>
-          </div>
 
-          {/* Total & Checkout */}
-          {error && (
-            <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-2">
-              {error}
-            </p>
-          )}
-
-          <button
-            type="button"
-            onClick={checkout}
-            disabled={loading}
-            className="w-full py-3.5 rounded-xl bg-[#34D399] hover:bg-[#10b981] disabled:opacity-50 disabled:cursor-not-allowed text-[#041018] font-bold text-lg transition-colors flex items-center justify-center gap-2"
-          >
-            {loading ? (
-              <>
-                <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
-                Redirecting to checkout…
-              </>
-            ) : (
-              <>
-                Buy ${total.toLocaleString()} —
-                {quantity} credit{quantity === 1 ? "" : "s"}
-              </>
+            {/* Total & Checkout */}
+            {error && (
+              <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-2 mt-4">
+                {error}
+              </p>
             )}
-          </button>
+
+            <button
+              type="button"
+              onClick={checkout}
+              disabled={loading}
+              className="w-full py-3.5 rounded-xl bg-[#34D399] hover:bg-[#10b981] disabled:opacity-50 disabled:cursor-not-allowed text-[#041018] font-bold text-base transition-colors flex items-center justify-center gap-2 mt-5"
+            >
+              {loading ? (
+                <>
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                  Redirecting to checkout…
+                </>
+              ) : (
+                <>
+                  Buy ${total.toLocaleString()} —
+                  {quantity} credit{quantity === 1 ? "" : "s"}
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>
