@@ -18,6 +18,7 @@ import { useUserScans } from "@/lib/hooks/useUserScans";
 import { useAuth } from "@/lib/context/AuthContext";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import ContinuousTesting from "@/components/dashboard/ContinuousTesting";
+import PentestHistoryRow from "@/components/dashboard/PentestHistoryRow";
 import toast from "react-hot-toast";
 
 export default function DashboardPage() {
@@ -441,34 +442,7 @@ function DashboardInner({
             </div>
             <div className="space-y-3">
               {recentScans.map((scan: any) => (
-                <div
-                  key={scan.scanId}
-                  className="p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 hover:border-[#34D399]/30 transition-all"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="px-3 py-1 bg-[#34D399] text-[#041018] text-xs font-semibold rounded-full uppercase">
-                          {scan.type}
-                        </span>
-                        <span className="font-semibold text-white">
-                          {scan.target}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-400">
-                        {scan.status === "completed"
-                          ? "✓ Completed"
-                          : "⏳ Running..."}
-                      </p>
-                    </div>
-                    <Link
-                      href={`/app/pentests#${scan.scanId}`}
-                      className="px-4 py-2 bg-[#34D399]/20 hover:bg-[#34D399]/30 text-green-theme font-semibold rounded-lg border border-[#34D399]/30 transition-colors text-sm"
-                    >
-                      View
-                    </Link>
-                  </div>
-                </div>
+                <PentestHistoryRow key={scan.scanId} scan={scan} compact />
               ))}
             </div>
           </div>
