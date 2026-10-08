@@ -29,6 +29,10 @@ const OnboardingTour = dynamic(
   () => import("@/components/onboarding/OnboardingTour"),
   { ssr: false },
 );
+const PurchaseModal = dynamic(
+  () => import("@/components/dashboard/PurchaseModal"),
+  { ssr: false },
+);
 export const START_TOUR_EVENT = "aip:start-tour";
 
 interface DashboardLayoutProps {
@@ -38,6 +42,7 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { currentUser, isLoadingAuth } = useAuth();
@@ -101,6 +106,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     >
       {/* First-run product tour (auto-starts once on the dashboard) */}
       <OnboardingTour />
+
+      {showPurchaseModal && <PurchaseModal onClose={() => setShowPurchaseModal(false)} />}
 
       <div className="flex flex-1 lg:overflow-hidden">
         {/* Mobile overlay */}
@@ -321,14 +328,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
 
             {/* Buy Credits button */}
-            <Link
-              href="/app/dashboard?purchase=web_app"
+            <button
+              type="button"
+              onClick={() => setShowPurchaseModal(true)}
               data-tour="buy-credits"
               className="block w-full px-4 py-3 bg-[#34D399] text-[#041018] font-semibold rounded-lg text-center hover:bg-[#10b981] transition-colors"
             >
               Buy Credits
               <FontAwesomeIcon icon={faPlus} className="ml-2" />
-            </Link>
+            </button>
           </div>
         </aside>
 
