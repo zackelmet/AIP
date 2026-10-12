@@ -56,33 +56,42 @@ export async function GET(request: NextRequest) {
       .orderBy("createdAt", "desc")
       .get();
 
-    const newPentestsThisMonth = pentestsSnap.docs.length;
-
-    // Fetch user emails for pentest table
+    // Internal pentests (launched by admin users, e.g. zack/connor) are
+    // excluded from analytics so metrics reflect real customers only.
+    // Fetch user docs to resolve emails + admin users.
     const userIds = Array.from(new Set(
       pentestsSnap.docs.map(d => d.data().userId as string).filter(Boolean),
     ));
     const emailByUid: Record<string, string> = {};
+    const adminUids = new Set<string>();
     if (userIds.length > 0) {
       const userRefs = userIds.map(id => db.collection("users").doc(id));
       const userDocs = await db.getAll(...userRefs);
       userDocs.forEach(ud => {
-        if (ud.exists) emailByUid[ud.id] = ud.data()?.email || "";
+        if (ud.exists) {
+          const data = ud.data();
+          if (data?.isAdmin === true) adminUids.add(ud.id);
+          emailByUid[ud.id] = data?.email || "";
+        }
       });
     }
 
-    const pentests = pentestsSnap.docs.map(doc => {
-      const d = doc.data();
-      return {
-        pentestId: doc.id,
-        userEmail: emailByUid[d.userId] || d.userEmail || "Unknown",
-        target: d.targetUrl || (d.targets?.[0] || "—"),
-        targetOrg: d.targetOrg || null,
-        type: d.type || "—",
-        amountCents: d.amountCents || 0,
-        createdAt: d.createdAt?.toDate?.()?.toISOString() ?? null,
-      };
-    });
+    const pentests = pentestsSnap.docs
+      .filter(doc => !adminUids.has(doc.data().userId))
+      .map(doc => {
+        const d = doc.data();
+        return {
+          pentestId: doc.id,
+          userEmail: emailByUid[d.userId] || d.userEmail || "Unknown",
+          target: d.targetUrl || (d.targets?.[0] || "—"),
+          targetOrg: d.targetOrg || null,
+          type: d.type || "—",
+          amountCents: d.amountCents || 0,
+          createdAt: d.createdAt?.toDate?.()?.toISOString() ?? null,
+        };
+      });
+
+    const newPentestsThisMonth = pentests.length;
 
     // Revenue from pentest amountCents
     const revenueThisMonthCents = pentests.reduce((sum, p) => sum + (p.amountCents || 0), 0);
