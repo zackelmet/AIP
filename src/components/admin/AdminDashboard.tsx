@@ -142,6 +142,9 @@ export default function AdminDashboard() {
     newUsersThisMonth: number;
     newPentestsThisMonth: number;
     revenueThisMonthCents: number;
+    purchasesThisMonth?: number;
+    creditsPurchasedThisMonth?: number;
+    revenueUnavailable?: boolean;
     pentests: any[];
   } | null>(null);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
@@ -669,13 +672,19 @@ export default function AdminDashboard() {
               </div>
               <div className="rounded-lg border border-white/10 bg-black/20 p-4">
                 <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
-                  Pentests Launched
+                  Credits Purchased
                 </p>
                 <p className="text-3xl font-black text-[var(--text)] mt-1">
-                  {analyticsData.newPentestsThisMonth}
+                  {analyticsData.creditsPurchasedThisMonth ??
+                    analyticsData.purchasesThisMonth ??
+                    0}
                 </p>
                 <p className="text-xs text-[var(--text-muted)] mt-2">
-                  This month
+                  {analyticsData.creditsPurchasedThisMonth != null
+                    ? `${analyticsData.purchasesThisMonth ?? 0} checkout${
+                        (analyticsData.purchasesThisMonth ?? 0) === 1 ? "" : "s"
+                      }`
+                    : "This month"}
                 </p>
               </div>
               <div className="rounded-lg border border-white/10 bg-black/20 p-4">
@@ -683,7 +692,13 @@ export default function AdminDashboard() {
                   Revenue
                 </p>
                 <p className="text-3xl font-black text-[var(--text)] mt-1">
-                  ${(analyticsData.revenueThisMonthCents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  {analyticsData.revenueUnavailable
+                    ? "n/a"
+                    : `$${(
+                        analyticsData.revenueThisMonthCents / 100
+                      ).toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                      })}`}
                 </p>
                 <p className="text-xs text-[var(--text-muted)] mt-2">
                   This month

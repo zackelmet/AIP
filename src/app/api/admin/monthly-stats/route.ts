@@ -4,8 +4,61 @@ import { verifyAdmin } from "@/lib/auth/verifyAuth";
 import { getStripeServerSide } from "@/lib/stripe/getStripeServerSide";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 const admin = initializeAdmin();
+
+/**
+ * Sum PAID Stripe checkout revenue in a time window. This is the actual money
+ * taken (credits purchased), not pentest-attributed amountCents — that field is
+ * stamped at launch and double-counts multi-IP jobs / mis-dates spend months.
+ * Best-effort: on any Stripe failure we report unavailable so the UI can say "n/a"
+ * instead of showing a misleading $0.
+ */
+async function stripeRevenueBetween(startSec: number, endSec: number) {
+  let salesCents = 0;
+  let salesCount = 0;
+  let creditsPurchased = 0;
+  let startingAfter: string | undefined;
+  const stripe = await getStripeServerSide();
+
+  try {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const page = await stripe.checkout.sessions.list({
+        limit: 100,
+        created: { gte: startSec, lt: endSec },
+        ...(startingAfter ? { starting_after: startingAfter } : {}),
+      });
+      for (const s of page.data) {
+        if (s.payment_status !== "paid") continue;
+        const amount = s.amount_total || 0;
+        if (amount <= 0) continue;
+        salesCents += amount;
+        salesCount += 1;
+        try {
+          const expanded = await stripe.checkout.sessions.retrieve(s.id, {
+            expand: ["line_items"],
+          });
+          const qty =
+            expanded.line_items?.data?.[0]?.quantity ||
+            expanded.line_items?.data?.reduce((sum, li) => sum + (li.quantity || 0), 0) ||
+            0;
+          creditsPurchased += qty || 1;
+        } catch {
+          creditsPurchased += 1;
+        }
+      }
+      if (!page.has_more || page.data.length === 0) break;
+      startingAfter = page.data[page.data.length - 1].id;
+    }
+  } catch (err) {
+    console.error("Stripe monthly revenue aggregation failed:", err);
+    return { salesCents: 0, salesCount: 0, creditsPurchased: 0, unavailable: true };
+  }
+
+  return { salesCents, salesCount, creditsPurchased, unavailable: false };
+}
 
 function monthRange(year: number, month: number) {
   const start = new Date(year, month - 1, 1);
@@ -93,15 +146,22 @@ export async function GET(request: NextRequest) {
 
     const newPentestsThisMonth = pentests.length;
 
-    // Revenue from pentest amountCents
-    const revenueThisMonthCents = pentests.reduce((sum, p) => sum + (p.amountCents || 0), 0);
+    // Revenue = actual paid checkouts (credits purchased) in this month.
+    const rangeSec = {
+      startSec: Math.floor(new Date(year, month - 1, 1).getTime() / 1000),
+      endSec: Math.floor(new Date(year, month, 1).getTime() / 1000),
+    };
+    const revenue = await stripeRevenueBetween(rangeSec.startSec, rangeSec.endSec);
 
     return NextResponse.json({
       year,
       month,
       newUsersThisMonth,
       newPentestsThisMonth,
-      revenueThisMonthCents,
+      revenueThisMonthCents: revenue.salesCents,
+      purchasesThisMonth: revenue.salesCount,
+      creditsPurchasedThisMonth: revenue.creditsPurchased,
+      revenueUnavailable: revenue.unavailable,
       pentests,
     });
   } catch (error: any) {
