@@ -1,8 +1,23 @@
 # Handoff — AIP (Affordable Pentesting)
 
-_Last updated: 2026-08-10_
+_Last updated: 2026-10-12_
 
 All work below is committed and pushed to `main` (auto-deploys to prod via Vercel at https://ai.affordablepentesting.com).
+
+## Shipped 2026-10-12 — Analytics cleanup + server-side engine flow
+
+- **Monthly analytics now reflect real business, not launches.** Revenue = **paid Stripe checkouts**
+  (credits purchased) for the month — previously it summed pentest `amountCents` (stamped at launch,
+  so purchases were mis-dated and multi-IP jobs inflated it). "Pentests Launched" card → **Credits
+  Purchased** (line-item quantities + checkout count). Internal (admin) launches are excluded from the
+  monthly pentest count/table so metrics reflect customers only.
+- **Dispatch → raw fields (universal engine).** AIP no longer builds an instruction pack; it sends
+  `type`/`authMode`/`targets`/`roles`/`endpoints`/`targetOrg`/`clientContext` to the shared
+  `pentest-runner`, which composes the Strix instruction server-side (`src/lib/pentest/instructionPack.ts`
+  deleted). Applies across mspp-ai / AIP / vulnscanners with one deploy.
+- Earlier this session: sidebar **Buy Credits modal** (all 3 pentest types + quantity picker), light-mode
+  readability fixes, dashboard **Order History** rename, verbose launch-history rows, Strix SARIF noise
+  filtered from findings, roles/endpoints/targets forwarded to the runner on dispatch.
 
 ## Shipped 2026-08-10 — Manual approval gate for VPS dispatch
 
@@ -11,101 +26,72 @@ All work below is committed and pushed to `main` (auto-deploys to prod via Verce
 - **`/api/pentests/[id]/reject`** now also accepts `pending_dispatch` (cancel queued jobs).
 - **Admin Review tab** (`ReviewPentests.tsx`) gained a "Pending Dispatch" window above the review list — Approve & Dispatch (VPS) + Reject per queued pentest.
 - **Status plumbing**: `pending_dispatch` added to `normalizePentestStatus` (lib/pentests/status.ts), user dashboard (clock icon) and admin badges handle it.
-- **Runner auth hardened** (2026-08-10): the VPS job-runner (`server.py` on oracle-vps, PM2 `job-runner`) now requires header `X-Job-Secret` on `POST /jobs`, read from `/home/ubuntu/strix/job-runner/.secret`. Webapp sends it via `VPS_JOB_RUNNER_SECRET` (Vercel prod env set). Local reference copy: `scripts/job-runner-server.py.reference`.
+- **Runner auth hardened** (2026-08-10): the shared **Hetzner** job-runner (`pentest-runner` on
+  `178.104.172.54`) requires header `X-Job-Secret` on `POST /jobs`, read from `.secret` beside
+  `server.py` (systemd unit `strix-job-runner`). Webapp sends it via `VPS_JOB_RUNNER_SECRET`
+  (Vercel prod env set).
 - ⚠️ **Smoke test policy**: `scripts/smokeTestDispatch.mjs` NEVER sends jobs to the pentest server / burns OpenRouter tokens unless `--dispatch` is passed explicitly. Default is launch-only (create → assert `pending_dispatch` → stop; completion = manual admin approval). Verify changes with `tsc --noEmit` + `next lint`; these changes were deployed to prod and verified (dispatch 403 unauth / gate held, smoke run `jFbkx5f15F63bigtGAfb` dispatched only via the script's explicit step).
 
-## PLANNED — Full self-serve loop: Strix VPS backend → CSV → report engine (2026-07-15)
+## SHIPPED — Full self-serve loop (Strix VPS backend → callback → report engine)
 
-**No code written yet.** This is the agreed plan; revisit to build. Goal: close the loop so a paid
-pentest runs itself end-to-end — webapp dispatches job → VPS AI pentester runs it → returns findings CSV →
-webapp report engine auto-generates the PDF → customer emailed. Today the return + report step is **manual**
-(admin drives `/admin/quick-report`).
+The 2026-07-15 plan is built out end-to-end and live: webapp dispatches → the shared Hetzner
+runner executes Strix → findings POST back to `POST /api/pentests/callback` → the report engine
+builds the PDF → the pentest flips to `review` for admin approval. (The old "return + report is
+manual" gap is closed; `/admin/quick-report` remains as a manual fallback.)
 
-**Update 2026-07-16 — Strix backend now runs on a live Anthropic key; blocker is the account rate tier, not credits.**
-Wired Strix on the Oracle VPS to a new funded Anthropic key (`anthropic/claude-haiku-4-5`; key saved in
-`~/Documents/Notes/openclaw`, on the box at `/home/ubuntu/strix/anthropic.key` + `run-anthropic.sh`, targeting
-`https://ai.affordablepentesting.com` with a non-destructive AIP-scoped instruction). **First real run executed
-end-to-end** — auth, model, and the spawn→run→`findings.sarif` loop all work (the ~37K-token first request cleared the
-old Groq TPM wall). **But the account is anomalously throttled to 10K input-tokens/min & 5 req/min** — ~200× BELOW
-Anthropic's lowest **Start tier** (Haiku 4.5 Start = 2M ITPM / 1,000 RPM). Strix's ~37K-token requests are 3–4× over the
-10K → 429/backoff retry loop; 45-min run = $0.54, 0 findings, killed. **Fix is a Console setting, NOT more spend / NOT a
-bigger model** (Start tier alone dwarfs Strix's needs; my earlier "deposit to Tier 2" note was wrong): in
-console.anthropic.com → **Settings → Limits** raise any self-set/workspace limit, and → **Settings → Billing** add a
-payment method / verify the org to get placed on real Start-tier limits; if it stays stuck, use "Request rate limit
-increase" or support. Then `SCAN_MODE=quick bash /home/ubuntu/strix/run-anthropic.sh eval_aip2`. Full detail in the
-`strix-engine` memory. The **webapp callback brick (#1 below) is still the recommended first build** and is unblocked
-regardless (testable with a mock CSV today).
+- **Webapp callback** `POST /api/pentests/callback` (secret-gated by `PENTEST_WEBHOOK_SECRET`):
+  accepts findings (SARIF or raw JSON/CSV) → `ReportFinding[]` → PDF via the report engine → stores
+  to Storage + `reports` doc → flips pentest → `review` → fires the "report ready" email. SHIPPED.
+- **VPS job-runner**: shared `zackelmet/pentest-runner` on Hetzner `vs1` (`178.104.172.54:18992`,
+  systemd `strix-job-runner`, CI auto-deploys on push to main). FIFO queue, welcome drain safety.
+  It OWNS the agent flow server-side (see pentest-runner README).
+- **Dispatch wiring**: `POST /api/pentests/[id]/dispatch` (admin gate) → runner `/jobs`, dispatched
+  ALONGSIDE the Make.com webhook (`source: "aip"`). AIP sends RAW fields — it no longer builds an
+  instruction pack.
 
-**Two unblock paths for the Strix engine (Zack deciding, 2026-07-16):**
-- **(A) Anthropic Start tier — best findings quality, free capacity.** In console.anthropic.com → **Settings → Billing**:
-  add a payment method + **buy credits** (the $5 promo does NOT activate real limits; a card-backed purchase does). That
-  promotes the org off the restricted free/eval state onto **Start tier** → Haiku 4.5 at **1,000 RPM / 2,000,000 ITPM**
-  (Settings → Limits confirms). No extra spend needed for *capacity* — Start tier is free headroom; you only pay per
-  token. Zack's plan: **do this when the Max plan expires.** Frontier quality (Haiku/Sonnet) = better vulns for a paid
-  product. Rerun: `SCAN_MODE=quick bash /home/ubuntu/strix/run-anthropic.sh eval_aip2`.
-- **(B) Groq Dev tier — cheapest, most-integrated, consolidates with the rest of the stack.** Upgrade Groq free →
-  pay-as-you-go to clear the 8K-TPM wall; the Groq↔Strix LiteLLM shims are **already on the box** (`run-eval.sh`). **Use
-  a Strix-recommended Groq model (Kimi K2 / Qwen), NOT gpt-oss-120b** (Strix flags gpt-oss "not recommended"). Pairs with
-  Zack's broader plan to run **OpenCode + a token-efficient Groq model instead of Claude Code**, and Groq for the apps
-  (ai-hacker / vuln-trends already Groq). Tradeoff: cheaper/faster but likely lower findings quality than frontier — fine
-  to **validate the loop on Groq**, but keep path (A)'s Sonnet-class model for production customer pentests.
+### Engine status (2026-10-12)
+- Models are routed by scan mode from `.env` on the box: **deep → `openrouter/deepseek/deepseek-v4-pro`**,
+  quick/standard → `v4-flash` (OpenRouter). ⚠️ **`deepseek-r1` was tested 2026-10-12 and REVERTED** — its 64K
+  context cap 400s Strix's large initial request, so the agent produced nothing. (The earlier Anthropic
+  Haiku / Groq-dev tier "two unblock paths" are obsolete — the engine runs on OpenRouter DeepSeek now.)
+- **Server-side instruction packs**: the runner composes the Strix `--instruction` from `type` / `authMode` /
+  scope (`targetOrg`/`endpoints`/`roles`/`targets`) / `clientContext`. AIP's local `instructionPack.ts` was
+  deleted; unknown types fall back to the default network pack (`ai_pentest` = web + network blend).
+- **Pre-flight reachability gate + SARIF real-finding filter** (2026-10-12): targets blackholed from the box
+  fail fast with a clear error; callbacks only carry true findings (Strix's "Ruled out / No issue /
+  reconnaissance" records are dropped).
+- Dispatch payload now sends: `type`, `authMode`, `targets`, `roles`, `endpoints`, `targetOrg`, `clientContext`,
+  `budget`, `mode`, `source: "aip"`.
 
 ### Decisions locked with Zack
-- **Run the VPS engine ALONGSIDE the existing Make.com webhook** (Make stays as fallback while Strix has no
-  paid model credits), not as a replacement.
+- **Run the VPS engine ALONGSIDE the existing Make.com webhook** (Make stays as fallback), not replacement.
 - **Report engine flexes to Strix's output** where needed (Zack: "we'll be flexible there").
 
-### Backend VPS — CONFIRMED present & working
-- **Oracle Cloud ARM VPS**: `147.224.173.192`, ssh alias `autojob-vps`, hostname `openclaw`, aarch64,
-  user `ubuntu`, key `/home/zack/Desktop/openclaw/ssh-key-2026-02-02.key`.
-- **`strix-agent 1.1.0`** installed via pipx (Python 3.12), CLI-only (`strix -n` headless) — **no REST API**;
-  integration = spawn CLI as a job + ingest its output dir. Runner scripts live in `/home/ubuntu/strix/`
-  (`run-gemini.sh`, `run-eval.sh`, `RESUME-STRIX.md`, `instruction.txt`); the Groq/LiteLLM shims are in place;
-  a working Gemini key sits at `/home/ubuntu/strix/gemini.key`. Docker + strix-sandbox image present; OWASP
-  Juice Shop container available as a test target.
-- ⚠️ **Shared box** — autojob-applier runs there under PM2 (fluxbox/browser/sdr-loop/vnc). Leave it alone.
-- Strix eval history/creds/blocker are documented in the `strix-engine` memory + `/home/ubuntu/strix/RESUME-STRIX.md`.
-  NB: that eval was originally scoped to the **msp** app; AIP would be the first app actually wired to the box.
+### Shared runner — CONFIRMED present & working (Hetzner, not Oracle)
+- **Shared Hetzner VPS `vs1`**: `178.104.172.54:18992`, SSH as root with
+  `~/.ssh/vulnscanners_hetzner_ed25519`. Repo `zackelmet/pentest-runner` (CI auto-deploys on push to
+  main; manual `./deploy.sh`). AIP's `VPS_JOB_RUNNER_URL` points here. ⚠️ The old Oracle ARM box
+  (`147.224.173.192`, autojob-vps/openclaw) is **NOT** AIP's runner anymore.
+- `strix-agent 1.1.0` via pipx, headless `strix -n`, Docker-sandboxed, LLM via LiteLLM (OpenRouter).
+- **Shared box** — the dedicated autojob-applier PM2 stack on Oracle is untouched; leave it alone.
 
-### Strix output contract (per-run dir under `strix_runs/`)
-- **`findings.sarif`** — SARIF 2.1.0, findings in `runs[0].results[]`.
-- **`run.json`** — `status`, `targets_info`, `llm_usage` (tokens → cost).
-- **`strix.log`** + `.state/agents.db`.
-- ⚠️ **Never seen a populated finding**: every run on the box so far has `results: []` (token-wall failures +
-  one Gemini-flash "completed" run that found 0 vulns on Juice Shop). Real deep findings need a **paid model
-  top-up** ("no AI credits yet"). **Before building the SARIF→CSV mapper, pull the populated SARIF result shape
-  from Strix source** (github.com/usestrix/strix) — how it fills `ruleId`/`level`/`message`/severity/CVSS.
+### Strix output contract (per-run dir under `/opt/strix/strix_runs/`)
+- **`findings.sarif`** — SARIF 2.1.0, findings in `runs[0].results[]`, per-finding `properties.strix`
+  carries severity/CVSS/poc/impact/remediation/cwe.
+- **`run.json`** — `status`, `targets_info`, `llm_usage` (tokens → cost). **`coverage.json`** +
+  `strix.log` + `.state/agents.db`.
+- AIP's callback filters to real findings server-side (noise like "Ruled out / reconnaissance" is
+  dropped by the runner); informational clean-runs get the report engine's attack-surface finding.
 
-### Chosen data contract
-Strix emits SARIF; report engine already ingests **CSV** via `parseCSVFindings`. Seam = a thin
-**SARIF → CSV adapter ON THE BOX** mapping into the columns `parseCSVFindings` already accepts
-(Title, Severity, Description, Proof of Concept, Impact, Remediation, CVSS 3.1/4.0 Score+Vector, Target,
-Affected Component). Keeps the webapp callback trivial (accept CSV → existing report engine).
-
-### Current webapp wiring (what exists)
-- Dispatch: `POST /api/pentests` (`src/app/api/pentests/route.ts`) — Stripe-credit check → deduct + create
-  Firestore `pentests` doc (**`status:"pending_dispatch"`** — queued for admin approval, NOT sent to
-  the VPS) in a txn → fire `MAKE_WEBHOOK_URL` with the job + `callbackUrl` (`/api/pentests`, the
-  create route — still worth fixing for a machine callback) + `webhookSecret` (`PENTEST_WEBHOOK_SECRET`).
-  VPS dispatch happens only via the admin approval gate: `POST /api/pentests/[id]/dispatch`.
-- Return webhook that exists: `POST /api/pentests/callback` (verifies `PENTEST_WEBHOOK_SECRET`, attaches
-  findings, builds the report via the report engine, flips pentest to `review`) — SHIPPED (was brick 1 below).
-- Report engine (DONE, good): `parseCSVFindings` (`src/lib/findings/parseFindingsBlock.ts`) →
-  `buildReportPdf`/`buildReportDocx` (`src/lib/report-engine/`). Driven manually today via `/admin/quick-report`.
-
-### Build plan — three bricks
-1. **Webapp callback** `POST /api/pentests/callback` (secret-auth'd): accept `{ pentestId, csv }` →
-   `parseCSVFindings` → `buildReportPdf` → store PDF → flip pentest to `complete` → fire existing
-   "report ready" email (`sendPentestReportReadyEmail`). **Contract-independent — fully buildable/testable
-   today with a mock CSV.** Recommended first brick (keystone, unblocks everything).
-2. **VPS job-runner**: small HTTP service on the Oracle box — accept job → run `strix -n` (reuse
-   `run-gemini.sh` patterns) → SARIF→CSV → POST to the callback. Runs alongside autojob-applier.
-3. **Dispatch wiring**: `/api/pentests` fires the VPS job *alongside* Make.com; set `callbackUrl` → new route.
-
-### Open questions for next session (not yet decided)
-- Sequencing: build webapp callback first (recommended) vs. stand up VPS runner first to watch a real flow.
-- VPS service process manager: **PM2** (matches the box) vs. systemd unit.
-- Paid model top-up (Anthropic/OpenAI/paid-Gemini) is still the true unblock for real findings — billing call.
+### Current webapp wiring (what exists / ships today)
+- Launch: `POST /api/pentests` (`src/app/api/pentests/route.ts`) — Stripe-credit check → deduct →
+  create Firestore `pentests` doc (`status:"pending_dispatch"`, queued for admin, NOT auto-sent to
+  the VPS) in a txn → fire `MAKE_WEBHOOK_URL` (parallel path). VPS dispatch happens only via the admin
+  approval gate: `POST /api/pentests/[id]/dispatch` (sends RAW fields to the shared runner).
+- Return webhook: `POST /api/pentests/callback` (verifies `PENTEST_WEBHOOK_SECRET`, builds the report,
+  flips pentest → `review`). SHIPPED.
+- Report engine (DONE): `parseFindingsBlock` → `buildReportPdf`/`buildReportDocx`. `/admin/quick-report`
+  remains as a manual fallback.
 
 ---
 
