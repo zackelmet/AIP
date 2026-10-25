@@ -1,7 +1,6 @@
 {
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "node": "22.x",
   "functions": {
     "src/app/api/stripe-webhook/route.ts": {
       "maxDuration": 30
