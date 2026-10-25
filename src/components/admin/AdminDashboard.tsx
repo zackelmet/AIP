@@ -13,6 +13,7 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
 import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
 import { faInbox } from "@fortawesome/free-solid-svg-icons/faInbox";
 import { faChartLine } from "@fortawesome/free-solid-svg-icons/faChartLine";
+import { faDollarSign } from "@fortawesome/free-solid-svg-icons/faDollarSign";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { normalizePentestStatus } from "@/lib/pentests/status";
@@ -145,6 +146,7 @@ export default function AdminDashboard() {
     purchasesThisMonth?: number;
     creditsPurchasedThisMonth?: number;
     revenueUnavailable?: boolean;
+    checkouts?: Array<{ userEmail: string; amount: number }>;
     pentests: any[];
   } | null>(null);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
@@ -604,6 +606,100 @@ export default function AdminDashboard() {
           </div>
         )}
       </div>
+
+      {/* Monthly Revenue — paid checkouts for the selected month */}
+      {(() => {
+        const revMonth = monthLabel(analyticsMonth);
+        const revCheckouts = analyticsData?.checkouts as
+          | Array<{ userEmail: string; amount: number }>
+          | undefined;
+
+        return (
+          <div className="neon-card p-6 space-y-4 max-w-4xl">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-2">
+                <FontAwesomeIcon
+                  icon={faDollarSign}
+                  className="text-green-theme text-lg"
+                />
+                <h2 className="text-lg font-bold text-[var(--text)]">
+                  Monthly Revenue
+                </h2>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const [y, m] = analyticsMonth.split("-").map(Number);
+                    const d = new Date(y, m - 2, 1);
+                    setAnalyticsMonth(
+                      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
+                    );
+                  }}
+                  className="neon-outline-btn px-2 py-1 text-sm"
+                  title="Previous month"
+                >
+                  ‹
+                </button>
+                <span className="min-w-32 text-center text-sm font-semibold text-[var(--text)]">
+                  {revMonth}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const [y, m] = analyticsMonth.split("-").map(Number);
+                    const d = new Date(y, m, 1);
+                    setAnalyticsMonth(
+                      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
+                    );
+                  }}
+                  className="neon-outline-btn px-2 py-1 text-sm"
+                  title="Next month"
+                >
+                  ›
+                </button>
+              </div>
+            </div>
+
+            {analyticsLoading ? (
+              <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
+                <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                Loading…
+              </div>
+            ) : revCheckouts && revCheckouts.length > 0 ? (
+              <div className="overflow-x-auto" style={{ userSelect: "text" }}>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-[var(--text-muted)]">
+                      <th className="text-left py-2 pr-3 font-semibold">User</th>
+                      <th className="text-right py-2 font-semibold">Revenue</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {revCheckouts.map((c) => (
+                      <tr
+                        key={c.userEmail + c.amount}
+                        className="border-b border-white/5 hover:bg-white/5"
+                      >
+                        <td className="py-2 pr-3 text-[var(--text)] truncate max-w-64" style={{ userSelect: "text" }}>
+                          {c.userEmail}
+                        </td>
+                        <td className="py-2 text-right text-[var(--text)] whitespace-nowrap" style={{ userSelect: "text" }}>
+                          ${(c.amount / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-sm text-[var(--text-muted)]">
+                No paid checkouts in {revMonth}.
+              </p>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Monthly Analytics */}
       <div className="neon-card p-6 space-y-4 max-w-4xl">

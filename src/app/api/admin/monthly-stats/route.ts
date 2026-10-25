@@ -20,6 +20,7 @@ async function stripeRevenueBetween(startSec: number, endSec: number) {
   let salesCount = 0;
   let creditsPurchased = 0;
   let startingAfter: string | undefined;
+  const checkouts: Array<{ userEmail: string; amount: number }> = [];
   const stripe = await getStripeServerSide();
 
   try {
@@ -36,6 +37,14 @@ async function stripeRevenueBetween(startSec: number, endSec: number) {
         if (amount <= 0) continue;
         salesCents += amount;
         salesCount += 1;
+        checkouts.push({
+          userEmail:
+            s.customer_email ||
+            s.customer_details?.email ||
+            s.metadata?.userEmail ||
+            "Unknown",
+          amount,
+        });
         try {
           const expanded = await stripe.checkout.sessions.retrieve(s.id, {
             expand: ["line_items"],
@@ -54,10 +63,10 @@ async function stripeRevenueBetween(startSec: number, endSec: number) {
     }
   } catch (err) {
     console.error("Stripe monthly revenue aggregation failed:", err);
-    return { salesCents: 0, salesCount: 0, creditsPurchased: 0, unavailable: true };
+    return { salesCents: 0, salesCount: 0, creditsPurchased: 0, checkouts: [], unavailable: true };
   }
 
-  return { salesCents, salesCount, creditsPurchased, unavailable: false };
+  return { salesCents, salesCount, creditsPurchased, checkouts, unavailable: false };
 }
 
 function monthRange(year: number, month: number) {
@@ -162,6 +171,7 @@ export async function GET(request: NextRequest) {
       purchasesThisMonth: revenue.salesCount,
       creditsPurchasedThisMonth: revenue.creditsPurchased,
       revenueUnavailable: revenue.unavailable,
+      checkouts: revenue.checkouts,
       pentests,
     });
   } catch (error: any) {
