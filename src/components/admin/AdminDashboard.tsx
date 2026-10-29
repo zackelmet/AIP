@@ -79,7 +79,10 @@ function formatDate(iso: string | null) {
 
 function monthLabel(monthStr: string) {
   const [y, m] = monthStr.split("-").map(Number);
-  return new Date(y, m - 1, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  return new Date(y, m - 1, 1).toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
 }
 
 function formatAge(iso: string | null) {
@@ -190,10 +193,13 @@ export default function AdminDashboard() {
   const loadAnalytics = async () => {
     setAnalyticsLoading(true);
     try {
-      const res = await fetch(`/api/admin/monthly-stats?month=${analyticsMonth}`);
+      const res = await fetch(
+        `/api/admin/monthly-stats?month=${analyticsMonth}`,
+      );
       const data = await res.json();
       if (res.ok) setAnalyticsData(data);
-    } catch {} finally {
+    } catch {
+    } finally {
       setAnalyticsLoading(false);
     }
   };
@@ -611,8 +617,7 @@ export default function AdminDashboard() {
       {(() => {
         const revMonth = monthLabel(analyticsMonth);
         const revCheckouts = analyticsData?.checkouts as
-          | Array<{ userEmail: string; amount: number }>
-          | undefined;
+          Array<{ userEmail: string; amount: number }> | undefined;
 
         return (
           <div className="neon-card p-6 space-y-4 max-w-4xl">
@@ -666,36 +671,91 @@ export default function AdminDashboard() {
                 <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
                 Loading…
               </div>
-            ) : revCheckouts && revCheckouts.length > 0 ? (
-              <div className="overflow-x-auto" style={{ userSelect: "text" }}>
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-[var(--text-muted)]">
-                      <th className="text-left py-2 pr-3 font-semibold">User</th>
-                      <th className="text-right py-2 font-semibold">Revenue</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {revCheckouts.map((c) => (
-                      <tr
-                        key={c.userEmail + c.amount}
-                        className="border-b border-white/5 hover:bg-white/5"
-                      >
-                        <td className="py-2 pr-3 text-[var(--text)] truncate max-w-64" style={{ userSelect: "text" }}>
-                          {c.userEmail}
-                        </td>
-                        <td className="py-2 text-right text-[var(--text)] whitespace-nowrap" style={{ userSelect: "text" }}>
-                          ${(c.amount / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
             ) : (
-              <p className="text-sm text-[var(--text-muted)]">
-                No paid checkouts in {revMonth}.
-              </p>
+              <>
+                {analyticsData?.revenueThisMonthCents != null && (
+                  <div
+                    onClick={() => {
+                      const v = analyticsData.revenueThisMonthCents;
+                      const s = `$${(v / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+                      navigator.clipboard
+                        .writeText(s)
+                        .then(() =>
+                          import("react-hot-toast").then((m) =>
+                            m.toast.success("Revenue copied"),
+                          ),
+                        )
+                        .catch(() => {});
+                    }}
+                    className="rounded-lg border border-white/10 bg-black/20 p-4 cursor-pointer"
+                    title="Click to copy"
+                  >
+                    <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
+                      Revenue
+                    </p>
+                    <p className="text-3xl font-black text-[var(--text)] mt-1 flex items-center gap-2 text-green-400">
+                      {analyticsData.revenueUnavailable
+                        ? "n/a"
+                        : `$${(
+                            analyticsData.revenueThisMonthCents / 100
+                          ).toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                          })}`}
+                    </p>
+                    <p className="text-xs text-[var(--text-muted)] mt-2">
+                      {revMonth}
+                    </p>
+                  </div>
+                )}
+
+                {revCheckouts && revCheckouts.length > 0 ? (
+                  <div
+                    className="overflow-x-auto"
+                    style={{ userSelect: "text" }}
+                  >
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-[var(--text-muted)]">
+                          <th className="text-left py-2 pr-3 font-semibold">
+                            User
+                          </th>
+                          <th className="text-right py-2 font-semibold">
+                            Revenue
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {revCheckouts.map((c) => (
+                          <tr
+                            key={c.userEmail + c.amount}
+                            className="border-b border-white/5 hover:bg-white/5"
+                          >
+                            <td
+                              className="py-2 pr-3 text-[var(--text)] truncate max-w-64"
+                              style={{ userSelect: "text" }}
+                            >
+                              {c.userEmail}
+                            </td>
+                            <td
+                              className="py-2 text-right text-[var(--text)] whitespace-nowrap"
+                              style={{ userSelect: "text" }}
+                            >
+                              $
+                              {(c.amount / 100).toLocaleString("en-US", {
+                                minimumFractionDigits: 2,
+                              })}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-sm text-[var(--text-muted)]">
+                    No paid checkouts in {revMonth}.
+                  </p>
+                )}
+              </>
             )}
           </div>
         );
@@ -719,7 +779,9 @@ export default function AdminDashboard() {
               onClick={() => {
                 const [y, m] = analyticsMonth.split("-").map(Number);
                 const d = new Date(y, m - 2, 1);
-                setAnalyticsMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+                setAnalyticsMonth(
+                  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
+                );
               }}
               className="neon-outline-btn px-2 py-1 text-sm"
               title="Previous month"
@@ -737,7 +799,9 @@ export default function AdminDashboard() {
               onClick={() => {
                 const [y, m] = analyticsMonth.split("-").map(Number);
                 const d = new Date(y, m, 1);
-                setAnalyticsMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+                setAnalyticsMonth(
+                  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
+                );
               }}
               className="neon-outline-btn px-2 py-1 text-sm"
               title="Next month"
@@ -808,43 +872,79 @@ export default function AdminDashboard() {
                   <button
                     type="button"
                     onClick={() => {
-                      const rows = [["User", "Target Org", "Target URL / IP", "Price"]];
+                      const rows = [
+                        ["User", "Target Org", "Target URL / IP", "Price"],
+                      ];
                       for (const p of analyticsData.pentests) {
-                        rows.push([p.userEmail, p.targetOrg || "", p.target, `$${(p.amountCents / 100).toFixed(2)}`]);
+                        rows.push([
+                          p.userEmail,
+                          p.targetOrg || "",
+                          p.target,
+                          `$${(p.amountCents / 100).toFixed(2)}`,
+                        ]);
                       }
-                      const text = rows.map(r => r.join("\t")).join("\n");
+                      const text = rows.map((r) => r.join("\t")).join("\n");
                       navigator.clipboard.writeText(text);
-                      import("react-hot-toast").then(m => m.toast.success("Table copied"));
+                      import("react-hot-toast").then((m) =>
+                        m.toast.success("Table copied"),
+                      );
                     }}
                     className="neon-outline-btn px-3 py-1 text-xs font-semibold"
                   >
                     Copy table
                   </button>
                 </div>
-                <div className="overflow-x-auto select-all" style={{ userSelect: "text" }}>
+                <div
+                  className="overflow-x-auto select-all"
+                  style={{ userSelect: "text" }}
+                >
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-[var(--text-muted)]">
-                        <th className="text-left py-2 pr-3 font-semibold">User</th>
-                        <th className="text-left py-2 pr-3 font-semibold">Target Org</th>
-                        <th className="text-left py-2 pr-3 font-semibold">Target URL / IP</th>
+                        <th className="text-left py-2 pr-3 font-semibold">
+                          User
+                        </th>
+                        <th className="text-left py-2 pr-3 font-semibold">
+                          Target Org
+                        </th>
+                        <th className="text-left py-2 pr-3 font-semibold">
+                          Target URL / IP
+                        </th>
                         <th className="text-right py-2 font-semibold">Price</th>
                       </tr>
                     </thead>
                     <tbody>
                       {analyticsData.pentests.map((p: any) => (
-                        <tr key={p.pentestId} className="border-b border-white/5 hover:bg-white/5">
-                          <td className="py-2 pr-3 text-[var(--text)] truncate max-w-40" style={{ userSelect: "text" }}>
+                        <tr
+                          key={p.pentestId}
+                          className="border-b border-white/5 hover:bg-white/5"
+                        >
+                          <td
+                            className="py-2 pr-3 text-[var(--text)] truncate max-w-40"
+                            style={{ userSelect: "text" }}
+                          >
                             {p.userEmail}
                           </td>
-                          <td className="py-2 pr-3 text-[var(--text-muted)] truncate max-w-32" style={{ userSelect: "text" }}>
+                          <td
+                            className="py-2 pr-3 text-[var(--text-muted)] truncate max-w-32"
+                            style={{ userSelect: "text" }}
+                          >
                             {p.targetOrg || "—"}
                           </td>
-                          <td className="py-2 pr-3 text-[var(--text-muted)] truncate max-w-48" style={{ userSelect: "text" }}>
+                          <td
+                            className="py-2 pr-3 text-[var(--text-muted)] truncate max-w-48"
+                            style={{ userSelect: "text" }}
+                          >
                             {p.target}
                           </td>
-                          <td className="py-2 text-right text-[var(--text)]" style={{ userSelect: "text" }}>
-                            ${(p.amountCents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                          <td
+                            className="py-2 text-right text-[var(--text)]"
+                            style={{ userSelect: "text" }}
+                          >
+                            $
+                            {(p.amountCents / 100).toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                            })}
                           </td>
                         </tr>
                       ))}
