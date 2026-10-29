@@ -821,6 +821,19 @@ export default function AdminDashboard() {
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="rounded-lg border border-white/10 bg-black/20 p-4">
                 <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
+                  Pentests Launched
+                </p>
+                <p className="text-3xl font-black text-[var(--text)] mt-1">
+                  {analyticsData.newPentestsThisMonth ??
+                    analyticsData.pentests.length ??
+                    0}
+                </p>
+                <p className="text-xs text-[var(--text-muted)] mt-2">
+                  {monthLabel(analyticsMonth)}
+                </p>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-black/20 p-4">
+                <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
                   New Sign Ups
                 </p>
                 <p className="text-3xl font-black text-[var(--text)] mt-1">
@@ -845,23 +858,6 @@ export default function AdminDashboard() {
                         (analyticsData.purchasesThisMonth ?? 0) === 1 ? "" : "s"
                       }`
                     : "This month"}
-                </p>
-              </div>
-              <div className="rounded-lg border border-white/10 bg-black/20 p-4">
-                <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
-                  Revenue
-                </p>
-                <p className="text-3xl font-black text-[var(--text)] mt-1">
-                  {analyticsData.revenueUnavailable
-                    ? "n/a"
-                    : `$${(
-                        analyticsData.revenueThisMonthCents / 100
-                      ).toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                      })}`}
-                </p>
-                <p className="text-xs text-[var(--text-muted)] mt-2">
-                  This month
                 </p>
               </div>
             </div>
