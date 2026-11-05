@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "@/lib/context/AuthContext";
 import { useTheme } from "@/lib/context/ThemeContext";
 
 export default function PublicNav() {
+  const { currentUser, isLoadingAuth } = useAuth();
   const { theme, toggle } = useTheme();
 
   return (
@@ -87,16 +89,29 @@ export default function PublicNav() {
             )}
           </button>
 
-          <Link
-            href="/login"
-            className="px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
-            style={{
-              backgroundColor: "var(--primary)",
-              color: "#041018",
-            }}
-          >
-            Sign In
-          </Link>
+          {!isLoadingAuth && currentUser ? (
+            <Link
+              href="/app/dashboard"
+              className="px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
+              style={{
+                backgroundColor: "var(--primary)",
+                color: "#041018",
+              }}
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
+              style={{
+                backgroundColor: "var(--primary)",
+                color: "#041018",
+              }}
+            >
+              Sign In
+            </Link>
+          )}
         </nav>
       </div>
     </header>
