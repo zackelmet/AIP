@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import ReviewPentests from "@/components/admin/ReviewPentests";
 import ReportEngine from "@/components/admin/ReportEngine";
@@ -19,6 +19,27 @@ export default function AdminTabs({ defaultTab }: { defaultTab: string }) {
   const [activeTab, setActiveTab] = useState(
     TABS.some((t) => t.id === defaultTab) ? defaultTab : "dashboard",
   );
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const [reviewRes, pendingRes] = await Promise.all([
+          fetch("/api/admin/active-pentests?status=review"),
+          fetch("/api/admin/active-pentests?status=pending_dispatch"),
+        ]);
+        const reviewData = await reviewRes.json();
+        const pendingData = await pendingRes.json();
+        const count =
+          (reviewData.pentests?.length || 0) +
+          (pendingData.pentests?.length || 0);
+        setPendingCount(count);
+      } catch {}
+    };
+    fetchCount();
+    const id = setInterval(fetchCount, 30000);
+    return () => clearInterval(id);
+  }, []);
 
   return (
     <>
@@ -38,6 +59,11 @@ export default function AdminTabs({ defaultTab }: { defaultTab: string }) {
             >
               <FontAwesomeIcon icon={tab.icon} className="text-sm" />
               {tab.label}
+              {tab.id === "review" && pendingCount > 0 && (
+                <span className="ml-1 text-xs bg-[#34D399]/20 text-[#34D399] rounded-full px-1.5 py-0.5 font-semibold">
+                  {pendingCount}
+                </span>
+              )}
             </button>
           ))}
         </div>
