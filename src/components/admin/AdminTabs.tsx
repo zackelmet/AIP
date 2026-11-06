@@ -60,7 +60,7 @@ export default function AdminTabs({ defaultTab }: { defaultTab: string }) {
               <FontAwesomeIcon icon={tab.icon} className="text-sm" />
               {tab.label}
               {tab.id === "review" && pendingCount > 0 && (
-                <span className="ml-1 text-xs bg-[#34D399]/20 text-[#34D399] rounded-full px-1.5 py-0.5 font-semibold">
+                <span className="ml-1 text-xs bg-[#34D399]/20 text-[var(--text)] rounded-full px-1.5 py-0.5 font-semibold">
                   {pendingCount}
                 </span>
               )}
