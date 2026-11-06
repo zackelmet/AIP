@@ -115,6 +115,8 @@ function statusBadge(status: string) {
 export default function AdminDashboard() {
   const [totalUsers, setTotalUsers] = useState<number | null>(null);
   const [loadingUsers, setLoadingUsers] = useState(true);
+  const [statsData, setStatsData] = useState<any>(null);
+  const [loadingStats, setLoadingStats] = useState(true);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loadingUserDirectory, setLoadingUserDirectory] = useState(true);
   const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
@@ -178,15 +180,21 @@ export default function AdminDashboard() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setLoadingStats(true);
     fetch("/api/admin/stats")
       .then((r) => r.json())
       .then((d) => {
+        setStatsData(d);
         setTotalUsers(d.totalUsers ?? 0);
       })
       .catch(() => {
+        setStatsData(null);
         setTotalUsers(0);
       })
-      .finally(() => setLoadingUsers(false));
+      .finally(() => {
+        setLoadingUsers(false);
+        setLoadingStats(false);
+      });
   }, []);
 
   // Monthly analytics
@@ -496,122 +504,62 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Active pentest queue — launched but not yet delivered */}
-      <div className="neon-card p-6 space-y-4 max-w-4xl">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <FontAwesomeIcon
-              icon={faInbox}
-              className="text-green-theme text-lg"
-            />
-            <h2 className="text-lg font-bold text-[var(--text)]">
-              Delivery Queue
-            </h2>
-            {!loadingActive && (
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#34D399]/15 text-green-theme">
-                {activePentests.length}
-              </span>
-            )}
-          </div>
-          <button
-            type="button"
-            onClick={loadActivePentests}
-            disabled={loadingActive}
-            className="text-xs underline opacity-60 hover:opacity-100 disabled:opacity-30"
-          >
-            Refresh
-          </button>
+      {/* Stat cards */}
+      {!loadingStats && (
+        <div className="grid grid-cols-3 gap-4">
+          {(() => {
+            const dollars = (cents: number) =>
+              `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+            const cards = [
+              {
+                label: "Total Users",
+                value: statsData?.totalUsers?.toLocaleString() || "0",
+                icon: faUsers,
+                color: "text-[#34D399]",
+              },
+              {
+                label: "Completed",
+                value: statsData?.completedPentests?.toLocaleString() || "0",
+                icon: faCheckCircle,
+                color: "text-[#34D399]",
+              },
+              {
+                label: `Revenue (${new Date().getFullYear()})`,
+                value: statsData?.revenueUnavailable
+                  ? "n/a"
+                  : dollars(statsData?.revenueYTDCents || 0),
+                icon: faDollarSign,
+                color: "text-[#34D399]",
+                sub: statsData?.revenueCountYTD
+                  ? `${statsData.revenueCountYTD} orders`
+                  : undefined,
+              },
+            ];
+            return cards.map((c) => (
+              <div
+                key={c.label}
+                className="bg-white/[0.03] border border-white/10 rounded-xl p-5"
+              >
+                <FontAwesomeIcon
+                  icon={c.icon}
+                  className={`text-lg ${c.color}`}
+                />
+                <p className="text-2xl font-bold text-[var(--text)] mt-3">
+                  {c.value}
+                </p>
+                <p className="text-xs text-[var(--text-muted)] uppercase tracking-wide mt-1">
+                  {c.label}
+                </p>
+                {c.sub && (
+                  <p className="text-[10px] text-[var(--text-muted)] mt-1">
+                    {c.sub}
+                  </p>
+                )}
+              </div>
+            ));
+          })()}
         </div>
-        <p className="text-xs text-[var(--text-muted)] -mt-2">
-          Pentests launched but not yet delivered. Upload a report to mark one
-          completed.
-        </p>
-
-        {loadingActive ? (
-          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
-            <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
-            Loading queue…
-          </div>
-        ) : activeError ? (
-          <p className="text-sm text-red-400">{activeError}</p>
-        ) : activePentests.length === 0 ? (
-          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] py-2">
-            <FontAwesomeIcon
-              icon={faCheckCircle}
-              className="text-green-theme"
-            />
-            All caught up — no pentests awaiting delivery.
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {activePentests.map((pentest) => {
-              const age = formatAge(pentest.createdAt);
-              const isUploading =
-                uploadingByPentest[pentest.pentestId] === true;
-              return (
-                <div
-                  key={pentest.pentestId}
-                  className="rounded-lg border border-white/10 px-4 py-3 flex items-center justify-between gap-4"
-                >
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[var(--text)] truncate">
-                      {pentest.target}
-                    </p>
-                    <p className="text-xs text-[var(--text-muted)] truncate">
-                      {pentest.userEmail || "Unknown client"} · ID:{" "}
-                      {pentest.pentestId}
-                    </p>
-                    <p className="text-xs mt-1 flex items-center gap-1.5">
-                      <FontAwesomeIcon
-                        icon={faClock}
-                        className={`${age.className} text-[10px]`}
-                      />
-                      <span className={age.className}>
-                        Launched {age.label}
-                      </span>
-                      <span className="text-[var(--text-muted)]">
-                        · {formatDate(pentest.createdAt)}
-                      </span>
-                    </p>
-                  </div>
-                  <label
-                    className={`neon-primary-btn px-4 py-2 text-sm font-semibold flex items-center gap-2 flex-shrink-0 ${
-                      isUploading
-                        ? "opacity-60 pointer-events-none"
-                        : "cursor-pointer"
-                    }`}
-                  >
-                    {isUploading ? (
-                      <>
-                        <FontAwesomeIcon
-                          icon={faSpinner}
-                          className="animate-spin"
-                        />
-                        Uploading…
-                      </>
-                    ) : (
-                      <>
-                        <FontAwesomeIcon icon={faUpload} /> Upload report
-                      </>
-                    )}
-                    <input
-                      type="file"
-                      accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                      className="hidden"
-                      disabled={isUploading}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) uploadForPentest(pentest.pentestId, file);
-                        e.target.value = "";
-                      }}
-                    />
-                  </label>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Monthly Revenue — paid checkouts for the selected month */}
       {(() => {
@@ -954,6 +902,123 @@ export default function AdminDashboard() {
           <p className="text-sm text-[var(--text-muted)]">
             No data available for this month.
           </p>
+        )}
+      </div>
+
+      {/* Active pentest queue */}
+      <div className="neon-card p-6 space-y-4 max-w-4xl">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <FontAwesomeIcon
+              icon={faInbox}
+              className="text-green-theme text-lg"
+            />
+            <h2 className="text-lg font-bold text-[var(--text)]">
+              Delivery Queue
+            </h2>
+            {!loadingActive && (
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#34D399]/15 text-green-theme">
+                {activePentests.length}
+              </span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={loadActivePentests}
+            disabled={loadingActive}
+            className="text-xs underline opacity-60 hover:opacity-100 disabled:opacity-30"
+          >
+            Refresh
+          </button>
+        </div>
+        <p className="text-xs text-[var(--text-muted)] -mt-2">
+          Pentests launched but not yet delivered. Upload a report to mark one
+          completed.
+        </p>
+
+        {loadingActive ? (
+          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
+            <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+            Loading queue…
+          </div>
+        ) : activeError ? (
+          <p className="text-sm text-red-400">{activeError}</p>
+        ) : activePentests.length === 0 ? (
+          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] py-2">
+            <FontAwesomeIcon
+              icon={faCheckCircle}
+              className="text-green-theme"
+            />
+            All caught up — no pentests awaiting delivery.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {activePentests.map((pentest) => {
+              const age = formatAge(pentest.createdAt);
+              const isUploading =
+                uploadingByPentest[pentest.pentestId] === true;
+              return (
+                <div
+                  key={pentest.pentestId}
+                  className="rounded-lg border border-white/10 px-4 py-3 flex items-center justify-between gap-4"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-[var(--text)] truncate">
+                      {pentest.target}
+                    </p>
+                    <p className="text-xs text-[var(--text-muted)] truncate">
+                      {pentest.userEmail || "Unknown client"} · ID:{" "}
+                      {pentest.pentestId}
+                    </p>
+                    <p className="text-xs mt-1 flex items-center gap-1.5">
+                      <FontAwesomeIcon
+                        icon={faClock}
+                        className={`${age.className} text-[10px]`}
+                      />
+                      <span className={age.className}>
+                        Launched {age.label}
+                      </span>
+                      <span className="text-[var(--text-muted)]">
+                        · {formatDate(pentest.createdAt)}
+                      </span>
+                    </p>
+                  </div>
+                  <label
+                    className={`neon-primary-btn px-4 py-2 text-sm font-semibold flex items-center gap-2 flex-shrink-0 ${
+                      isUploading
+                        ? "opacity-60 pointer-events-none"
+                        : "cursor-pointer"
+                    }`}
+                  >
+                    {isUploading ? (
+                      <>
+                        <FontAwesomeIcon
+                          icon={faSpinner}
+                          className="animate-spin"
+                        />
+                        Uploading…
+                      </>
+                    ) : (
+                      <>
+                        <FontAwesomeIcon icon={faUpload} /> Upload report
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                      className="hidden"
+                      disabled={isUploading}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) uploadForPentest(pentest.pentestId, file);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
 

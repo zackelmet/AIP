@@ -14,95 +14,30 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const now = new Date();
-    const daysAgo = (days: number) => {
-      const date = new Date(now);
-      date.setDate(date.getDate() - days);
-      return date;
-    };
 
     const db = admin.firestore();
     const usersRef = db.collection("users");
     const pentestsRef = db.collection("pentests");
 
-    const thirtyDaysAgo = admin.firestore.Timestamp.fromDate(daysAgo(30));
-    const sevenDaysAgo = admin.firestore.Timestamp.fromDate(daysAgo(6));
-
-    const [
-      totalUsersSnap,
-      newUsers30dSnap,
-      totalPentestsSnap,
-      completedPentestsSnap,
-      recentPentestsSnap,
-    ] = await Promise.all([
+    const [totalUsersSnap, completedPentestsSnap] = await Promise.all([
       usersRef.count().get(),
-      usersRef.where("createdAt", ">=", thirtyDaysAgo).count().get(),
-      pentestsRef.count().get(),
       pentestsRef.where("status", "==", "completed").count().get(),
-      pentestsRef.where("createdAt", ">=", sevenDaysAgo).get(),
     ]);
 
     const totalUsers = totalUsersSnap.data().count;
-    const newUsers30Days = newUsers30dSnap.data().count;
-    const totalPentests = totalPentestsSnap.data().count;
+    const completedPentests = completedPentestsSnap.data().count;
 
-    const pentestStatusCounts = {
-      completed: completedPentestsSnap.data().count,
-      running: Math.max(0, totalPentests - completedPentestsSnap.data().count),
-    };
-
-    const dayKeys = Array.from({ length: 7 }, (_, index) => {
-      const date = daysAgo(6 - index);
-      return date.toISOString().slice(0, 10);
-    });
-
-    const revenueDayKeys = Array.from({ length: 30 }, (_, index) => {
-      const date = daysAgo(29 - index);
-      return date.toISOString().slice(0, 10);
-    });
-
-    const pentestsByDay = dayKeys.reduce<Record<string, number>>(
-      (accumulator, key) => {
-        accumulator[key] = 0;
-        return accumulator;
-      },
-      {},
-    );
-
-    recentPentestsSnap.docs.forEach((doc) => {
-      const createdAtDate = doc.data().createdAt?.toDate?.();
-      if (!createdAtDate) return;
-      const dayKey = createdAtDate.toISOString().slice(0, 10);
-      if (dayKey in pentestsByDay) {
-        pentestsByDay[dayKey] += 1;
-      }
-    });
-
-    const pentestsLast7Days = dayKeys.map((dayKey) => {
-      const date = new Date(dayKey + "T00:00:00.000Z");
-      return {
-        date: dayKey,
-        label: date.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        }),
-        count: pentestsByDay[dayKey] ?? 0,
-      };
-    });
-
-    let sales30DaysCents = 0;
-    let salesCount30Days = 0;
-    const revenueByDay = revenueDayKeys.reduce<Record<string, number>>(
-      (accumulator, key) => {
-        accumulator[key] = 0;
-        return accumulator;
-      },
-      {},
-    );
+    let revenueYTDCents = 0;
+    let revenueCountYTD = 0;
 
     if (process.env.STRIPE_SECRET_KEY) {
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
         apiVersion: "2023-10-16",
       });
+
+      const ytdStart = Math.floor(
+        new Date(`${now.getFullYear()}-01-01T00:00:00Z`).getTime() / 1000,
+      );
 
       let hasMore = true;
       let startingAfter: string | undefined;
@@ -110,7 +45,7 @@ export async function GET(request: NextRequest) {
       while (hasMore) {
         const sessions = await stripe.checkout.sessions.list({
           limit: 100,
-          created: { gte: Math.floor(daysAgo(30).getTime() / 1000) },
+          created: { gte: ytdStart },
           ...(startingAfter ? { starting_after: startingAfter } : {}),
         });
 
@@ -118,13 +53,8 @@ export async function GET(request: NextRequest) {
           const amount = session.amount_total ?? 0;
           const isPaid = session.payment_status === "paid";
           if (isPaid && amount > 0) {
-            salesCount30Days += 1;
-            sales30DaysCents += amount;
-            const createdAtDate = new Date((session.created || 0) * 1000);
-            const dayKey = createdAtDate.toISOString().slice(0, 10);
-            if (dayKey in revenueByDay) {
-              revenueByDay[dayKey] += amount;
-            }
+            revenueCountYTD += 1;
+            revenueYTDCents += amount;
           }
         });
 
@@ -135,33 +65,12 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const averageOrderValueCents =
-      salesCount30Days > 0
-        ? Math.round(sales30DaysCents / salesCount30Days)
-        : 0;
-
-    const revenueLast30Days = revenueDayKeys.map((dayKey) => {
-      const date = new Date(dayKey + "T00:00:00.000Z");
-      return {
-        date: dayKey,
-        label: date.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        }),
-        cents: revenueByDay[dayKey] ?? 0,
-      };
-    });
-
     return NextResponse.json({
       totalUsers,
-      newUsers30Days,
-      totalPentests,
-      pentestStatusCounts,
-      pentestsLast7Days,
-      sales30DaysCents,
-      salesCount30Days,
-      averageOrderValueCents,
-      revenueLast30Days,
+      completedPentests,
+      revenueYTDCents,
+      revenueCountYTD,
+      revenueUnavailable: !process.env.STRIPE_SECRET_KEY,
     });
   } catch (error) {
     console.error("Admin stats error:", error);

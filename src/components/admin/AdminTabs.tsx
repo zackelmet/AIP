@@ -10,8 +10,8 @@ import { faFileWord } from "@fortawesome/free-solid-svg-icons/faFileWord";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const TABS = [
-  { id: "dashboard", label: "Dashboard", icon: faGaugeHigh },
-  { id: "review", label: "Review", icon: faShieldHalved },
+  { id: "dashboard", label: "Overview", icon: faGaugeHigh },
+  { id: "review", label: "Pending", icon: faShieldHalved },
   { id: "report-engine", label: "Docx Reporting", icon: faFileWord },
 ];
 
