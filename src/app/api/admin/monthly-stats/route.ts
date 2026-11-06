@@ -51,7 +51,10 @@ async function stripeRevenueBetween(startSec: number, endSec: number) {
           });
           const qty =
             expanded.line_items?.data?.[0]?.quantity ||
-            expanded.line_items?.data?.reduce((sum, li) => sum + (li.quantity || 0), 0) ||
+            expanded.line_items?.data?.reduce(
+              (sum, li) => sum + (li.quantity || 0),
+              0,
+            ) ||
             0;
           creditsPurchased += qty || 1;
         } catch {
@@ -63,10 +66,22 @@ async function stripeRevenueBetween(startSec: number, endSec: number) {
     }
   } catch (err) {
     console.error("Stripe monthly revenue aggregation failed:", err);
-    return { salesCents: 0, salesCount: 0, creditsPurchased: 0, checkouts: [], unavailable: true };
+    return {
+      salesCents: 0,
+      salesCount: 0,
+      creditsPurchased: 0,
+      checkouts: [],
+      unavailable: true,
+    };
   }
 
-  return { salesCents, salesCount, creditsPurchased, checkouts, unavailable: false };
+  return {
+    salesCents,
+    salesCount,
+    creditsPurchased,
+    checkouts,
+    unavailable: false,
+  };
 }
 
 function monthRange(year: number, month: number) {
@@ -83,7 +98,8 @@ function monthRange(year: number, month: number) {
 export async function GET(request: NextRequest) {
   try {
     const token = await verifyAdmin(request);
-    if (!token) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!token)
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const now = new Date();
     let year = now.getFullYear();
@@ -121,15 +137,17 @@ export async function GET(request: NextRequest) {
     // Internal pentests (launched by admin users, e.g. zack/connor) are
     // excluded from analytics so metrics reflect real customers only.
     // Fetch user docs to resolve emails + admin users.
-    const userIds = Array.from(new Set(
-      pentestsSnap.docs.map(d => d.data().userId as string).filter(Boolean),
-    ));
+    const userIds = Array.from(
+      new Set(
+        pentestsSnap.docs.map((d) => d.data().userId as string).filter(Boolean),
+      ),
+    );
     const emailByUid: Record<string, string> = {};
     const adminUids = new Set<string>();
     if (userIds.length > 0) {
-      const userRefs = userIds.map(id => db.collection("users").doc(id));
+      const userRefs = userIds.map((id) => db.collection("users").doc(id));
       const userDocs = await db.getAll(...userRefs);
-      userDocs.forEach(ud => {
+      userDocs.forEach((ud) => {
         if (ud.exists) {
           const data = ud.data();
           if (data?.isAdmin === true) adminUids.add(ud.id);
@@ -139,15 +157,16 @@ export async function GET(request: NextRequest) {
     }
 
     const pentests = pentestsSnap.docs
-      .filter(doc => !adminUids.has(doc.data().userId))
-      .map(doc => {
+      .filter((doc) => !adminUids.has(doc.data().userId))
+      .map((doc) => {
         const d = doc.data();
         return {
           pentestId: doc.id,
           userEmail: emailByUid[d.userId] || d.userEmail || "Unknown",
-          target: d.targetUrl || (d.targets?.[0] || "—"),
+          target: d.targetUrl || d.targets?.[0] || "—",
           targetOrg: d.targetOrg || null,
           type: d.type || "—",
+          status: d.status || "—",
           amountCents: d.amountCents || 0,
           createdAt: d.createdAt?.toDate?.()?.toISOString() ?? null,
         };
@@ -160,7 +179,10 @@ export async function GET(request: NextRequest) {
       startSec: Math.floor(new Date(year, month - 1, 1).getTime() / 1000),
       endSec: Math.floor(new Date(year, month, 1).getTime() / 1000),
     };
-    const revenue = await stripeRevenueBetween(rangeSec.startSec, rangeSec.endSec);
+    const revenue = await stripeRevenueBetween(
+      rangeSec.startSec,
+      rangeSec.endSec,
+    );
 
     return NextResponse.json({
       year,
@@ -176,6 +198,9 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: any) {
     console.error("monthly-stats error:", error);
-    return NextResponse.json({ error: error.message || "Internal error" }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || "Internal error" },
+      { status: 500 },
+    );
   }
 }
