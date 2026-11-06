@@ -515,13 +515,13 @@ export default function AdminDashboard() {
                 label: "Total Users",
                 value: statsData?.totalUsers?.toLocaleString() || "0",
                 icon: faUsers,
-                color: "text-[#34D399]",
+                color: "text-[#4590e2]",
               },
               {
                 label: "Completed",
                 value: statsData?.completedPentests?.toLocaleString() || "0",
                 icon: faCheckCircle,
-                color: "text-[#34D399]",
+                color: "text-green-400",
               },
               {
                 label: `Revenue (${new Date().getFullYear()})`,
@@ -529,7 +529,7 @@ export default function AdminDashboard() {
                   ? "n/a"
                   : dollars(statsData?.revenueYTDCents || 0),
                 icon: faDollarSign,
-                color: "text-[#34D399]",
+                color: "text-yellow-400",
                 sub: statsData?.revenueCountYTD
                   ? `${statsData.revenueCountYTD} orders`
                   : undefined,
