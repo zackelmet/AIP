@@ -8,8 +8,12 @@ import { faShieldHalved } from "@fortawesome/free-solid-svg-icons/faShieldHalved
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons/faArrowLeft";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons/faChevronDown";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
 import { faChevronUp } from "@fortawesome/free-solid-svg-icons/faChevronUp";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
+import { faRocket } from "@fortawesome/free-solid-svg-icons/faRocket";
+import { faClipboard } from "@fortawesome/free-solid-svg-icons/faClipboard";
 import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
 import { faInbox } from "@fortawesome/free-solid-svg-icons/faInbox";
 import { faChartLine } from "@fortawesome/free-solid-svg-icons/faChartLine";
@@ -99,6 +103,17 @@ function formatAge(iso: string | null) {
   else if (hours >= 24) className = "text-yellow-400";
   return { label, className };
 }
+
+const STATUS_STYLES: Record<string, string> = {
+  completed: "bg-green-500/20 text-green-300 border-green-500/30",
+  running: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
+  pending: "bg-blue-500/20 text-blue-300 border-blue-500/30",
+  pending_dispatch: "bg-blue-500/20 text-blue-300 border-blue-500/30",
+  review: "bg-orange-500/20 text-orange-300 border-orange-500/30",
+  in_progress: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
+  failed: "bg-red-500/20 text-red-300 border-red-500/30",
+  rejected: "bg-red-500/20 text-red-300 border-red-500/30",
+};
 
 function statusBadge(status: string) {
   const normalized = normalizePentestStatus(status);
@@ -505,61 +520,63 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stat cards */}
-      {!loadingStats && (
-        <div className="grid grid-cols-3 gap-4">
-          {(() => {
-            const dollars = (cents: number) =>
-              `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
-            const cards = [
-              {
-                label: "Total Users",
-                value: statsData?.totalUsers?.toLocaleString() || "0",
-                icon: faUsers,
-                color: "text-[#4590e2]",
-              },
-              {
-                label: "Completed",
-                value: statsData?.completedPentests?.toLocaleString() || "0",
-                icon: faCheckCircle,
-                color: "text-green-400",
-              },
-              {
-                label: `Revenue (${new Date().getFullYear()})`,
-                value: statsData?.revenueUnavailable
-                  ? "n/a"
-                  : dollars(statsData?.revenueYTDCents || 0),
-                icon: faDollarSign,
-                color: "text-yellow-400",
-                sub: statsData?.revenueCountYTD
-                  ? `${statsData.revenueCountYTD} orders`
-                  : undefined,
-              },
-            ];
-            return cards.map((c) => (
-              <div
-                key={c.label}
-                className="bg-white/[0.03] border border-white/10 rounded-xl p-5"
-              >
-                <FontAwesomeIcon
-                  icon={c.icon}
-                  className={`text-lg ${c.color}`}
-                />
-                <p className="text-2xl font-bold text-[var(--text)] mt-3">
-                  {c.value}
-                </p>
-                <p className="text-xs text-[var(--text-muted)] uppercase tracking-wide mt-1">
-                  {c.label}
-                </p>
-                {c.sub && (
-                  <p className="text-[10px] text-[var(--text-muted)] mt-1">
-                    {c.sub}
+      <div className="min-h-[180px]">
+        {!loadingStats && (
+          <div className="grid grid-cols-3 gap-4">
+            {(() => {
+              const dollars = (cents: number) =>
+                `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+              const cards = [
+                {
+                  label: "Total Users",
+                  value: statsData?.totalUsers?.toLocaleString() || "0",
+                  icon: faUsers,
+                  color: "text-[#4590e2]",
+                },
+                {
+                  label: "Completed",
+                  value: statsData?.completedPentests?.toLocaleString() || "0",
+                  icon: faCheckCircle,
+                  color: "text-green-400",
+                },
+                {
+                  label: `Revenue (${new Date().getFullYear()})`,
+                  value: statsData?.revenueUnavailable
+                    ? "n/a"
+                    : dollars(statsData?.revenueYTDCents || 0),
+                  icon: faDollarSign,
+                  color: "text-yellow-400",
+                  sub: statsData?.revenueCountYTD
+                    ? `${statsData.revenueCountYTD} orders`
+                    : undefined,
+                },
+              ];
+              return cards.map((c) => (
+                <div
+                  key={c.label}
+                  className="bg-white/[0.03] border border-white/10 rounded-xl p-5"
+                >
+                  <FontAwesomeIcon
+                    icon={c.icon}
+                    className={`text-lg ${c.color}`}
+                  />
+                  <p className="text-2xl font-bold text-[var(--text)] mt-3">
+                    {c.value}
                   </p>
-                )}
-              </div>
-            ));
-          })()}
-        </div>
-      )}
+                  <p className="text-xs text-[var(--text-muted)] uppercase tracking-wide mt-1">
+                    {c.label}
+                  </p>
+                  {c.sub && (
+                    <p className="text-[10px] text-[var(--text-muted)] mt-1">
+                      {c.sub}
+                    </p>
+                  )}
+                </div>
+              ));
+            })()}
+          </div>
+        )}
+      </div>
 
       {/* Monthly Revenue — paid checkouts for the selected month */}
       {(() => {
@@ -710,12 +727,12 @@ export default function AdminDashboard() {
       })()}
 
       {/* Monthly Analytics */}
-      <div className="neon-card p-6 space-y-4 max-w-4xl">
+      <div className="neon-card p-6 space-y-5 max-w-4xl">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <FontAwesomeIcon
               icon={faChartLine}
-              className="text-green-theme text-lg"
+              className="text-[#34D399] text-lg"
             />
             <h2 className="text-lg font-bold text-[var(--text)]">
               Monthly Analytics
@@ -734,14 +751,11 @@ export default function AdminDashboard() {
               className="neon-outline-btn px-2 py-1 text-sm"
               title="Previous month"
             >
-              ‹
+              <FontAwesomeIcon icon={faChevronLeft} />
             </button>
-            <input
-              type="month"
-              value={analyticsMonth}
-              onChange={(e) => setAnalyticsMonth(e.target.value)}
-              className="w-36 py-1.5 px-2 text-sm text-center font-semibold rounded-lg border border-white/10 bg-white/5 text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[#34D399]/40 [color-scheme:var(--calendar-scheme)]"
-            />
+            <span className="min-w-32 text-center text-sm font-semibold text-[var(--text)]">
+              {monthLabel(analyticsMonth)}
+            </span>
             <button
               type="button"
               onClick={() => {
@@ -754,87 +768,150 @@ export default function AdminDashboard() {
               className="neon-outline-btn px-2 py-1 text-sm"
               title="Next month"
             >
-              ›
+              <FontAwesomeIcon icon={faChevronRight} />
             </button>
           </div>
         </div>
 
-        {analyticsLoading ? (
+        {analyticsLoading && analyticsData === null ? (
           <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
             <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
             Loading…
           </div>
-        ) : analyticsData ? (
+        ) : (
           <>
             <div className="grid sm:grid-cols-3 gap-4">
-              <div className="rounded-lg border border-white/10 bg-black/20 p-4">
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
                 <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
                   Pentests Launched
                 </p>
-                <p className="text-3xl font-black text-[var(--text)] mt-1">
-                  {analyticsData.newPentestsThisMonth ??
-                    analyticsData.pentests.length ??
-                    0}
-                </p>
+                {analyticsLoading ? (
+                  <p className="text-3xl font-black mt-1">
+                    <FontAwesomeIcon
+                      icon={faSpinner}
+                      className="animate-spin text-gray-400 text-base"
+                    />
+                  </p>
+                ) : (
+                  <p className="text-3xl font-black mt-1 flex items-center gap-2">
+                    <FontAwesomeIcon
+                      icon={faRocket}
+                      className="text-green-400 text-lg"
+                    />
+                    <span className="text-green-400">
+                      {analyticsData
+                        ? (
+                            analyticsData.newPentestsThisMonth ??
+                            analyticsData.pentests.length ??
+                            0
+                          ).toLocaleString()
+                        : null}
+                    </span>
+                  </p>
+                )}
                 <p className="text-xs text-[var(--text-muted)] mt-2">
                   {monthLabel(analyticsMonth)}
                 </p>
               </div>
-              <div className="rounded-lg border border-white/10 bg-black/20 p-4">
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
                 <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
                   New Sign Ups
                 </p>
-                <p className="text-3xl font-black text-[var(--text)] mt-1">
-                  {analyticsData.newUsersThisMonth}
-                </p>
+                {analyticsLoading ? (
+                  <p className="text-3xl font-black mt-1">
+                    <FontAwesomeIcon
+                      icon={faSpinner}
+                      className="animate-spin text-gray-400 text-base"
+                    />
+                  </p>
+                ) : (
+                  <p className="text-3xl font-black mt-1 flex items-center gap-2">
+                    <FontAwesomeIcon
+                      icon={faUsers}
+                      className="text-[#4590e2] text-lg"
+                    />
+                    <span className="text-[#4590e2]">
+                      {analyticsData
+                        ? analyticsData.newUsersThisMonth.toLocaleString()
+                        : null}
+                    </span>
+                  </p>
+                )}
                 <p className="text-xs text-[var(--text-muted)] mt-2">
                   {monthLabel(analyticsMonth)}
                 </p>
               </div>
-              <div className="rounded-lg border border-white/10 bg-black/20 p-4">
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
                 <p className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
                   Credits Purchased
                 </p>
-                <p className="text-3xl font-black text-[var(--text)] mt-1">
-                  {analyticsData.creditsPurchasedThisMonth ??
-                    analyticsData.purchasesThisMonth ??
-                    0}
-                </p>
+                {analyticsLoading ? (
+                  <p className="text-3xl font-black mt-1">
+                    <FontAwesomeIcon
+                      icon={faSpinner}
+                      className="animate-spin text-gray-400 text-base"
+                    />
+                  </p>
+                ) : (
+                  <p className="text-3xl font-black mt-1 flex items-center gap-2">
+                    <FontAwesomeIcon
+                      icon={faShieldHalved}
+                      className="text-purple-400 text-lg"
+                    />
+                    <span className="text-purple-400">
+                      {analyticsData
+                        ? (
+                            analyticsData.creditsPurchasedThisMonth ??
+                            analyticsData.purchasesThisMonth ??
+                            0
+                          ).toLocaleString()
+                        : null}
+                    </span>
+                  </p>
+                )}
                 <p className="text-xs text-[var(--text-muted)] mt-2">
-                  {analyticsData.creditsPurchasedThisMonth != null
-                    ? `${analyticsData.purchasesThisMonth ?? 0} checkout${
-                        (analyticsData.purchasesThisMonth ?? 0) === 1 ? "" : "s"
-                      }`
-                    : "This month"}
+                  {analyticsData &&
+                  analyticsData.creditsPurchasedThisMonth != null
+                    ? `${analyticsData.purchasesThisMonth ?? 0} checkout${(analyticsData.purchasesThisMonth ?? 0) === 1 ? "" : "s"}`
+                    : monthLabel(analyticsMonth)}
                 </p>
               </div>
             </div>
 
-            {analyticsData.pentests.length > 0 && (
+            {analyticsLoading ? (
+              <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
+                <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                Loading…
+              </div>
+            ) : analyticsData && analyticsData.pentests.length > 0 ? (
               <div>
                 <div className="flex items-center justify-end gap-3 mb-2">
                   <button
                     type="button"
                     onClick={() => {
                       const rows = [
-                        ["User", "Target Org", "Target URL / IP", "Price"],
+                        [
+                          "User",
+                          "Target Org",
+                          "Target URL / IP",
+                          "Status",
+                          "Launched",
+                        ],
                       ];
-                      for (const p of analyticsData.pentests) {
+                      for (const p of analyticsData.pentests)
                         rows.push([
                           p.userEmail,
                           p.targetOrg || "",
                           p.target,
-                          `$${(p.amountCents / 100).toFixed(2)}`,
+                          p.status,
+                          formatDate(p.createdAt),
                         ]);
-                      }
                       const text = rows.map((r) => r.join("\t")).join("\n");
-                      navigator.clipboard.writeText(text);
-                      import("react-hot-toast").then((m) =>
-                        m.toast.success("Table copied"),
-                      );
+                      navigator.clipboard.writeText(text).catch(() => {});
                     }}
-                    className="neon-outline-btn px-3 py-1 text-xs font-semibold"
+                    className="neon-outline-btn px-3 py-1 text-xs font-semibold flex items-center gap-1.5"
                   >
+                    <FontAwesomeIcon icon={faClipboard} className="w-3 h-3" />
                     Copy table
                   </button>
                 </div>
@@ -854,7 +931,12 @@ export default function AdminDashboard() {
                         <th className="text-left py-2 pr-3 font-semibold">
                           Target URL / IP
                         </th>
-                        <th className="text-right py-2 font-semibold">Price</th>
+                        <th className="text-left py-2 pr-3 font-semibold">
+                          Status
+                        </th>
+                        <th className="text-right py-2 font-semibold">
+                          Launched
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -864,7 +946,7 @@ export default function AdminDashboard() {
                           className="border-b border-white/5 hover:bg-white/5"
                         >
                           <td
-                            className="py-2 pr-3 text-[var(--text)] truncate max-w-40"
+                            className="py-2 pr-3 text-[var(--text)] truncate max-w-44"
                             style={{ userSelect: "text" }}
                           >
                             {p.userEmail}
@@ -881,14 +963,18 @@ export default function AdminDashboard() {
                           >
                             {p.target}
                           </td>
+                          <td className="py-2 pr-3">
+                            <span
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${STATUS_STYLES[p.status] || "bg-gray-500/20 text-gray-300 border-gray-500/30"}`}
+                            >
+                              {p.status}
+                            </span>
+                          </td>
                           <td
-                            className="py-2 text-right text-[var(--text)]"
+                            className="py-2 text-right text-[var(--text-muted)] whitespace-nowrap"
                             style={{ userSelect: "text" }}
                           >
-                            $
-                            {(p.amountCents / 100).toLocaleString("en-US", {
-                              minimumFractionDigits: 2,
-                            })}
+                            {formatDate(p.createdAt)}
                           </td>
                         </tr>
                       ))}
@@ -896,12 +982,12 @@ export default function AdminDashboard() {
                   </table>
                 </div>
               </div>
+            ) : (
+              <p className="text-sm text-[var(--text-muted)]">
+                No customer pentests in {monthLabel(analyticsMonth)}.
+              </p>
             )}
           </>
-        ) : (
-          <p className="text-sm text-[var(--text-muted)]">
-            No data available for this month.
-          </p>
         )}
       </div>
 
