@@ -90,7 +90,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       icon: faUser,
     },
     ...(userData?.isAdmin
-      ? [{ href: "/admin", label: "Admin", icon: faUserShield }]
+      ? [{ href: "/admin", label: "Admin console", icon: faUserShield }]
       : []),
   ];
 
@@ -107,7 +107,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* First-run product tour (auto-starts once on the dashboard) */}
       <OnboardingTour />
 
-      {showPurchaseModal && <PurchaseModal onClose={() => setShowPurchaseModal(false)} />}
+      {showPurchaseModal && (
+        <PurchaseModal onClose={() => setShowPurchaseModal(false)} />
+      )}
 
       <div className="flex flex-1 lg:overflow-hidden">
         {/* Mobile overlay */}

@@ -1,14 +1,10 @@
-import AdminTabs from "@/components/admin/AdminTabs";
+import AdminConsole from "@/components/admin/AdminConsole";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 
-export default async function AdminPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ tab?: string }>;
-}) {
+export default async function AdminPage() {
   const cookieStore = cookies();
   const sessionToken = cookieStore.get("__session")?.value ?? "";
 
@@ -43,11 +39,9 @@ export default async function AdminPage({
     redirect("/app/dashboard");
   }
 
-  const { tab } = await searchParams;
-
   return (
     <DashboardLayout>
-      <AdminTabs defaultTab={tab || "dashboard"} />
+      <AdminConsole />
     </DashboardLayout>
   );
 }
