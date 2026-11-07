@@ -510,9 +510,7 @@ export default function AdminDashboard() {
           className="text-green-theme text-2xl"
         />
         <div>
-          <h1 className="text-2xl font-black text-[var(--text)]">
-            Admin Dashboard
-          </h1>
+          <h1 className="text-2xl font-black text-[var(--text)]">Overview</h1>
           <p className="text-sm text-[var(--text-muted)]">
             Affordable Pentesting — internal tools
           </p>
@@ -520,62 +518,69 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stat cards */}
-      <div className="min-h-[180px]">
-        {!loadingStats && (
-          <div className="grid grid-cols-3 gap-4">
-            {(() => {
-              const dollars = (cents: number) =>
-                `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
-              const cards = [
-                {
-                  label: "Total Users",
-                  value: statsData?.totalUsers?.toLocaleString() || "0",
-                  icon: faUsers,
-                  color: "text-[#4590e2]",
-                },
-                {
-                  label: "Completed",
-                  value: statsData?.completedPentests?.toLocaleString() || "0",
-                  icon: faCheckCircle,
-                  color: "text-green-400",
-                },
-                {
-                  label: `Revenue (${new Date().getFullYear()})`,
-                  value: statsData?.revenueUnavailable
-                    ? "n/a"
-                    : dollars(statsData?.revenueYTDCents || 0),
-                  icon: faDollarSign,
-                  color: "text-yellow-400",
-                  sub: statsData?.revenueCountYTD
-                    ? `${statsData.revenueCountYTD} orders`
-                    : undefined,
-                },
-              ];
-              return cards.map((c) => (
-                <div
-                  key={c.label}
-                  className="bg-white/[0.03] border border-white/10 rounded-xl p-5"
-                >
-                  <FontAwesomeIcon
-                    icon={c.icon}
-                    className={`text-lg ${c.color}`}
-                  />
-                  <p className="text-2xl font-bold text-[var(--text)] mt-3">
-                    {c.value}
-                  </p>
-                  <p className="text-xs text-[var(--text-muted)] uppercase tracking-wide mt-1">
-                    {c.label}
-                  </p>
-                  {c.sub && (
-                    <p className="text-[10px] text-[var(--text-muted)] mt-1">
-                      {c.sub}
-                    </p>
-                  )}
+      <div className="grid grid-cols-3 gap-4">
+        {(() => {
+          if (loadingStats) {
+            return [1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="bg-white/[0.03] border border-white/10 rounded-xl p-5"
+              >
+                <div className="animate-pulse">
+                  <div className="h-4 w-4 rounded bg-gray-500/30 mb-6" />
+                  <div className="h-8 w-20 bg-gray-500/20 rounded mb-2" />
+                  <div className="h-3 w-16 bg-gray-500/20 rounded" />
                 </div>
-              ));
-            })()}
-          </div>
-        )}
+              </div>
+            ));
+          }
+          const dollars = (cents: number) =>
+            `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2 })}`;
+          const cards = [
+            {
+              label: "Total Users",
+              value: statsData?.totalUsers?.toLocaleString() || "0",
+              icon: faUsers,
+              color: "text-[#4590e2]",
+            },
+            {
+              label: "Completed",
+              value: statsData?.completedPentests?.toLocaleString() || "0",
+              icon: faCheckCircle,
+              color: "text-green-400",
+            },
+            {
+              label: `Revenue (${new Date().getFullYear()})`,
+              value: statsData?.revenueUnavailable
+                ? "n/a"
+                : dollars(statsData?.revenueYTDCents || 0),
+              icon: faDollarSign,
+              color: "text-yellow-400",
+              sub: statsData?.revenueCountYTD
+                ? `${statsData.revenueCountYTD} orders`
+                : undefined,
+            },
+          ];
+          return cards.map((c) => (
+            <div
+              key={c.label}
+              className="bg-white/[0.03] border border-white/10 rounded-xl p-5"
+            >
+              <FontAwesomeIcon icon={c.icon} className={`text-lg ${c.color}`} />
+              <p className="text-2xl font-bold text-[var(--text)] mt-3">
+                {c.value}
+              </p>
+              <p className="text-xs text-[var(--text-muted)] uppercase tracking-wide mt-1">
+                {c.label}
+              </p>
+              {c.sub && (
+                <p className="text-[10px] text-[var(--text-muted)] mt-1">
+                  {c.sub}
+                </p>
+              )}
+            </div>
+          ));
+        })()}
       </div>
 
       {/* Monthly Revenue — paid checkouts for the selected month */}
