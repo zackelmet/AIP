@@ -134,7 +134,7 @@ export default function Home() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="flex-1 space-y-6">
-              <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest">
+              <p className="text-[var(--text)] text-xs font-normal uppercase tracking-widest">
                 Audit-Ready Output
               </p>
               <h2 className="text-4xl lg:text-5xl font-light text-theme">
@@ -177,7 +177,7 @@ export default function Home() {
               ].map(({ label, delay }) => (
                 <div
                   key={label}
-                  className="relative overflow-hidden px-5 py-2.5 rounded-lg border border-[#34D399]/30 text-[#34D399] text-center font-normal tracking-wide"
+                  className="relative overflow-hidden px-5 py-2.5 rounded-lg border border-[#34D399]/30 text-[var(--text)] text-center font-normal tracking-wide"
                   style={{ animationDelay: delay }}
                 >
                   {/* shimmer sweep */}
