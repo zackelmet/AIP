@@ -105,14 +105,14 @@ function formatAge(iso: string | null) {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  completed: "bg-green-500/20 text-green-300 border-green-500/30",
-  running: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
-  pending: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-  pending_dispatch: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-  review: "bg-orange-500/20 text-orange-300 border-orange-500/30",
-  in_progress: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
-  failed: "bg-red-500/20 text-red-300 border-red-500/30",
-  rejected: "bg-red-500/20 text-red-300 border-red-500/30",
+  completed: "bg-green-500/20 text-[var(--text)] border-green-500/30",
+  running: "bg-yellow-500/20 text-[var(--text)] border-yellow-500/30",
+  pending: "bg-blue-500/20 text-[var(--text)] border-blue-500/30",
+  pending_dispatch: "bg-blue-500/20 text-[var(--text)] border-blue-500/30",
+  review: "bg-orange-500/20 text-[var(--text)] border-orange-500/30",
+  in_progress: "bg-yellow-500/20 text-[var(--text)] border-yellow-500/30",
+  failed: "bg-red-500/20 text-[var(--text)] border-red-500/30",
+  rejected: "bg-red-500/20 text-[var(--text)] border-red-500/30",
 };
 
 function statusBadge(status: string) {
