@@ -122,7 +122,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* Sidebar */}
         <aside
-          className={`fixed lg:static inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out ${
+          className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
           } flex flex-col`}
           style={{
@@ -343,7 +343,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </aside>
 
         {/* Main content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden lg:pl-64">
           {/* Mobile header with hamburger - hidden on admin page */}
           {!pathname?.startsWith("/admin") && (
             <header
