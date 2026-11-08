@@ -504,18 +504,6 @@ export default function AdminDashboard() {
   return (
     <div className="p-6 space-y-8">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <FontAwesomeIcon
-          icon={faShieldHalved}
-          className="text-green-theme text-2xl"
-        />
-        <div>
-          <h1 className="text-2xl font-black text-[var(--text)]">Overview</h1>
-          <p className="text-sm text-[var(--text-muted)]">
-            Affordable Pentesting — internal tools
-          </p>
-        </div>
-      </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-3 gap-4">
