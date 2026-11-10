@@ -29,16 +29,26 @@ export default function UsersSection() {
       .finally(() => setLoading(false));
   }, []);
 
+  const sorted = useMemo(
+    () =>
+      [...users].sort((a, b) => {
+        const da = a.createdAt || "";
+        const db = b.createdAt || "";
+        return db.localeCompare(da);
+      }),
+    [users],
+  );
+
   const q = search.trim().toLowerCase();
   const filtered = useMemo(
     () =>
-      users.filter((u) => {
+      sorted.filter((u) => {
         if (!q) return true;
         const email = (u.email || "").toLowerCase();
         const name = (u.name || "").toLowerCase();
         return email.includes(q) || name.includes(q);
       }),
-    [users, q],
+    [sorted, q],
   );
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -101,7 +111,13 @@ export default function UsersSection() {
                   <th className="text-left py-2 pr-3 font-semibold">Name</th>
                   <th className="text-center py-2 pr-3 font-semibold">Admin</th>
                   <th className="text-right py-2 pr-3 font-semibold">
-                    Credits
+                    web_app
+                  </th>
+                  <th className="text-right py-2 pr-3 font-semibold">
+                    external_ip
+                  </th>
+                  <th className="text-right py-2 pr-3 font-semibold">
+                    pentest_plus
                   </th>
                   <th className="text-right py-2 font-semibold">Joined</th>
                 </tr>
@@ -124,8 +140,14 @@ export default function UsersSection() {
                     <td className="py-2 pr-3 text-center">
                       {u.isAdmin ? "✓" : ""}
                     </td>
-                    <td className="py-2 pr-3 text-right text-[var(--text-muted)] whitespace-nowrap font-mono">
-                      {JSON.stringify(u.credits || {})}
+                    <td className="py-2 pr-3 text-right text-[var(--text-muted)] whitespace-nowrap">
+                      {(u.credits?.web_app ?? 0).toLocaleString()}
+                    </td>
+                    <td className="py-2 pr-3 text-right text-[var(--text-muted)] whitespace-nowrap">
+                      {(u.credits?.external_ip ?? 0).toLocaleString()}
+                    </td>
+                    <td className="py-2 pr-3 text-right text-[var(--text-muted)] whitespace-nowrap">
+                      {(u.credits?.pentest_plus ?? 0).toLocaleString()}
                     </td>
                     <td className="py-2 text-right text-[var(--text-muted)] whitespace-nowrap">
                       {formatDate(u.createdAt)}
