@@ -1,4 +1,5 @@
-'use client';
+import Link from "next/link";
+("use client");
 
 interface PricingCardProps {
   name: string;
@@ -17,7 +18,7 @@ export default function PricingCard({
   description,
   label,
   features,
-  ctaText = 'Get Started',
+  ctaText = "Get Started",
   highlight = false,
   popular = false,
 }: PricingCardProps) {
@@ -25,13 +26,15 @@ export default function PricingCard({
     <div
       className={`rounded-lg border ${
         highlight || popular
-          ? 'border-emerald-500 shadow-xl scale-105'
-          : 'border-gray-200 shadow-lg'
+          ? "border-emerald-500 shadow-xl scale-105"
+          : "border-gray-200 shadow-lg"
       } bg-white p-8 flex flex-col`}
     >
       <div className="mb-6">
         <h3 className="text-2xl font-bold text-gray-900 mb-2">{name}</h3>
-        <p className="text-gray-600 text-sm mb-4">{description || label || ''}</p>
+        <p className="text-gray-600 text-sm mb-4">
+          {description || label || ""}
+        </p>
         <div className="flex items-baseline">
           <span className="text-5xl font-extrabold text-gray-900">{price}</span>
         </div>
@@ -56,16 +59,16 @@ export default function PricingCard({
         ))}
       </ul>
 
-      <a
+      <Link
         href="/#pricing"
         className={`w-full py-3 px-6 rounded-lg font-semibold text-center transition-colors ${
           highlight
-            ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-            : 'bg-gray-800 hover:bg-gray-900 text-white'
+            ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+            : "bg-gray-800 hover:bg-gray-900 text-white"
         }`}
       >
         {ctaText}
-      </a>
+      </Link>
     </div>
   );
 }

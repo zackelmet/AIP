@@ -77,7 +77,7 @@ const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://affordable-pentes
 
 async function main() {
   // Init Firebase
-  const admin = require("firebase-admin");
+  const admin = require("./_admin.cjs");
   if (!admin.apps.length) {
     admin.initializeApp({
       credential: admin.credential.cert({

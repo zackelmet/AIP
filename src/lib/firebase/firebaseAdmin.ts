@@ -1,17 +1,46 @@
-import admin from "firebase-admin";
+import {
+  initializeApp,
+  getApp,
+  getApps,
+  cert,
+  applicationDefault,
+} from "firebase-admin/app";
+import { getFirestore, FieldValue, Timestamp } from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
+import { getStorage } from "firebase-admin/storage";
+import type { App } from "firebase-admin/app";
+import type { Firestore } from "firebase-admin/firestore";
+import type { Auth } from "firebase-admin/auth";
+import type { Storage } from "firebase-admin/storage";
 
 /**
  * Initializes the Firebase Admin SDK. (SHOULD ONLY BE USED IN SERVER SIDE)
  *
- * This function initializes the Firebase Admin SDK with the provided credentials.
- * It is used to interact with Firebase services from a server environment.
- *
- * @returns {void}
+ * Uses the modular firebase-admin v14 API internally, and returns a small
+ * namespace-compatible object so existing `admin.firestore()` / `admin.auth()`
+ * call sites keep working.
  */
-export const initializeAdmin = () => {
-  if (!admin.apps.length) {
+type FirestoreNamespace = (() => Firestore) & {
+  FieldValue: typeof FieldValue;
+  Timestamp: typeof Timestamp;
+};
+
+interface AdminShim {
+  initializeApp: typeof initializeApp;
+  app: () => App;
+  credential: {
+    cert: typeof cert;
+    applicationDefault: typeof applicationDefault;
+  };
+  firestore: FirestoreNamespace;
+  auth: () => Auth;
+  storage: () => Storage;
+  readonly apps: App[];
+}
+
+export const initializeAdmin = (): AdminShim => {
+  if (!getApps().length) {
     try {
-      // Prefer explicit service account credentials when provided (Vercel env vars)
       const projectId =
         process.env.FIREBASE_ADMIN_PROJECT_ID ||
         process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
@@ -23,35 +52,30 @@ export const initializeAdmin = () => {
         process.env.FIREBASE_PRIVATE_KEY
       )?.replace(/\\n/g, "\n");
 
-      const cleanBucket = (process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '')
+      const cleanBucket = (
+        process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || ""
+      )
         .trim()
-        .replace(/^["']|["']$/g, '');
+        .replace(/^["']|["']$/g, "");
 
       if (projectId && clientEmail && privateKey) {
-        admin.initializeApp({
-          credential: admin.credential.cert({
-            projectId,
-            clientEmail,
-            privateKey,
-          }),
+        initializeApp({
+          credential: cert({ projectId, clientEmail, privateKey }),
           storageBucket: cleanBucket || undefined,
         });
         console.log(
           "Firebase Admin initialized using explicit service account",
         );
       } else {
-        // Fall back to application default credentials (useful for Cloud Build / GCP environments)
         try {
-          admin.initializeApp({
-            credential: admin.credential.applicationDefault(),
+          initializeApp({
+            credential: applicationDefault(),
             storageBucket: cleanBucket || undefined,
           });
           console.log(
             "Firebase Admin initialized using application default credentials",
           );
         } catch (adcErr) {
-          // During build (or environments without credentials) we don't want to fail the entire build.
-          // Log the error and continue; runtime requests will fail if credentials are actually required.
           console.error(
             "Firebase admin applicationDefault init failed:",
             adcErr,
@@ -65,11 +89,48 @@ export const initializeAdmin = () => {
       console.error("Firebase admin initialization unexpected error", error);
     }
   }
-  return admin;
+  return adminShim;
 };
 
-// Export initialized Firestore instance for convenience
+const firestoreFn: FirestoreNamespace = Object.assign(() => getFirestore(), {
+  FieldValue,
+  Timestamp,
+});
+const authFn = () => getAuth();
+const storageFn = () => getStorage();
+
+const adminShim = {
+  initializeApp,
+  app: () => getApp(),
+  credential: { cert, applicationDefault },
+  firestore: firestoreFn,
+  auth: authFn,
+  storage: storageFn,
+} as unknown as AdminShim;
+Object.defineProperty(adminShim, "apps", {
+  get: () => getApps(),
+  enumerable: true,
+});
+
 initializeAdmin();
-export const adminDb = admin.firestore();
-export const adminAuth = admin.auth();
-export const adminStorage = admin.storage();
+export { FieldValue, Timestamp };
+export const adminDb = getFirestore();
+adminDb.settings({ ignoreUndefinedProperties: true });
+export const adminAuth = getAuth();
+export const adminStorage = getStorage();
+
+/**
+ * Verifies the Bearer token in the Authorization header and returns the UID,
+ * or null if invalid / missing.
+ */
+export async function verifyAuthToken(req: Request): Promise<string | null> {
+  try {
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) return null;
+    const token = authHeader.split("Bearer ")[1];
+    const decoded = await adminAuth.verifyIdToken(token);
+    return decoded.uid;
+  } catch {
+    return null;
+  }
+}

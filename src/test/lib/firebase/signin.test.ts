@@ -26,6 +26,11 @@ jest.mock("../../../lib/firebase/firebaseClient", () => ({
   getFirebaseApp: jest.fn(),
 }));
 
+// Verification email now goes through our branded helper.
+jest.mock("../../../lib/firebase/sendVerification", () => ({
+  sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
+}));
+
 describe("signIn function", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -109,9 +114,9 @@ describe("signIn function", () => {
       user: null,
       error: "Mocked error: auth/email-not-verified",
     });
-    expect(require("firebase/auth").sendEmailVerification).toHaveBeenCalledWith(
-      mockUserCredential.user,
-    );
+    expect(
+      require("../../../lib/firebase/sendVerification").sendVerificationEmail,
+    ).toHaveBeenCalledWith(mockUserCredential.user);
     expect(require("firebase/auth").signOut).toHaveBeenCalled();
   });
 

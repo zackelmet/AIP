@@ -6,105 +6,102 @@ service cloud.firestore {
     function isAuthenticated() {
       return request.auth != null;
     }
-    
+
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
-    
+
     function isAdmin() {
-      return isAuthenticated() && 
+      return isAuthenticated() &&
              exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
     // Users collection
+    // Owners may only change their own profile preferences. Credits,
+    // subscription state, role, org, and isAdmin are server-managed (Admin SDK
+    // bypasses rules) and must never be writable from the client.
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow write: if isOwner(userId) || isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin() ||
+        (isOwner(userId) &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+           "savedTargets",
+           "onboardingCompleted",
+           "onboardingCompletedAt"
+         ]));
+      allow delete: if isAdmin();
     }
 
     // Scans collection
     match /scans/{scanId} {
       allow read: if isOwner(resource.data.userId) || isAdmin();
-      allow create: if isAuthenticated();
-      allow update, delete: if isOwner(resource.data.userId) || isAdmin();
+      allow write: if isAdmin();
     }
 
     // Pentests collection (AI-powered pentests)
     match /pentests/{pentestId} {
       allow read: if isOwner(resource.data.userId) || isAdmin();
-      allow create: if isAuthenticated();
-      allow update: if isAdmin(); // Only backend (admin SDK) updates pentests
-      allow delete: if isOwner(resource.data.userId) || isAdmin();
+      allow write: if isAdmin();
     }
 
     // Targets collection
     match /targets/{targetId} {
       allow read: if isOwner(resource.data.userId) || isAdmin();
-      allow create: if isAuthenticated();
-      allow update, delete: if isOwner(resource.data.userId) || isAdmin();
+      allow write: if isAdmin();
     }
 
     // Activity Logs collection
     match /activityLogs/{logId} {
       allow read: if isOwner(resource.data.userId) || isAdmin();
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid;
       allow update, delete: if false; // Activity logs are immutable
     }
 
     // Manual Tests collection
     match /manualTests/{testId} {
       allow read: if isOwner(resource.data.userId) || isAdmin();
-      allow create: if isAuthenticated();
-      allow update: if isOwner(resource.data.userId) || isAdmin();
-      allow delete: if isAdmin();
+      allow write: if isAdmin();
     }
 
     // Findings collection
     match /findings/{findingId} {
       allow read: if isOwner(resource.data.userId) || isAdmin();
-      allow create: if isAuthenticated();
-      allow update: if isOwner(resource.data.userId) || isAdmin();
-      allow delete: if isAdmin();
+      allow write: if isAdmin();
     }
 
     // Engagements collection
     match /engagements/{engagementId} {
       allow read: if isOwner(resource.data.userId) || isAdmin();
-      allow create: if isAuthenticated();
-      allow update: if isOwner(resource.data.userId) || isAdmin();
-      allow delete: if isAdmin();
+      allow write: if isAdmin();
     }
 
     // AI Pentest Runs collection
     match /aiPentestRuns/{runId} {
       allow read: if isOwner(resource.data.userId) || isAdmin();
-      allow create: if isAuthenticated();
-      allow update: if isOwner(resource.data.userId) || isAdmin();
-      allow delete: if isAdmin();
+      allow write: if isAdmin();
     }
 
     // Pentest Requests collection
     match /pentestRequests/{requestId} {
       allow read: if isOwner(resource.data.userId) || isAdmin();
-      allow create: if isAuthenticated();
-      allow update: if isAdmin(); // Only admins can update request status
-      allow delete: if isAdmin();
+      allow write: if isAdmin();
     }
 
     // Schedules collection (recurring pentest schedules)
     match /schedules/{scheduleId} {
       allow read: if isOwner(resource.data.userId) || isAdmin();
-      allow create: if isAuthenticated();
-      allow update: if isAdmin(); // Only backend (admin SDK) updates schedules
-      allow delete: if isOwner(resource.data.userId) || isAdmin();
+      allow write: if isAdmin();
 
-      // Schedule runs sub-collection
+      // Schedule runs sub-collection — readable by the schedule owner only.
       match /runs/{runId} {
-        allow read: if isAuthenticated();
-        allow write: if isAdmin(); // Only backend writes run records
+        allow read: if isOwner(
+          get(/databases/$(database)/documents/schedules/$(scheduleId)).data.userId
+        ) || isAdmin();
+        allow write: if isAdmin();
       }
     }
   }
 }
-

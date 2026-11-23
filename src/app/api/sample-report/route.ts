@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebase/firebaseAdmin";
 import { FieldValue } from "firebase-admin/firestore";
-import { Resend } from "resend";
 import { addToAudience } from "@/lib/email/audience";
+import { rateLimit } from "@/lib/security/rateLimit";
+import { sendSampleReportEmail } from "@/lib/email/resend";
 import fs from "fs";
 import path from "path";
 
@@ -12,12 +13,35 @@ export const dynamic = "force-dynamic";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const FREE_PROVIDERS = new Set([
-  "gmail.com", "googlemail.com", "yahoo.com", "yahoo.co.uk", "hotmail.com",
-  "hotmail.co.uk", "outlook.com", "live.com", "msn.com", "aol.com",
-  "icloud.com", "me.com", "mac.com", "proton.me", "protonmail.com",
-  "pm.me", "gmx.com", "mail.com", "zoho.com", "yandex.com",
-  "tutanota.com", "fastmail.com", "hey.com", "comcast.net",
-  "verizon.net", "att.net", "qq.com", "163.com", "naver.com",
+  "gmail.com",
+  "googlemail.com",
+  "yahoo.com",
+  "yahoo.co.uk",
+  "hotmail.com",
+  "hotmail.co.uk",
+  "outlook.com",
+  "live.com",
+  "msn.com",
+  "aol.com",
+  "icloud.com",
+  "me.com",
+  "mac.com",
+  "proton.me",
+  "protonmail.com",
+  "pm.me",
+  "gmx.com",
+  "mail.com",
+  "zoho.com",
+  "yandex.com",
+  "tutanota.com",
+  "fastmail.com",
+  "hey.com",
+  "comcast.net",
+  "verizon.net",
+  "att.net",
+  "qq.com",
+  "163.com",
+  "naver.com",
 ]);
 
 function leadDocId(email: string): string {
@@ -29,20 +53,51 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request body." },
+      { status: 400 },
+    );
   }
 
   const rawEmail = (body as { email?: unknown })?.email;
   if (typeof rawEmail !== "string" || !EMAIL_RE.test(rawEmail.trim())) {
-    return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Please enter a valid email address." },
+      { status: 400 },
+    );
   }
 
   const email = rawEmail.trim().toLowerCase();
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const perMin = rateLimit(`sample-report:min:${ip}`, 5, 60_000);
+  const perHour = rateLimit(`sample-report:hour:${ip}`, 20, 3_600_000);
+  const perEmail = rateLimit(`sample-report:email:${email}`, 3, 3_600_000);
+  if (!perMin.ok || !perHour.ok || !perEmail.ok) {
+    return NextResponse.json(
+      { error: "Too many sample-report requests. Try again later." },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(
+            Math.max(
+              perMin.retryAfterSec,
+              perHour.retryAfterSec,
+              perEmail.retryAfterSec,
+            ),
+          ),
+        },
+      },
+    );
+  }
   const domain = email.slice(email.lastIndexOf("@") + 1);
 
   if (FREE_PROVIDERS.has(domain)) {
     return NextResponse.json(
-      { error: "Please use your work email — free mailboxes (Gmail, Outlook, etc.) aren't accepted." },
+      {
+        error:
+          "Please use your work email — free mailboxes (Gmail, Outlook, etc.) aren't accepted.",
+      },
       { status: 400 },
     );
   }
@@ -70,82 +125,59 @@ export async function POST(req: NextRequest) {
   const resendApiKey = process.env.RESEND_API_KEY;
   if (!resendApiKey) {
     return NextResponse.json(
-      { error: "Email delivery is temporarily unavailable. Please try again later." },
+      {
+        error:
+          "Email delivery is temporarily unavailable. Please try again later.",
+      },
       { status: 503 },
     );
   }
 
-  const pdfPath = path.join(process.cwd(), "public/templates/AIP Sample Report - WebApp Pentest.docx.pdf");
+  const pdfPath = path.join(
+    process.cwd(),
+    "public/templates/AIP Sample Report - WebApp Pentest.docx.pdf",
+  );
   let pdfBuffer: Buffer;
   try {
     pdfBuffer = fs.readFileSync(pdfPath);
   } catch {
-    return NextResponse.json({ error: "Report file not found." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Report file not found." },
+      { status: 500 },
+    );
   }
 
-  const resend = new Resend(resendApiKey);
-  const from = process.env.EMAIL_FROM || "Affordable Pentesting <noreply@affordablepentesting.com>";
-
   try {
-    const sent = await resend.emails.send({
-      from,
+    const resendId = await sendSampleReportEmail({
       to: email,
-      subject: "Your AI Pentest Sample Report from Affordable Pentesting",
-      html: `<!doctype html>
-<html>
-  <body style="margin:0;padding:0;background:#f4f7f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 16px;">
-      <tr><td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
-          <tr><td style="padding-bottom:24px;">
-            <span style="font-size:17px;font-weight:700;color:#0a141f;">Affordable Pentesting</span>
-          </td></tr>
-          <tr><td style="background:#ffffff;border:1px solid #e5e7eb;border-radius:14px;padding:36px 32px;">
-            <table width="100%" cellpadding="0" cellspacing="0">
-              <tr><td style="padding-bottom:6px;">
-                <span style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#34D399;">Affordable Pentesting</span>
-              </td></tr>
-              <tr><td style="font-size:22px;font-weight:700;color:#0a141f;padding-bottom:14px;">Your sample report is ready</td></tr>
-              <tr><td style="font-size:14px;line-height:1.7;color:#374151;padding-bottom:20px;">
-                Here is a full AI-powered penetration test report — executive summary, severity breakdown, and detailed findings with remediation guidance.
-              </td></tr>
-              <tr><td style="padding-top:8px;">
-                <a href="https://ai.affordablepentesting.com" style="display:inline-block;background:#34D399;color:#04231a;text-decoration:none;font-weight:700;font-size:14px;padding:13px 28px;border-radius:8px;">Launch your first pentest</a>
-              </td></tr>
-              <tr><td style="padding:20px 0 0;font-size:13px;color:#374151;">
-                Ready to test your own targets? Sign up and launch your first AI pentest in minutes.
-              </td></tr>
-            </table>
-          </td></tr>
-          <tr><td style="padding:24px 8px 0;font-size:12px;color:#6b7280;">
-            Affordable Pentesting &middot; Professional penetration testing
-          </td></tr>
-        </table>
-      </td></tr>
-    </table>
-  </body>
-</html>`,
-      attachments: [
-        {
-          filename: "AIP Sample Pentest Report.pdf",
-          content: pdfBuffer.toString("base64"),
-        },
-      ],
+      pdfBase64: pdfBuffer.toString("base64"),
+      filename: "AIP Sample Pentest Report.pdf",
     });
 
-    console.log(`[sample-report] sent to ${email} — resend id: ${"data" in sent && sent.data ? sent.data.id : "unknown"}`);
+    console.log(
+      `[sample-report] sent to ${email} — resend id: ${resendId || "unknown"}`,
+    );
 
     // Push to Resend Broadcasts nurture audience (fire-and-forget)
     addToAudience("sample_report", {
       email,
       first_name: email.split("@")[0] || "",
-      data: { source: "landing-sample-report", signed_up_at: new Date().toISOString() },
+      data: {
+        source: "landing-sample-report",
+        signed_up_at: new Date().toISOString(),
+      },
     }).then((r) => {
-      if (!r.ok) console.warn(`[audience] sample_report push failed for ${email}: ${r.error}`);
+      if (!r.ok)
+        console.warn(
+          `[audience] sample_report push failed for ${email}: ${r.error}`,
+        );
     });
   } catch (err) {
     console.error("Failed to send sample report email:", err);
-    return NextResponse.json({ error: "We couldn't send the report. Please try again." }, { status: 500 });
+    return NextResponse.json(
+      { error: "We couldn't send the report. Please try again." },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ ok: true });

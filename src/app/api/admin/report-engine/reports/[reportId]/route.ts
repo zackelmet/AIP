@@ -10,14 +10,14 @@ export const runtime = "nodejs";
 
 export async function GET(
   request: NextRequest,
-  context: { params: { reportId: string } },
+  context: { params: Promise<{ reportId: string }> },
 ) {
   const token = await verifyAuth(request);
   if (!token) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const reportId = context.params.reportId;
+  const reportId = (await context.params).reportId;
   const report = await getReportRecord(reportId);
 
   if (!report) {
@@ -49,7 +49,8 @@ export async function GET(
   return new NextResponse(new Uint8Array(fileBytes), {
     status: 200,
     headers: {
-      "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "Content-Type":
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "Content-Disposition": `attachment; filename="${report.fileName}"`,
       "Cache-Control": "private, no-store",
     },

@@ -51,3 +51,4 @@ scripts/migrateUserScans.js
 
 # Vercel env snapshots (secrets)
 .env.vercel*
+.env*

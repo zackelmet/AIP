@@ -1,7 +1,6 @@
 import signUp from "@/lib/firebase/signup";
 import {
   createUserWithEmailAndPassword,
-  sendEmailVerification,
   signOut,
   UserCredential,
 } from "firebase/auth";
@@ -23,6 +22,11 @@ jest.mock("../../../lib/firebase/firebaseClient", () => ({
   getFirebaseApp: jest.fn(),
 }));
 
+// Verification email now goes through our branded helper.
+jest.mock("../../../lib/firebase/sendVerification", () => ({
+  sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
+}));
+
 describe("signUp function", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -42,7 +46,9 @@ describe("signUp function", () => {
       "password123",
     );
     expect(result).toEqual({ user: mockUserCredential, error: null });
-    expect(sendEmailVerification).toHaveBeenCalledWith(mockUserCredential.user);
+    expect(
+      require("../../../lib/firebase/sendVerification").sendVerificationEmail,
+    ).toHaveBeenCalledWith(mockUserCredential.user);
     expect(signOut).toHaveBeenCalled();
   });
 

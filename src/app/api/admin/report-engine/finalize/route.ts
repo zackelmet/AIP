@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
+import { timingSafeEqual } from "crypto";
 import { adminDb, adminStorage } from "@/lib/firebase/firebaseAdmin";
 
 export const runtime = "nodejs";
@@ -36,8 +37,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const providedToken = readBearerToken(request);
-    if (!providedToken || providedToken !== expectedToken) {
+    const providedToken = readBearerToken(request) || "";
+    const a = Buffer.from(providedToken);
+    const b = Buffer.from(expectedToken);
+    const tokenOk = a.length === b.length && timingSafeEqual(a, b);
+    if (!tokenOk) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -56,6 +60,19 @@ export async function POST(request: NextRequest) {
       if (!body?.[key] || typeof body[key] !== "string") {
         return NextResponse.json(
           { error: `Missing required field: ${key}` },
+          { status: 400 },
+        );
+      }
+    }
+
+    if (body.requestedByUid) {
+      const owner = await adminDb
+        .collection("users")
+        .doc(String(body.requestedByUid))
+        .get();
+      if (!owner.exists) {
+        return NextResponse.json(
+          { error: "requestedByUid does not match a user" },
           { status: 400 },
         );
       }

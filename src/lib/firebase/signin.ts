@@ -3,11 +3,11 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   OAuthProvider,
-  sendEmailVerification,
   signOut,
   UserCredential,
 } from "firebase/auth";
 import { getFirebaseAuth } from "./firebaseClient";
+import { sendVerificationEmail } from "./sendVerification";
 import { FirebaseError } from "firebase/app";
 import { getAuthErrorMessage } from "./getAuthErrorMessage";
 
@@ -87,7 +87,7 @@ export async function signIn(
 
         if (!userCredential.user.emailVerified) {
           try {
-            await sendEmailVerification(userCredential.user);
+            await sendVerificationEmail(userCredential.user);
           } catch (verificationError) {
             console.error(
               "Failed to resend verification email:",

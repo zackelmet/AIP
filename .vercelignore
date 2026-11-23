@@ -1,1 +1,6 @@
 /functions
+.env*
+!.env.example
+!.env.local.example
+!.env.smoke.example
+!.env.vercel.prod.example

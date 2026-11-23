@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
+import { rateLimit } from "@/lib/security/rateLimit";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,16 @@ const MAX_AGE = 60 * 60 * 24 * 14;
  */
 export async function POST(request: NextRequest) {
   try {
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      "unknown";
+    const rl = rateLimit(`session:${ip}`, 10, 60_000);
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } },
+      );
+    }
     const { idToken } = await request.json();
     if (!idToken) {
       return NextResponse.json({ error: "idToken required" }, { status: 400 });

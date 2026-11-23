@@ -2,6 +2,8 @@ import { SubscriptionModalProvider } from "@/lib/context/SubscriptionModalContex
 import ClientProviders from "@/lib/context/ClientProviders";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Affordable Pentesting - Dashboard",
   description:

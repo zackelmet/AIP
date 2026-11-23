@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faRocket } from "@fortawesome/free-solid-svg-icons/faRocket";
@@ -352,13 +353,13 @@ export default function ScansPage() {
                   a plan that fits your needs and start protecting your
                   infrastructure today.
                 </p>
-                <a
+                <Link
                   href="/#pricing"
                   className="inline-block px-6 py-3 bg-[#34D399] text-[#041018] font-semibold rounded-lg hover:bg-[#10b981] transition-colors"
                 >
                   <FontAwesomeIcon icon={faRocket} className="mr-2" />
                   Upgrade Now
-                </a>
+                </Link>
               </div>
             ) : (
               <div className="bg-white/5 border border-white/10 rounded-xl p-6">
