@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { timingSafeEqual } from "crypto";
 import { adminDb, adminStorage } from "@/lib/firebase/firebaseAdmin";
+import { audit } from "@/lib/security/audit";
 
 export const runtime = "nodejs";
 
@@ -139,6 +140,15 @@ export async function POST(request: NextRequest) {
         driveDocUrl: body.driveDocUrl || null,
         createdAt: FieldValue.serverTimestamp(),
       });
+
+    await audit("report.finalized", {
+      reportId,
+      jobId: body.jobId,
+      requestedByUid: body.requestedByUid || null,
+      requestedByEmail: body.requestedByEmail || null,
+      clientName: body.clientName,
+      projectTitle: body.projectTitle,
+    });
 
     const expiresAt = Date.now() + 15 * 60 * 1000;
     const [pdfSignedUrl] = await bucket.file(pdfPath).getSignedUrl({

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { verifyAuth } from "@/lib/auth/verifyAuth";
-import { rateLimit } from "@/lib/security/rateLimit";
+import { rateLimitDistributed } from "@/lib/security/distributedRateLimit";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
     const userId = token.uid;
 
-    const rl = rateLimit(`checkout:${userId}`, 20, 3_600_000);
+    const rl = await rateLimitDistributed(`checkout:${userId}`, 20, 3_600_000);
     if (!rl.ok) {
       return NextResponse.json(
         { error: "Too many checkout attempts. Try again later." },

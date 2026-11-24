@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { adminDb } from "@/lib/firebase/firebaseAdmin";
 import { FieldValue } from "firebase-admin/firestore";
 import { sendInvoiceEmail } from "@/lib/email/resend";
+import { audit } from "@/lib/security/audit";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -61,6 +62,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   } catch (error: any) {
     console.error("Error processing webhook:", error);
+    await audit("stripe.webhook_failed", {
+      eventId: event.id,
+      eventType: event.type,
+      message: error?.message || String(error),
+    });
     return NextResponse.json(
       { error: "Webhook processing failed" },
       { status: 500 },
@@ -117,6 +123,8 @@ async function handleCheckoutSessionCompleted(
   const eventRef = adminDb.collection("stripeEvents").doc(eventId);
   const userRef = adminDb.collection("users").doc(userId);
 
+  let granted = false;
+
   try {
     await adminDb.runTransaction(async (tx) => {
       const existing = await tx.get(eventRef);
@@ -153,7 +161,18 @@ async function handleCheckoutSessionCompleted(
         quantity,
         processedAt: FieldValue.serverTimestamp(),
       });
+      granted = true;
     });
+
+    if (granted) {
+      await audit("credits.granted", {
+        eventId,
+        sessionId: session.id,
+        userId,
+        pentestType,
+        quantity,
+      });
+    }
 
     console.log(
       `Added ${quantity} ${pentestType} credit(s) to user ${userId} (event ${eventId})`,

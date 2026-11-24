@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebase/firebaseAdmin";
 import { FieldValue } from "firebase-admin/firestore";
 import { addToAudience } from "@/lib/email/audience";
-import { rateLimit } from "@/lib/security/rateLimit";
+import { rateLimitDistributed } from "@/lib/security/distributedRateLimit";
 import { sendSampleReportEmail } from "@/lib/email/resend";
 import fs from "fs";
 import path from "path";
@@ -70,9 +70,11 @@ export async function POST(req: NextRequest) {
   const email = rawEmail.trim().toLowerCase();
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  const perMin = rateLimit(`sample-report:min:${ip}`, 5, 60_000);
-  const perHour = rateLimit(`sample-report:hour:${ip}`, 20, 3_600_000);
-  const perEmail = rateLimit(`sample-report:email:${email}`, 3, 3_600_000);
+  const [perMin, perHour, perEmail] = await Promise.all([
+    rateLimitDistributed(`sample-report:min:${ip}`, 5, 60_000),
+    rateLimitDistributed(`sample-report:hour:${ip}`, 20, 3_600_000),
+    rateLimitDistributed(`sample-report:email:${email}`, 3, 3_600_000),
+  ]);
   if (!perMin.ok || !perHour.ok || !perEmail.ok) {
     return NextResponse.json(
       { error: "Too many sample-report requests. Try again later." },

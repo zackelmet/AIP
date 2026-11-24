@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
-import { rateLimit } from "@/lib/security/rateLimit";
+import { rateLimitDistributed } from "@/lib/security/distributedRateLimit";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     const ip =
       request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
       "unknown";
-    const rl = rateLimit(`session:${ip}`, 10, 60_000);
+    const rl = await rateLimitDistributed(`session:${ip}`, 10, 60_000);
     if (!rl.ok) {
       return NextResponse.json(
         { error: "Too many requests" },
