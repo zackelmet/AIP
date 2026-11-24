@@ -51,7 +51,8 @@ interface ShellOptions {
   preheader: string;
   heading: string;
   intro: string;
-  rows: Array<[string, string]>;
+  introText?: string;
+  rows?: Array<[string, string]>;
   cta?: { label: string; href: string };
   closing?: string;
   closingText?: string;
@@ -79,7 +80,7 @@ function renderEmail({
   closingText,
   secondaryCta,
 }: ShellOptions): string {
-  const detailRows = rows
+  const detailRows = (rows ?? [])
     .map(
       ([label, value]) => `
         <tr>
@@ -171,11 +172,15 @@ function renderEmail({
                   <tr>
                     <td style="font-size:14px;line-height:1.7;color:${COLORS.muted};padding-bottom:20px;">${intro}</td>
                   </tr>
-                  <tr>
+                  ${
+                    detailRows
+                      ? `<tr>
                     <td>
                       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid ${COLORS.border};">${detailRows}</table>
                     </td>
-                  </tr>
+                  </tr>`
+                      : ""
+                  }
                   ${ctaBlock}
                   ${closingBlock}
                   ${secondaryBlock}
@@ -226,14 +231,15 @@ function send(
 function renderText({
   heading,
   intro,
+  introText,
   rows,
   cta,
   closing,
   closingText,
   secondaryCta,
 }: ShellOptions): string {
-  const lines = [heading, "", intro, ""];
-  rows.forEach(([label, value]) => lines.push(`${label}: ${value}`));
+  const lines = [heading, "", introText || intro, ""];
+  (rows ?? []).forEach(([label, value]) => lines.push(`${label}: ${value}`));
   if (cta) lines.push("", `${cta.label}: ${cta.href}`);
   if (closing || closingText) lines.push("", closingText || closing!);
   if (secondaryCta) {
@@ -471,18 +477,33 @@ function esc(v: unknown): string {
 export interface WeeklySignupRow {
   email: string;
   name?: string | null;
-  meta?: string | null;
   signedUp: string;
   launched: boolean;
 }
 
-/** Internal weekly digest of new AIP signups. */
+export interface WeeklyTestRow {
+  email: string;
+  target: string;
+  type: string;
+  launchedAt: string;
+}
+
+export interface WeeklyCreditPurchaseRow {
+  email: string;
+  credits: number;
+  type: string;
+  purchasedAt: string;
+}
+
+/** Internal weekly digest of new AIP signups and activity. */
 export async function sendWeeklySignupsDigest(opts: {
   total: number;
   previousTotal: number;
   weekLabel: string;
   days: Array<{ label: string; count: number }>;
   users: WeeklySignupRow[];
+  tests: WeeklyTestRow[];
+  purchases: WeeklyCreditPurchaseRow[];
   sample?: boolean;
 }): Promise<boolean> {
   if (!getResend()) return false;
@@ -493,60 +514,149 @@ export async function sendWeeklySignupsDigest(opts: {
       ? "No signups the previous week."
       : `${delta >= 0 ? "+" : ""}${delta} vs ${opts.previousTotal} the previous week.`;
   const launched = opts.users.filter((u) => u.launched).length;
+  const totalCredits = opts.purchases.reduce((sum, p) => sum + p.credits, 0);
+  const plural = (n: number) => (n === 1 ? "" : "s");
+  const countColor = "#0a7a5a";
 
-  const rows = opts.users
-    .slice(0, 50)
-    .map(
-      (u) => `
-        <tr>
-          <td style="padding:9px 0;border-bottom:1px solid ${COLORS.border};font-size:12px;color:${COLORS.text};word-break:break-all;">${esc(u.email)}</td>
-          <td style="padding:9px 0;border-bottom:1px solid ${COLORS.border};font-size:12px;color:${COLORS.muted};">${esc(u.name || "—")}</td>
-          <td style="padding:9px 0;border-bottom:1px solid ${COLORS.border};font-size:12px;color:${COLORS.muted};white-space:nowrap;">${esc(u.meta || "—")}</td>
-          <td style="padding:9px 0;border-bottom:1px solid ${COLORS.border};font-size:12px;color:${COLORS.muted};white-space:nowrap;">${esc(u.signedUp)}</td>
-          <td style="padding:9px 0;border-bottom:1px solid ${COLORS.border};font-size:12px;color:${u.launched ? "#0a7a5a" : COLORS.muted};font-weight:600;">${u.launched ? "Yes" : "No"}</td>
-        </tr>`,
-    )
-    .join("");
+  const th = (label: string, width: string) =>
+    `<th align="left" width="${width}" style="padding:7px 6px;border-bottom:1px solid ${COLORS.border};font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:${COLORS.faint};width:${width};">${label}</th>`;
+  const td = (content: string, extra = "") =>
+    `<td style="padding:9px 6px;border-bottom:1px solid ${COLORS.border};font-size:12px;line-height:1.45;vertical-align:top;${extra}">${content}</td>`;
+  const sectionHeader = (title: string, count: string) => `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:28px;">
+      <tr>
+        <td style="padding:0 0 8px;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:${COLORS.text};">${title}</td>
+        <td align="right" style="padding:0 0 8px;font-size:12px;font-weight:700;color:${countColor};">${count}</td>
+      </tr>
+    </table>`;
+  const empty = (text: string) =>
+    `<p style="margin:6px 0 0;padding:12px;border:1px dashed ${COLORS.border};border-radius:8px;font-size:12px;color:${COLORS.faint};">${text}</p>`;
+  const more = (shown: number, total: number) =>
+    total > shown
+      ? `<p style="margin:10px 0 0;font-size:12px;color:${COLORS.faint};">…and ${total - shown} more.</p>`
+      : "";
 
-  const table = opts.users.length
-    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px;border-top:1px solid ${COLORS.border};">
-         <tr>
-           <th align="left" style="padding:8px 0;border-bottom:1px solid ${COLORS.border};font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:${COLORS.faint};">Email</th>
-           <th align="left" style="padding:8px 0;border-bottom:1px solid ${COLORS.border};font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:${COLORS.faint};">Name</th>
-           <th align="left" style="padding:8px 0;border-bottom:1px solid ${COLORS.border};font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:${COLORS.faint};">Credits</th>
-           <th align="left" style="padding:8px 0;border-bottom:1px solid ${COLORS.border};font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:${COLORS.faint};">Signed up</th>
-           <th align="left" style="padding:8px 0;border-bottom:1px solid ${COLORS.border};font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:${COLORS.faint};">Launched</th>
-         </tr>
-         ${rows}
+  const signupTable = opts.users.length
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;table-layout:fixed;">
+         <tr>${th("Email", "56%")}${th("Name", "26%")}${th("Joined", "18%")}</tr>
+         ${opts.users
+           .slice(0, 50)
+           .map(
+             (u) => `<tr>
+               ${td(esc(u.email), `color:${COLORS.text};word-break:break-all;`)}
+               ${td(esc(u.name || "—"), `color:${COLORS.muted};word-break:break-word;`)}
+               ${td(esc(u.signedUp), `color:${COLORS.muted};white-space:nowrap;`)}
+             </tr>`,
+           )
+           .join("")}
        </table>
-       ${opts.users.length > 50 ? `<p style="margin:10px 0 0;font-size:12px;color:${COLORS.faint};">…and ${opts.users.length - 50} more.</p>` : ""}`
-    : "";
+       ${more(50, opts.users.length)}`
+    : empty("No new sign ups this week.");
+
+  const testTable = opts.tests.length
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;table-layout:fixed;">
+         <tr>${th("Target", "46%")}${th("User", "39%")}${th("Launched", "15%")}</tr>
+         ${opts.tests
+           .slice(0, 50)
+           .map(
+             (t) => `<tr>
+               ${td(`${esc(t.target)}<br><span style="font-size:11px;color:${COLORS.faint};">${esc(t.type)}</span>`, `color:${COLORS.text};word-break:break-all;`)}
+               ${td(esc(t.email), `color:${COLORS.muted};word-break:break-all;`)}
+               ${td(esc(t.launchedAt), `color:${COLORS.muted};white-space:nowrap;`)}
+             </tr>`,
+           )
+           .join("")}
+       </table>
+       ${more(50, opts.tests.length)}`
+    : empty("No tests launched this week.");
+
+  const purchaseTable = opts.purchases.length
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;table-layout:fixed;">
+         <tr>${th("User", "56%")}${th("Credits", "26%")}${th("Purchased", "18%")}</tr>
+         ${opts.purchases
+           .slice(0, 50)
+           .map(
+             (p) => `<tr>
+               ${td(esc(p.email), `color:${COLORS.text};word-break:break-all;`)}
+               ${td(`${p.credits} &times; ${esc(p.type)}`, `color:${COLORS.muted};`)}
+               ${td(esc(p.purchasedAt), `color:${COLORS.muted};white-space:nowrap;`)}
+             </tr>`,
+           )
+           .join("")}
+       </table>
+       ${more(50, opts.purchases.length)}`
+    : empty("No credits purchased this week.");
+
+  const launchedText =
+    opts.total > 0
+      ? `<strong>${launched}</strong> of ${opts.total} new signup${plural(opts.total)} have launched a test.`
+      : "No new signups this week.";
 
   const intro = `
-    <p style="margin:0 0 8px;">${opts.weekLabel}</p>
-    <p style="margin:0 0 8px;">${deltaText} <strong>${launched}</strong> of ${opts.total} have launched.</p>
+    <p style="margin:0 0 8px;">${esc(opts.weekLabel)}</p>
+    <p style="margin:0 0 6px;">${deltaText} ${launchedText}</p>
     <p style="margin:0;font-size:12px;color:${COLORS.faint};">${opts.days
       .map((d) => `${d.label} ${d.count}`)
       .join(" &middot; ")}</p>
-    ${table}`;
+    <p style="margin:18px 0 0;padding:12px 14px;background:#f8fafc;border-radius:10px;font-size:13px;line-height:1.6;color:${COLORS.muted};">
+      <strong style="color:${COLORS.text};">${opts.total}</strong> signup${plural(opts.total)} &middot;
+      <strong style="color:${COLORS.text};">${opts.tests.length}</strong> test${plural(opts.tests.length)} launched &middot;
+      <strong style="color:${COLORS.text};">${totalCredits}</strong> credit${plural(totalCredits)} purchased
+    </p>
+    ${sectionHeader("Sign ups", String(opts.total))}
+    ${signupTable}
+    ${sectionHeader("Tests launched", String(opts.tests.length))}
+    ${testTable}
+    ${sectionHeader("Credits purchased", `${totalCredits} credit${plural(totalCredits)}`)}
+    ${purchaseTable}`;
+
+  const introText = [
+    opts.weekLabel,
+    deltaText,
+    opts.total > 0
+      ? `${launched} of ${opts.total} new signups have launched a test.`
+      : "No new signups this week.",
+    opts.days.map((d) => `${d.label}: ${d.count}`).join(", "),
+    "",
+    `${opts.total} signups · ${opts.tests.length} tests launched · ${totalCredits} credits purchased`,
+    "",
+    `SIGN UPS (${opts.total})`,
+    ...(opts.users.length
+      ? opts.users
+          .slice(0, 50)
+          .map((u) => `${u.email} | ${u.name || "—"} | ${u.signedUp}`)
+      : ["No new sign ups this week."]),
+    "",
+    `TESTS LAUNCHED (${opts.tests.length})`,
+    ...(opts.tests.length
+      ? opts.tests
+          .slice(0, 50)
+          .map((t) => `${t.target} | ${t.email} | ${t.type} | ${t.launchedAt}`)
+      : ["No tests launched this week."]),
+    "",
+    `CREDITS PURCHASED (${totalCredits})`,
+    ...(opts.purchases.length
+      ? opts.purchases
+          .slice(0, 50)
+          .map(
+            (p) => `${p.email} | ${p.credits} × ${p.type} | ${p.purchasedAt}`,
+          )
+      : ["No credits purchased this week."]),
+  ].join("\n");
 
   const shell: ShellOptions = {
-    preheader: `${opts.total} new signup${opts.total === 1 ? "" : "s"} this week.`,
-    heading: `${opts.total} new signup${opts.total === 1 ? "" : "s"}`,
+    preheader: `${opts.total} signup${plural(opts.total)}, ${opts.tests.length} test${plural(opts.tests.length)}, ${totalCredits} credit${plural(totalCredits)} this week.`,
+    heading: "Weekly report",
     intro,
-    rows: [
-      ["Week", opts.weekLabel],
-      ["Previous week", String(opts.previousTotal)],
-      ["Launched", `${launched} of ${opts.total}`],
-    ],
+    introText,
     cta: { label: "Open admin", href: `${SITE_URL}/admin` },
-    closing: "Automated weekly digest — Sunday nights.",
+    closing: "Automated weekly digest — Monday mornings.",
   };
 
   try {
     await send(
       ADMIN_EMAIL,
-      `${opts.sample ? "[Sample] " : ""}[Signups] ${opts.total} new this week — Affordable Pentesting`,
+      `${opts.sample ? "[Sample] " : ""}[Weekly] ${opts.total} signup${plural(opts.total)} · ${opts.tests.length} test${plural(opts.tests.length)} · ${totalCredits} credit${plural(totalCredits)} — Affordable Pentesting`,
       renderEmail(shell),
       renderText(shell),
     );
