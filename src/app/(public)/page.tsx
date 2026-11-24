@@ -6,6 +6,22 @@ import SwirlyParticles from "@/components/landing/SwirlyParticles";
 
 import PricingWidget from "./PricingWidgetLoader";
 
+const CUSTOMER_REVIEWS = [
+  {
+    quote:
+      "Zack and his team were great to work with! Communication was fast and clear from the first call, they took the time to understand our platform and lead flow, and the testing was thorough and professional. The report was detailed, with clear findings and practical remediation steps our developers could act on right away. They also delivered the attestation letter quickly when we were on a tight deadline. Highly recommended for anyone who needs a reliable, independent pentest. Thank you!",
+    name: "Matthew Bartos",
+    role: "CEO",
+    company: "M4 Labs LLC - VisionXlab",
+  },
+  {
+    quote: "Great response time, communication and coordination.",
+    name: "Mike H",
+    role: "COO",
+    company: "Ciye",
+  },
+];
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-theme text-theme">
@@ -243,6 +259,71 @@ export default function Home() {
           </div>
 
           <SampleReportForm />
+        </div>
+      </section>
+
+      {/* Customer Reviews Section */}
+      <section id="reviews" className="py-20 bg-theme border-t border-theme">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <p className="text-[#34D399] text-xs font-normal uppercase tracking-widest mb-3">
+              Customer reviews
+            </p>
+            <h2 className="text-4xl lg:text-5xl font-light mb-4 text-theme">
+              What customers <span className="text-[#34D399]">say</span>
+            </h2>
+            <p className="text-theme-muted text-lg max-w-2xl mx-auto">
+              Real feedback from teams that trusted us with their security
+              testing.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-6 items-stretch">
+            {CUSTOMER_REVIEWS.map((review) => (
+              <figure
+                key={review.name}
+                className="bg-theme-panel border border-theme rounded-xl p-7 flex flex-col"
+              >
+                <div className="flex items-center gap-1 mb-4">
+                  <span
+                    className="text-[#34D399] text-sm tracking-[0.2em]"
+                    aria-hidden="true"
+                  >
+                    ★★★★★
+                  </span>
+                  <span className="sr-only">Rated 5 out of 5</span>
+                </div>
+                <blockquote className="text-theme-muted text-sm leading-relaxed flex-1">
+                  &ldquo;{review.quote}&rdquo;
+                </blockquote>
+                <figcaption className="mt-6 pt-5 border-t border-theme">
+                  <div className="text-theme font-medium">{review.name}</div>
+                  <div className="text-theme-muted text-xs mt-1">
+                    {review.role} &middot; {review.company}
+                  </div>
+                </figcaption>
+              </figure>
+            ))}
+
+            <div className="bg-[#34D399]/5 border border-[#34D399]/25 rounded-xl p-7 flex flex-col items-center justify-center text-center">
+              <div className="text-5xl font-light text-[#34D399]">5.0</div>
+              <div className="flex items-center gap-1 mt-3">
+                <span
+                  className="text-[#34D399] text-sm tracking-[0.2em]"
+                  aria-hidden="true"
+                >
+                  ★★★★★
+                </span>
+                <span className="sr-only">Rated 5 out of 5</span>
+              </div>
+              <p className="mt-4 text-theme text-sm font-medium">
+                Average customer rating
+              </p>
+              <p className="text-theme-muted text-xs mt-1">
+                Based on 3 customer reviews
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
