@@ -2,7 +2,7 @@ import { createRequire } from "module";
 import { readFileSync } from "fs";
 const require = createRequire(import.meta.url);
 
-const admin = require("firebase-admin");
+const admin = require("./_admin.cjs");
 
 const envLocal = readFileSync(new URL("../.env.local", import.meta.url), "utf-8");
 const envVercel = readFileSync(new URL("../.env.vercel.check2", import.meta.url), "utf-8");

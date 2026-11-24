@@ -1,10 +1,10 @@
 import {
   createUserWithEmailAndPassword,
-  sendEmailVerification,
   signOut,
   UserCredential,
 } from "firebase/auth";
 import { getFirebaseAuth } from "./firebaseClient";
+import { sendVerificationEmail } from "./sendVerification";
 
 const auth = getFirebaseAuth();
 
@@ -72,7 +72,7 @@ export default async function signUp(
       await signupCallback(userCredential);
     }
 
-    await sendEmailVerification(userCredential.user);
+    await sendVerificationEmail(userCredential.user);
     await signOut(auth);
 
     return { user: userCredential, error: null };

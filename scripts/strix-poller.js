@@ -1,4 +1,4 @@
-const admin = require("firebase-admin");
+const admin = require("./_admin.cjs");
 const { randomUUID } = require("crypto");
 
 const SA_PATH = __dirname + "/service-account.json";

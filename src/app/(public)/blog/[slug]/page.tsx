@@ -38,11 +38,10 @@ export async function generateStaticParams() {
     }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
+  const params = await props.params;
   const { data } = readPost(params.slug);
   if (!isPublished(data)) return {};
   const title = data.title || "Affordable Pentesting Blog";
@@ -75,7 +74,10 @@ export async function generateMetadata({
   };
 }
 
-export default function BlogPost({ params }: { params: { slug: string } }) {
+export default async function BlogPost(props: {
+  params: Promise<{ slug: string }>;
+}) {
+  const params = await props.params;
   const { content, data } = readPost(params.slug);
   if (!isPublished(data)) notFound();
   const title = data.title || "";

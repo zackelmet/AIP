@@ -1,11 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import dynamic from "next/dynamic";
 import LazySection from "@/components/shared/LazySection";
 import SampleReportForm from "@/components/landing/SampleReportForm";
 import SwirlyParticles from "@/components/landing/SwirlyParticles";
 
-const PricingWidget = dynamic(() => import("./PricingWidget"), { ssr: false });
+import PricingWidget from "./PricingWidgetLoader";
 
 export default function Home() {
   return (
@@ -29,16 +28,16 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Link
                 href="/app/new-pentest"
-                className="inline-block px-10 py-5 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors text-xl"
+                className="cta-primary inline-block px-10 py-5 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-semibold rounded-lg transition-colors text-xl"
               >
                 Launch an AI Pentest Now
               </Link>
-              <Link
-                href="/LaunchAPentest"
-                className="inline-block px-10 py-5 bg-theme-panel hover:bg-white/10 text-theme font-normal rounded-lg border border-theme transition-colors text-xl"
+              <a
+                href="#sample-report"
+                className="cta-secondary inline-block px-10 py-5 bg-theme-panel hover:bg-white/10 text-theme font-semibold rounded-lg border border-theme transition-colors text-xl"
               >
-                Get a Manual Pentest
-              </Link>
+                See a sample report
+              </a>
             </div>
           </div>
         </div>
@@ -263,7 +262,7 @@ export default function Home() {
           </p>
           <Link
             href="/app/new-pentest"
-            className="inline-block px-10 py-5 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors text-xl"
+            className="cta-primary inline-block px-10 py-5 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-semibold rounded-lg transition-colors text-xl"
           >
             Get Started
           </Link>
@@ -376,7 +375,7 @@ export default function Home() {
               href="https://www.affordablepentesting.com/get-a-quote"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-4 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-normal rounded-lg transition-colors"
+              className="cta-primary px-8 py-4 bg-[#34D399] hover:bg-[#10b981] text-[#041018] font-semibold rounded-lg transition-colors"
             >
               Get a Pentest Quote
             </a>
@@ -384,7 +383,7 @@ export default function Home() {
               href="https://www.affordablepentesting.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-4 bg-theme-panel hover:bg-white/10 text-theme font-normal rounded-lg border border-theme transition-colors"
+              className="cta-secondary px-8 py-4 bg-theme-panel hover:bg-white/10 text-theme font-semibold rounded-lg border border-theme transition-colors"
             >
               Learn More
             </a>

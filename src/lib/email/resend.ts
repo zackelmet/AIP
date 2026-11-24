@@ -15,6 +15,10 @@ const FROM =
   process.env.EMAIL_FROM ||
   "Affordable Pentesting <noreply@affordablepentesting.com>";
 const ADMIN_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || "zack@msppentesting.com";
+// Monitored mailbox for replies — the From address is no-reply by design.
+const REPLY_TO = process.env.EMAIL_REPLY_TO || "zack@affordablepentesting.com";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://ai.affordablepentesting.com";
 
 // Inline the logo as a CID attachment so it renders without a hosted asset and
 // survives image-blocking clients better than a remote URL.
@@ -47,11 +51,19 @@ interface ShellOptions {
   preheader: string;
   heading: string;
   intro: string;
-  rows: Array<[string, string]>;
+  introText?: string;
+  rows?: Array<[string, string]>;
   cta?: { label: string; href: string };
   closing?: string;
+  closingText?: string;
   // A lighter-weight secondary link rendered below the closing (e.g. "Rate us").
-  secondaryCta?: { lead?: string; label: string; href: string };
+  secondaryCta?: {
+    lead?: string;
+    body?: string;
+    label: string;
+    href: string;
+    prominent?: boolean;
+  };
 }
 
 /**
@@ -65,9 +77,10 @@ function renderEmail({
   rows,
   cta,
   closing,
+  closingText,
   secondaryCta,
 }: ShellOptions): string {
-  const detailRows = rows
+  const detailRows = (rows ?? [])
     .map(
       ([label, value]) => `
         <tr>
@@ -94,7 +107,21 @@ function renderEmail({
     : "";
 
   const secondaryBlock = secondaryCta
-    ? `
+    ? secondaryCta.prominent
+      ? `
+      <tr>
+        <td style="padding:26px 0 0;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid ${COLORS.border};">
+            <tr><td style="padding:22px 0 0;">
+              <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:${COLORS.faint};">Your feedback</p>
+              ${secondaryCta.lead ? `<p style="margin:0 0 6px;font-size:17px;font-weight:600;color:${COLORS.text};line-height:1.35;">${secondaryCta.lead}</p>` : ""}
+              ${secondaryCta.body ? `<p style="margin:0 0 16px;font-size:13px;line-height:1.65;color:${COLORS.muted};">${secondaryCta.body}</p>` : ""}
+              <a href="${secondaryCta.href}" style="display:inline-block;border:1px solid ${COLORS.green};color:#0a7a5a;background:transparent;text-decoration:none;font-weight:600;font-size:13px;padding:10px 22px;border-radius:999px;">${secondaryCta.label}</a>
+            </td></tr>
+          </table>
+        </td>
+      </tr>`
+      : `
       <tr>
         <td style="padding:18px 0 0;font-size:13px;line-height:1.7;color:${COLORS.muted};">
           ${secondaryCta.lead ? `${secondaryCta.lead} ` : ""}<a href="${secondaryCta.href}" style="color:${COLORS.green};text-decoration:none;font-weight:600;">${secondaryCta.label} &rarr;</a>
@@ -145,11 +172,15 @@ function renderEmail({
                   <tr>
                     <td style="font-size:14px;line-height:1.7;color:${COLORS.muted};padding-bottom:20px;">${intro}</td>
                   </tr>
-                  <tr>
+                  ${
+                    detailRows
+                      ? `<tr>
                     <td>
                       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid ${COLORS.border};">${detailRows}</table>
                     </td>
-                  </tr>
+                  </tr>`
+                      : ""
+                  }
                   ${ctaBlock}
                   ${closingBlock}
                   ${secondaryBlock}
@@ -171,7 +202,13 @@ function renderEmail({
 </html>`;
 }
 
-function send(to: string, subject: string, html: string, text: string) {
+function send(
+  to: string,
+  subject: string,
+  html: string,
+  text: string,
+  replyTo?: string,
+) {
   const resend = getResend();
   if (!resend) {
     console.warn("RESEND_API_KEY not set — skipping email:", subject);
@@ -185,6 +222,7 @@ function send(to: string, subject: string, html: string, text: string) {
     // A plain-text alternative alongside the HTML improves deliverability —
     // HTML-only messages are a moderate spam signal.
     text,
+    replyTo: replyTo || REPLY_TO,
     attachments: [logoAttachment],
   });
 }
@@ -193,20 +231,23 @@ function send(to: string, subject: string, html: string, text: string) {
 function renderText({
   heading,
   intro,
+  introText,
   rows,
   cta,
   closing,
+  closingText,
   secondaryCta,
 }: ShellOptions): string {
-  const lines = [heading, "", intro, ""];
-  rows.forEach(([label, value]) => lines.push(`${label}: ${value}`));
+  const lines = [heading, "", introText || intro, ""];
+  (rows ?? []).forEach(([label, value]) => lines.push(`${label}: ${value}`));
   if (cta) lines.push("", `${cta.label}: ${cta.href}`);
-  if (closing) lines.push("", closing);
-  if (secondaryCta)
-    lines.push(
-      "",
-      `${secondaryCta.lead ? `${secondaryCta.lead} ` : ""}${secondaryCta.label}: ${secondaryCta.href}`,
-    );
+  if (closing || closingText) lines.push("", closingText || closing!);
+  if (secondaryCta) {
+    lines.push("");
+    if (secondaryCta.lead) lines.push(secondaryCta.lead);
+    if (secondaryCta.body) lines.push(secondaryCta.body);
+    lines.push(`${secondaryCta.label}: ${secondaryCta.href}`);
+  }
   lines.push(
     "",
     "—",
@@ -250,29 +291,29 @@ export async function sendPentestLaunchedEmails({
   }
 
   const typeLabel = TYPE_LABELS[type] || type;
-  const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ""}/app/dashboard`;
+  const dashboardUrl = `${SITE_URL}/app/dashboard`;
   const rows: Array<[string, string]> = [
-    ["Target", target],
-    ["Assessment", typeLabel],
+    ["Target", esc(target)],
+    ["Assessment", esc(typeLabel)],
   ];
 
   const sends: Promise<unknown>[] = [];
 
   if (userEmail) {
     const clientOpts: ShellOptions = {
-      preheader: "Your engagement is now underway.",
-      heading: "Your penetration test has started",
+      preheader: `Your assessment of ${target} is underway.`,
+      heading: `We've started testing ${target}`,
       intro:
-        "Your engagement is now underway. Our team has begun assessing your target, and we will email you the moment your report is ready to download.",
+        "Your assessment is underway. You'll get an email the moment your report is ready to download.",
       rows,
       cta: { label: "View in dashboard", href: dashboardUrl },
-      closing:
-        "No action is required from you at this stage. If you have questions about scope or timing, simply reply to this email.",
+      closing: `No action is required from you at this stage. If you have questions about scope or timing, visit our <a href="${SITE_URL}/support" style="color:${COLORS.green};text-decoration:none;font-weight:600;">support page</a>.`,
+      closingText: `No action is required from you at this stage. If you have questions about scope or timing, visit ${SITE_URL}/support.`,
     };
     sends.push(
       send(
         userEmail,
-        "Your penetration test has started",
+        `We've started testing ${target}`,
         renderEmail(clientOpts),
         renderText(clientOpts),
       ),
@@ -280,15 +321,15 @@ export async function sendPentestLaunchedEmails({
   }
 
   const adminOpts: ShellOptions = {
-    preheader: `A new ${typeLabel} engagement was launched.`,
-    heading: "New pentest launched",
-    intro: "A client just launched a new engagement. Details are below.",
-    rows: [["Client", userEmail || "Unknown"], ...rows],
+    preheader: `A new ${typeLabel} assessment was launched.`,
+    heading: "New assessment launched",
+    intro: "A customer just launched an assessment. Details are below.",
+    rows: [["Client", esc(userEmail || "Unknown")], ...rows],
   };
   sends.push(
     send(
       ADMIN_EMAIL,
-      `New pentest launched — ${target}`,
+      `[Launch] ${target} — ${userEmail || "unknown client"}`,
       renderEmail(adminOpts),
       renderText(adminOpts),
     ),
@@ -316,7 +357,7 @@ export async function sendPentestReportReadyEmail({
   }
 
   const typeLabel = TYPE_LABELS[type] || type;
-  const site = process.env.NEXT_PUBLIC_SITE_URL || "";
+  const site = SITE_URL;
   const dashboardUrl = `${site}/app/dashboard`;
   const rateUsUrl = `${site}/rate-us?${new URLSearchParams({
     e: userEmail,
@@ -325,32 +366,418 @@ export async function sendPentestReportReadyEmail({
   }).toString()}`;
 
   const reportOpts: ShellOptions = {
-    preheader: "Your report is now available to download.",
+    preheader:
+      "Your report has passed quality review and is ready to download.",
     heading: "Your report is ready",
-    intro:
-      "Your penetration test is complete and your report is now available. Sign in to your dashboard to review the findings and download the full report.",
+    intro: `The assessment of ${esc(target)} is complete and has passed our quality review. Sign in to review the findings and download the full report.`,
     rows: [
-      ["Target", target],
-      ["Assessment", typeLabel],
+      ["Target", esc(target)],
+      ["Assessment", esc(typeLabel)],
+      ["Status", "Reviewed and ready"],
     ],
-    cta: { label: "Download your report", href: dashboardUrl },
-    closing:
-      "We recommend reviewing the findings with your technical team and prioritizing remediation by severity. If you would like to discuss the results, simply reply to this email.",
+    cta: { label: "View your report", href: dashboardUrl },
+    closing: `We recommend reviewing the findings with your technical team and prioritizing remediation by severity. If you would like to discuss the results, visit our <a href="${SITE_URL}/support" style="color:${COLORS.green};text-decoration:none;font-weight:600;">support page</a>.`,
+    closingText: `We recommend reviewing the findings with your technical team and prioritizing remediation by severity. If you would like to discuss the results, visit ${SITE_URL}/support.`,
     secondaryCta: {
-      lead: "Enjoyed working with us?",
+      lead: "How did we do?",
+      body: "A 10-second review helps other teams find us — and helps us improve.",
       label: "Rate your experience",
       href: rateUsUrl,
+      prominent: true,
     },
   };
 
   try {
     await send(
       userEmail,
-      "Your penetration test report is ready",
+      `${target}: your security report is ready`,
       renderEmail(reportOpts),
       renderText(reportOpts),
     );
   } catch (error) {
     console.error("Report-ready email failed:", error);
+  }
+}
+
+// ── Ops alerts ──────────────────────────────────────────────────────────────
+
+/** Internal alert when a scan finishes and is waiting for review. */
+export async function sendOpsReviewEmail(opts: {
+  target: string;
+  findingCount: number;
+  criticalCount: number;
+  highCount: number;
+  pentestId: string;
+}): Promise<void> {
+  const shell: ShellOptions = {
+    preheader: "A completed assessment is waiting for review.",
+    heading: "Report ready for review",
+    intro: `The assessment of ${esc(opts.target)} finished and is waiting for your review before delivery.`,
+    rows: [
+      ["Target", esc(opts.target)],
+      ["Findings", String(opts.findingCount)],
+      ["Critical / High", `${opts.criticalCount} / ${opts.highCount}`],
+      ["Pentest", esc(opts.pentestId)],
+    ],
+    cta: { label: "Review in admin", href: `${SITE_URL}/admin` },
+    closing: "Accept to deliver the report and email the customer.",
+  };
+  try {
+    await send(
+      ADMIN_EMAIL,
+      `[Review] ${opts.target} — ${opts.findingCount} finding${opts.findingCount === 1 ? "" : "s"} ready`,
+      renderEmail(shell),
+      renderText(shell),
+    );
+  } catch (error) {
+    console.error("Ops review email failed:", error);
+  }
+}
+
+/** Internal alert for a failed scan. */
+export async function sendOpsFailureEmail(opts: {
+  target: string;
+  pentestId: string;
+  reason?: string;
+}): Promise<void> {
+  const shell: ShellOptions = {
+    preheader: "A scan failed and needs attention.",
+    heading: "Scan failed",
+    intro: `The assessment of ${esc(opts.target)} did not complete. No customer email has been sent.`,
+    rows: [
+      ["Target", esc(opts.target)],
+      ["Pentest", esc(opts.pentestId)],
+      ["Reason", esc(opts.reason || "Runner reported failure")],
+    ],
+    cta: { label: "Open admin", href: `${SITE_URL}/admin` },
+    closing: "Re-run or refund as appropriate.",
+  };
+  try {
+    await send(
+      ADMIN_EMAIL,
+      `[Failed] ${opts.target} — scan did not complete`,
+      renderEmail(shell),
+      renderText(shell),
+    );
+  } catch (error) {
+    console.error("Ops failure email failed:", error);
+  }
+}
+
+// ── Weekly signup digest ───────────────────────────────────────────────────
+
+function esc(v: unknown): string {
+  return String(v ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+export interface WeeklySignupRow {
+  email: string;
+  name?: string | null;
+  signedUp: string;
+  launched: boolean;
+}
+
+export interface WeeklyTestRow {
+  email: string;
+  target: string;
+  type: string;
+  launchedAt: string;
+}
+
+export interface WeeklyCreditPurchaseRow {
+  email: string;
+  credits: number;
+  type: string;
+  purchasedAt: string;
+}
+
+/** Internal weekly digest of new AIP signups and activity. */
+export async function sendWeeklySignupsDigest(opts: {
+  total: number;
+  previousTotal: number;
+  weekLabel: string;
+  days: Array<{ label: string; count: number }>;
+  users: WeeklySignupRow[];
+  tests: WeeklyTestRow[];
+  purchases: WeeklyCreditPurchaseRow[];
+  sample?: boolean;
+}): Promise<boolean> {
+  if (!getResend()) return false;
+
+  const delta = opts.total - opts.previousTotal;
+  const deltaText =
+    opts.previousTotal === 0
+      ? "No signups the previous week."
+      : `${delta >= 0 ? "+" : ""}${delta} vs ${opts.previousTotal} the previous week.`;
+  const launched = opts.users.filter((u) => u.launched).length;
+  const totalCredits = opts.purchases.reduce((sum, p) => sum + p.credits, 0);
+  const plural = (n: number) => (n === 1 ? "" : "s");
+  const countColor = "#0a7a5a";
+
+  const th = (label: string, width: string) =>
+    `<th align="left" width="${width}" style="padding:7px 6px;border-bottom:1px solid ${COLORS.border};font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:${COLORS.faint};width:${width};">${label}</th>`;
+  const td = (content: string, extra = "") =>
+    `<td style="padding:9px 6px;border-bottom:1px solid ${COLORS.border};font-size:12px;line-height:1.45;vertical-align:top;${extra}">${content}</td>`;
+  const sectionHeader = (title: string, count: string) => `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:28px;">
+      <tr>
+        <td style="padding:0 0 8px;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:${COLORS.text};">${title}</td>
+        <td align="right" style="padding:0 0 8px;font-size:12px;font-weight:700;color:${countColor};">${count}</td>
+      </tr>
+    </table>`;
+  const empty = (text: string) =>
+    `<p style="margin:6px 0 0;padding:12px;border:1px dashed ${COLORS.border};border-radius:8px;font-size:12px;color:${COLORS.faint};">${text}</p>`;
+  const more = (shown: number, total: number) =>
+    total > shown
+      ? `<p style="margin:10px 0 0;font-size:12px;color:${COLORS.faint};">…and ${total - shown} more.</p>`
+      : "";
+
+  const signupTable = opts.users.length
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;table-layout:fixed;">
+         <tr>${th("Email", "56%")}${th("Name", "26%")}${th("Joined", "18%")}</tr>
+         ${opts.users
+           .slice(0, 50)
+           .map(
+             (u) => `<tr>
+               ${td(esc(u.email), `color:${COLORS.text};word-break:break-all;`)}
+               ${td(esc(u.name || "—"), `color:${COLORS.muted};word-break:break-word;`)}
+               ${td(esc(u.signedUp), `color:${COLORS.muted};white-space:nowrap;`)}
+             </tr>`,
+           )
+           .join("")}
+       </table>
+       ${more(50, opts.users.length)}`
+    : empty("No new sign ups this week.");
+
+  const testTable = opts.tests.length
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;table-layout:fixed;">
+         <tr>${th("Target", "46%")}${th("User", "39%")}${th("Launched", "15%")}</tr>
+         ${opts.tests
+           .slice(0, 50)
+           .map(
+             (t) => `<tr>
+               ${td(`${esc(t.target)}<br><span style="font-size:11px;color:${COLORS.faint};">${esc(t.type)}</span>`, `color:${COLORS.text};word-break:break-all;`)}
+               ${td(esc(t.email), `color:${COLORS.muted};word-break:break-all;`)}
+               ${td(esc(t.launchedAt), `color:${COLORS.muted};white-space:nowrap;`)}
+             </tr>`,
+           )
+           .join("")}
+       </table>
+       ${more(50, opts.tests.length)}`
+    : empty("No tests launched this week.");
+
+  const purchaseTable = opts.purchases.length
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;table-layout:fixed;">
+         <tr>${th("User", "56%")}${th("Credits", "26%")}${th("Purchased", "18%")}</tr>
+         ${opts.purchases
+           .slice(0, 50)
+           .map(
+             (p) => `<tr>
+               ${td(esc(p.email), `color:${COLORS.text};word-break:break-all;`)}
+               ${td(`${p.credits} &times; ${esc(p.type)}`, `color:${COLORS.muted};`)}
+               ${td(esc(p.purchasedAt), `color:${COLORS.muted};white-space:nowrap;`)}
+             </tr>`,
+           )
+           .join("")}
+       </table>
+       ${more(50, opts.purchases.length)}`
+    : empty("No credits purchased this week.");
+
+  const launchedText =
+    opts.total > 0
+      ? `<strong>${launched}</strong> of ${opts.total} new signup${plural(opts.total)} have launched a test.`
+      : "No new signups this week.";
+
+  const intro = `
+    <p style="margin:0 0 8px;">${esc(opts.weekLabel)}</p>
+    <p style="margin:0 0 6px;">${deltaText} ${launchedText}</p>
+    <p style="margin:0;font-size:12px;color:${COLORS.faint};">${opts.days
+      .map((d) => `${d.label} ${d.count}`)
+      .join(" &middot; ")}</p>
+    <p style="margin:18px 0 0;padding:12px 14px;background:#f8fafc;border-radius:10px;font-size:13px;line-height:1.6;color:${COLORS.muted};">
+      <strong style="color:${COLORS.text};">${opts.total}</strong> signup${plural(opts.total)} &middot;
+      <strong style="color:${COLORS.text};">${opts.tests.length}</strong> test${plural(opts.tests.length)} launched &middot;
+      <strong style="color:${COLORS.text};">${totalCredits}</strong> credit${plural(totalCredits)} purchased
+    </p>
+    ${sectionHeader("Sign ups", String(opts.total))}
+    ${signupTable}
+    ${sectionHeader("Tests launched", String(opts.tests.length))}
+    ${testTable}
+    ${sectionHeader("Credits purchased", `${totalCredits} credit${plural(totalCredits)}`)}
+    ${purchaseTable}`;
+
+  const introText = [
+    opts.weekLabel,
+    deltaText,
+    opts.total > 0
+      ? `${launched} of ${opts.total} new signups have launched a test.`
+      : "No new signups this week.",
+    opts.days.map((d) => `${d.label}: ${d.count}`).join(", "),
+    "",
+    `${opts.total} signups · ${opts.tests.length} tests launched · ${totalCredits} credits purchased`,
+    "",
+    `SIGN UPS (${opts.total})`,
+    ...(opts.users.length
+      ? opts.users
+          .slice(0, 50)
+          .map((u) => `${u.email} | ${u.name || "—"} | ${u.signedUp}`)
+      : ["No new sign ups this week."]),
+    "",
+    `TESTS LAUNCHED (${opts.tests.length})`,
+    ...(opts.tests.length
+      ? opts.tests
+          .slice(0, 50)
+          .map((t) => `${t.target} | ${t.email} | ${t.type} | ${t.launchedAt}`)
+      : ["No tests launched this week."]),
+    "",
+    `CREDITS PURCHASED (${totalCredits})`,
+    ...(opts.purchases.length
+      ? opts.purchases
+          .slice(0, 50)
+          .map(
+            (p) => `${p.email} | ${p.credits} × ${p.type} | ${p.purchasedAt}`,
+          )
+      : ["No credits purchased this week."]),
+  ].join("\n");
+
+  const shell: ShellOptions = {
+    preheader: `${opts.total} signup${plural(opts.total)}, ${opts.tests.length} test${plural(opts.tests.length)}, ${totalCredits} credit${plural(totalCredits)} this week.`,
+    heading: "Weekly report",
+    intro,
+    introText,
+    cta: { label: "Open admin", href: `${SITE_URL}/admin` },
+    closing: "Automated weekly digest — Monday mornings.",
+  };
+
+  try {
+    await send(
+      ADMIN_EMAIL,
+      `${opts.sample ? "[Sample] " : ""}[Weekly] ${opts.total} signup${plural(opts.total)} · ${opts.tests.length} test${plural(opts.tests.length)} · ${totalCredits} credit${plural(totalCredits)} — Affordable Pentesting`,
+      renderEmail(shell),
+      renderText(shell),
+    );
+    return true;
+  } catch (error) {
+    console.error("Weekly signups digest failed:", error);
+    return false;
+  }
+}
+
+// ── Billing ─────────────────────────────────────────────────────────────────
+
+/** Branded receipt when a paid Stripe invoice is generated. */
+export async function sendInvoiceEmail(opts: {
+  userEmail: string | null;
+  amount: string;
+  invoiceNumber: string;
+  invoiceUrl?: string | null;
+  productLabel?: string | null;
+}): Promise<void> {
+  if (!opts.userEmail) return;
+  const rows: Array<[string, string]> = [
+    ["Amount", esc(opts.amount)],
+    ["Invoice", esc(opts.invoiceNumber)],
+  ];
+  if (opts.productLabel) rows.push(["For", esc(opts.productLabel)]);
+
+  const shell: ShellOptions = {
+    preheader: "Your payment was received and your invoice is ready.",
+    heading: "Payment received",
+    intro:
+      "Thanks for your purchase. Your invoice is ready to view or download.",
+    rows,
+    cta: {
+      label: "View / download invoice",
+      href: opts.invoiceUrl || `${SITE_URL}/app/dashboard`,
+    },
+    closing: `You can find all your invoices in your account billing history. Questions? Visit our <a href="${SITE_URL}/support" style="color:${COLORS.green};text-decoration:none;font-weight:600;">support page</a>.`,
+    closingText: `You can find all your invoices in your account billing history. Questions? Visit ${SITE_URL}/support.`,
+  };
+  try {
+    await send(
+      opts.userEmail,
+      `Payment received — invoice ${opts.invoiceNumber}`,
+      renderEmail(shell),
+      renderText(shell),
+    );
+  } catch (error) {
+    console.error("Invoice email failed:", error);
+  }
+}
+
+// ── Sample report ───────────────────────────────────────────────────────────
+
+/**
+ * Sends the sample-report PDF with a branded shell. Returns the Resend id (or
+ * null on failure/skip). Used by the public landing-page form.
+ */
+export async function sendSampleReportEmail(opts: {
+  to: string;
+  pdfBase64: string;
+  filename: string;
+}): Promise<string | null> {
+  const resend = getResend();
+  if (!resend) {
+    console.warn("RESEND_API_KEY not set — skipping sample report");
+    return null;
+  }
+  const shell: ShellOptions = {
+    preheader: "Your sample penetration test report is attached.",
+    heading: "Your sample report is ready",
+    intro:
+      "Here is a full AI-powered penetration test report — executive summary, severity breakdown, and detailed findings with remediation guidance.",
+    rows: [],
+    cta: { label: "Launch your first pentest", href: SITE_URL },
+    closing:
+      "Ready to test your own targets? Sign up and launch your first assessment in minutes.",
+  };
+  const sent = await resend.emails.send({
+    from: FROM,
+    to: opts.to,
+    subject: "Your sample penetration test report",
+    html: renderEmail(shell),
+    text: renderText(shell),
+    replyTo: REPLY_TO,
+    attachments: [
+      logoAttachment,
+      { filename: opts.filename, content: opts.pdfBase64 },
+    ],
+  });
+  return "data" in sent && sent.data ? sent.data.id : null;
+}
+
+// ── Verification ────────────────────────────────────────────────────────────
+
+/** Branded email-verification link (sent from our API, not Firebase). */
+export async function sendVerificationEmail(opts: {
+  to: string;
+  url: string;
+}): Promise<boolean> {
+  if (!getResend()) return false;
+  const shell: ShellOptions = {
+    preheader: "Confirm your email address to finish setting up your account.",
+    heading: "Confirm your email",
+    intro:
+      "Thanks for signing up. Confirm your email address to finish setting up your Affordable Pentesting account.",
+    rows: [],
+    cta: { label: "Verify email", href: opts.url },
+    closing:
+      "This link expires in one hour. If you didn't create an account, you can ignore this email.",
+  };
+  try {
+    await send(
+      opts.to,
+      "Verify your email for Affordable Pentesting",
+      renderEmail(shell),
+      renderText(shell),
+    );
+    return true;
+  } catch (error) {
+    console.error("Verification email failed:", error);
+    return false;
   }
 }

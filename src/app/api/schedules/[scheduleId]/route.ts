@@ -1,16 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase/firebaseAdmin';
-import { FieldValue } from 'firebase-admin/firestore';
-import { verifyAuth } from '@/lib/auth/verifyAuth';
+import { NextRequest, NextResponse } from "next/server";
+import { adminDb } from "@/lib/firebase/firebaseAdmin";
+import { FieldValue } from "firebase-admin/firestore";
+import { verifyAuth } from "@/lib/auth/verifyAuth";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { scheduleId: string } },
+  props: { params: Promise<{ scheduleId: string }> },
 ) {
+  const params = await props.params;
   try {
     const token = await verifyAuth(request);
     if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const userId = token.uid;
     const { scheduleId } = params;
@@ -18,23 +19,26 @@ export async function PATCH(
     const body = await request.json();
     const { action } = body; // 'pause' | 'resume' | 'cancel'
 
-    if (!['pause', 'resume', 'cancel'].includes(action)) {
+    if (!["pause", "resume", "cancel"].includes(action)) {
       return NextResponse.json(
-        { error: 'Invalid action. Must be pause, resume, or cancel' },
+        { error: "Invalid action. Must be pause, resume, or cancel" },
         { status: 400 },
       );
     }
 
-    const scheduleRef = adminDb.collection('schedules').doc(scheduleId);
+    const scheduleRef = adminDb.collection("schedules").doc(scheduleId);
     const scheduleDoc = await scheduleRef.get();
 
     if (!scheduleDoc.exists) {
-      return NextResponse.json({ error: 'Schedule not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Schedule not found" },
+        { status: 404 },
+      );
     }
 
     const scheduleData = scheduleDoc.data();
     if (scheduleData?.userId !== userId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     let newStatus: string;
@@ -43,24 +47,24 @@ export async function PATCH(
     };
 
     switch (action) {
-      case 'pause':
-        if (scheduleData?.status !== 'active') {
+      case "pause":
+        if (scheduleData?.status !== "active") {
           return NextResponse.json(
-            { error: 'Can only pause active schedules' },
+            { error: "Can only pause active schedules" },
             { status: 400 },
           );
         }
-        newStatus = 'paused';
+        newStatus = "paused";
         break;
 
-      case 'resume':
-        if (scheduleData?.status !== 'paused') {
+      case "resume":
+        if (scheduleData?.status !== "paused") {
           return NextResponse.json(
-            { error: 'Can only resume paused schedules' },
+            { error: "Can only resume paused schedules" },
             { status: 400 },
           );
         }
-        newStatus = 'active';
+        newStatus = "active";
         // Recalculate next run from now
         const nextRunAt = new Date(
           Date.now() + (scheduleData.intervalDays || 30) * 24 * 60 * 60 * 1000,
@@ -68,14 +72,14 @@ export async function PATCH(
         updateData.nextRunAt = nextRunAt;
         break;
 
-      case 'cancel':
-        if (scheduleData?.status === 'cancelled') {
+      case "cancel":
+        if (scheduleData?.status === "cancelled") {
           return NextResponse.json(
-            { error: 'Schedule is already cancelled' },
+            { error: "Schedule is already cancelled" },
             { status: 400 },
           );
         }
-        newStatus = 'cancelled';
+        newStatus = "cancelled";
         break;
 
       default:
@@ -90,9 +94,9 @@ export async function PATCH(
       status: newStatus,
     });
   } catch (error: any) {
-    console.error('Error updating schedule:', error);
+    console.error("Error updating schedule:", error);
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: error.message || "Internal server error" },
       { status: 500 },
     );
   }
@@ -100,32 +104,36 @@ export async function PATCH(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { scheduleId: string } },
+  props: { params: Promise<{ scheduleId: string }> },
 ) {
+  const params = await props.params;
   try {
     const token = await verifyAuth(request);
     if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const userId = token.uid;
     const { scheduleId } = params;
 
-    const scheduleRef = adminDb.collection('schedules').doc(scheduleId);
+    const scheduleRef = adminDb.collection("schedules").doc(scheduleId);
     const scheduleDoc = await scheduleRef.get();
 
     if (!scheduleDoc.exists) {
-      return NextResponse.json({ error: 'Schedule not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Schedule not found" },
+        { status: 404 },
+      );
     }
 
     const scheduleData = scheduleDoc.data();
     if (scheduleData?.userId !== userId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Fetch runs sub-collection
     const runsSnapshot = await scheduleRef
-      .collection('runs')
-      .orderBy('ranAt', 'desc')
+      .collection("runs")
+      .orderBy("ranAt", "desc")
       .limit(50)
       .get();
 
@@ -139,9 +147,9 @@ export async function GET(
       runs,
     });
   } catch (error: any) {
-    console.error('Error fetching schedule:', error);
+    console.error("Error fetching schedule:", error);
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { error: error.message || "Internal server error" },
       { status: 500 },
     );
   }

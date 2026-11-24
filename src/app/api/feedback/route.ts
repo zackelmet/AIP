@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "@/lib/firebase/firebaseAdmin";
+import { rateLimitDistributed } from "@/lib/security/distributedRateLimit";
 
 export const runtime = "nodejs";
 
@@ -13,6 +14,16 @@ const clamp = (v: unknown, max: number) =>
  */
 export async function POST(request: NextRequest) {
   try {
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      "unknown";
+    const rl = await rateLimitDistributed(`feedback:${ip}`, 10, 60_000);
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } },
+      );
+    }
     const body = await request.json();
 
     const rating = Number(body?.rating);

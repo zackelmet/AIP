@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { timingSafeEqual } from "crypto";
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 import { ScanMetadata } from "@/lib/types/user";
+
+export const dynamic = "force-dynamic";
 
 /**
  * Generate a signed URL for a GCS path (gs://bucket/path)
@@ -49,29 +52,33 @@ export async function POST(request: NextRequest) {
     const sig2 = request.headers.get("x-gcp-webhook-secret");
     const sig3 = request.headers.get("x-webhook-secret");
 
-    // Debug logging for webhook auth issues
-    console.log("🔐 Webhook auth check:", {
-      hasEnvSecret: !!webhookSecret,
-      envSecretPreview: webhookSecret
-        ? `${webhookSecret.slice(0, 4)}...`
-        : "NOT SET",
-      sig1: sig1 ? `${sig1.slice(0, 4)}...` : null,
-      sig2: sig2 ? `${sig2.slice(0, 4)}...` : null,
-      sig3: sig3 ? `${sig3.slice(0, 4)}...` : null,
-    });
-
-    if (webhookSecret && webhookSecret !== (sig1 || sig2 || sig3)) {
-      console.error(
-        "❌ Webhook signature mismatch - expected:",
-        webhookSecret?.slice(0, 4),
-        "got:",
-        (sig1 || sig2)?.slice(0, 4),
+    // Fail closed: this endpoint writes scan results, so it must never be
+    // callable without the configured secret being present and matched.
+    if (!webhookSecret) {
+      return NextResponse.json(
+        { error: "Webhook secret is not configured" },
+        { status: 503 },
       );
+    }
+    const candidates = [sig1, sig2, sig3].filter(
+      (v): v is string => typeof v === "string" && v.length > 0,
+    );
+    const secretOk = candidates.some((candidate) => {
+      const a = Buffer.from(candidate);
+      const b = Buffer.from(webhookSecret);
+      return a.length === b.length && timingSafeEqual(a, b);
+    });
+    if (!secretOk) {
+      console.error("Webhook signature mismatch");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
     // Parse scan result from Cloud Function
     const result = await request.json();
+    if (!result || typeof result !== "object") {
+      return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+    }
+
     const {
       scanId,
       userId,
@@ -108,6 +115,17 @@ export async function POST(request: NextRequest) {
         ? `${gcpReportSignedUrl.slice(0, 60)}...`
         : "NOT PROVIDED",
     });
+
+    if (!userId || !scanId) {
+      return NextResponse.json(
+        { error: "userId and scanId are required" },
+        { status: 400 },
+      );
+    }
+    const owner = await firestore.collection("users").doc(userId).get();
+    if (!owner.exists) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
     // Update per-user subcollection document for this scan (preferred)
     const userScanRef = firestore

@@ -5,8 +5,9 @@ const admin = initializeAdmin();
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { productId: string } }
+  props: { params: Promise<{ productId: string }> },
 ) {
+  const params = await props.params;
   try {
     const { productId } = params;
 
@@ -32,7 +33,7 @@ export async function GET(
     if (pricesSnapshot.empty) {
       return NextResponse.json(
         { error: "No active price found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 

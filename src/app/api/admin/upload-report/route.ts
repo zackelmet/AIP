@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 import { verifyAdmin } from "@/lib/auth/verifyAuth";
+import { detectReportMime, reportExtension } from "@/lib/security/fileType";
+import { audit } from "@/lib/security/audit";
 import { sendPentestReportReadyEmail } from "@/lib/email/resend";
 
 const admin = initializeAdmin();
@@ -35,15 +37,29 @@ export async function POST(request: NextRequest) {
       "application/pdf",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
-    if (!allowedTypes.includes(file.type)) {
+    if (file.type && !allowedTypes.includes(file.type)) {
       return NextResponse.json(
         { error: "Only PDF and DOCX files are accepted" },
         { status: 400 },
       );
     }
 
-    // Determine extension
-    const ext = file.type === "application/pdf" ? "pdf" : "docx";
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
+    if (fileBuffer.length > 20 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "File must be under 20MB" },
+        { status: 400 },
+      );
+    }
+    const detectedType = detectReportMime(fileBuffer);
+    if (!detectedType || (file.type && file.type !== detectedType)) {
+      return NextResponse.json(
+        { error: "File contents do not match a valid PDF or DOCX" },
+        { status: 400 },
+      );
+    }
+
+    const ext = reportExtension(detectedType);
 
     // Verify pentest doc exists
     const pentestRef = admin.firestore().collection("pentests").doc(pentestId);
@@ -67,12 +83,11 @@ export async function POST(request: NextRequest) {
 
     const bucket = admin.storage().bucket(bucketName);
     const storagePath = `reports/${pentestId}.${ext}`;
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
 
     const storageFile = bucket.file(storagePath);
     await storageFile.save(fileBuffer, {
       metadata: {
-        contentType: file.type,
+        contentType: detectedType,
         metadata: {
           uploadedBy: uid,
           pentestId,
@@ -87,6 +102,13 @@ export async function POST(request: NextRequest) {
       reportUploadedAt: admin.firestore.FieldValue.serverTimestamp(),
       status: "completed",
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    await audit("report.uploaded", {
+      pentestId,
+      uploadedBy: uid,
+      contentType: detectedType,
+      bytes: fileBuffer.length,
     });
 
     // Notify the client their report is ready (fire-and-forget; never throws).

@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { initializeAdmin } from "@/lib/firebase/firebaseAdmin";
 
 export default async function AdminPage() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const sessionToken = cookieStore.get("__session")?.value ?? "";
 
   if (!sessionToken) {

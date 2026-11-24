@@ -298,7 +298,7 @@ body[data-theme="cupcake"] {
   border-color: var(--text-green);
 }
 
-.light-mode .text-\[#34D399\] {
+.light-mode .text-\[\#34D399\] {
   color: var(--text-green) !important;
   font-weight: 600 !important;
 }
@@ -329,33 +329,33 @@ body[data-theme="cupcake"] {
   color: var(--text-green) !important;
 }
 
-.light-mode .bg-\[#34D399\]\/10 {
+.light-mode .bg-\[\#34D399\]\/10 {
   background-color: rgba(6, 95, 70, 0.18) !important;
 }
 
-.light-mode .bg-\[#34D399\]\/15 {
+.light-mode .bg-\[\#34D399\]\/15 {
   background-color: rgba(6, 95, 70, 0.22) !important;
 }
 
-.light-mode .bg-\[#34D399\]\/20 {
+.light-mode .bg-\[\#34D399\]\/20 {
   background-color: rgba(6, 95, 70, 0.25) !important;
 }
 
-.light-mode .border-\[#34D399\]\/30,
-.light-mode .border-\[#34D399\]\/40,
-.light-mode .border-\[#34D399\]\/50 {
+.light-mode .border-\[\#34D399\]\/30,
+.light-mode .border-\[\#34D399\]\/40,
+.light-mode .border-\[\#34D399\]\/50 {
   border-color: rgba(6, 95, 70, 0.45) !important;
 }
 
-.light-mode .hover\:bg-\[#34D399\]\/25:hover {
+.light-mode .hover\:bg-\[\#34D399\]\/25:hover {
   background-color: rgba(6, 95, 70, 0.3) !important;
 }
 
-.light-mode .hover\:bg-\[#34D399\]\/30:hover {
+.light-mode .hover\:bg-\[\#34D399\]\/30:hover {
   background-color: rgba(6, 95, 70, 0.35) !important;
 }
 
-.light-mode .hover\:border-\[#34D399\]:hover {
+.light-mode .hover\:border-\[\#34D399\]:hover {
   border-color: #065f46 !important;
 }
 
@@ -451,6 +451,24 @@ body[data-theme="cupcake"] {
   color: var(--text) !important;
   background: var(--panel) !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+/* Landing page CTAs — explicit light-mode contrast */
+.light-mode .cta-primary {
+  background-color: #047857 !important;
+  color: #ffffff !important;
+}
+.light-mode .cta-primary:hover {
+  background-color: #065f46 !important;
+}
+.light-mode .cta-secondary {
+  background-color: #ffffff !important;
+  color: #065f46 !important;
+  border-color: #059669 !important;
+  box-shadow: 0 2px 10px rgba(4, 16, 24, 0.07);
+}
+.light-mode .cta-secondary:hover {
+  background-color: #ecfdf5 !important;
+  border-color: #047857 !important;
 }
 
 .light-mode .disabled\:bg-gray-700:disabled {

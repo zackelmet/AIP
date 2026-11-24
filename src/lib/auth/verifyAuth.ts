@@ -42,7 +42,7 @@ export async function verifyAuth(
 
     if (sessionCookie) {
       try {
-        decoded = await admin.auth().verifySessionCookie(sessionCookie, false);
+        decoded = await admin.auth().verifySessionCookie(sessionCookie, true);
       } catch {
         // Backward compatibility: older cookies may still contain raw ID tokens.
         decoded = await admin.auth().verifyIdToken(sessionCookie);
