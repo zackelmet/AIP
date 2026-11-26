@@ -1,0 +1,109 @@
+"use client";
+
+import type { AuthKind } from "@/lib/security/authBundle";
+
+export interface AuthSessionDraft {
+  label: string;
+  kind: AuthKind;
+  token: string;
+  cookie: string;
+  checkUrl: string;
+}
+
+export const emptyAuthSession = (): AuthSessionDraft => ({
+  label: "",
+  kind: "bearer",
+  token: "",
+  cookie: "",
+  checkUrl: "",
+});
+
+export default function AuthSessionsEditor({
+  value,
+  onChange,
+  max = 5,
+}: {
+  value: AuthSessionDraft[];
+  onChange: (next: AuthSessionDraft[]) => void;
+  max?: number;
+}) {
+  const update = (index: number, patch: Partial<AuthSessionDraft>) =>
+    onChange(value.map((row, i) => (i === index ? { ...row, ...patch } : row)));
+
+  return (
+    <div className="space-y-3">
+      {value.map((row, index) => (
+        <div
+          key={index}
+          className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3"
+        >
+          <div className="grid gap-3 sm:grid-cols-[1fr_150px_1fr_auto]">
+            <input
+              value={row.label}
+              onChange={(e) => update(index, { label: e.target.value })}
+              placeholder="Role label (e.g. admin)"
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              autoComplete="off"
+            />
+            <select
+              value={row.kind}
+              onChange={(e) =>
+                update(index, {
+                  kind: e.target.value as AuthKind,
+                  token: "",
+                  cookie: "",
+                })
+              }
+              className="w-full rounded-lg border border-white/10 bg-[#0a141f] px-3 py-2 text-sm text-white"
+            >
+              <option value="bearer">Bearer token</option>
+              <option value="cookie">Cookie header</option>
+            </select>
+            <input
+              value={row.checkUrl}
+              onChange={(e) => update(index, { checkUrl: e.target.value })}
+              placeholder="Protected URL (401 signed out, 200 signed in)"
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              autoComplete="off"
+            />
+            <button
+              type="button"
+              onClick={() => onChange(value.filter((_, i) => i !== index))}
+              className="rounded-lg border border-white/10 px-3 py-2 text-sm text-gray-300 hover:border-red-400/40 hover:text-red-300"
+            >
+              Remove
+            </button>
+          </div>
+          {row.kind === "bearer" ? (
+            <input
+              type="password"
+              value={row.token}
+              onChange={(e) => update(index, { token: e.target.value })}
+              placeholder="Bearer token (stored encrypted, never shown in reports)"
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+              autoComplete="off"
+            />
+          ) : (
+            <textarea
+              rows={2}
+              value={row.cookie}
+              onChange={(e) => update(index, { cookie: e.target.value })}
+              placeholder="Cookie header from a signed-in session: session=...; other=..."
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+              autoComplete="off"
+            />
+          )}
+        </div>
+      ))}
+      {value.length < max && (
+        <button
+          type="button"
+          onClick={() => onChange([...value, emptyAuthSession()])}
+          className="rounded-lg border border-[#34D399]/40 bg-[#34D399]/10 px-4 py-2 text-sm font-medium text-[#34D399] hover:bg-[#34D399]/20"
+        >
+          + Add session
+        </button>
+      )}
+    </div>
+  );
+}
