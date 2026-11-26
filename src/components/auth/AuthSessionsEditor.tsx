@@ -30,6 +30,37 @@ export default function AuthSessionsEditor({
   const update = (index: number, patch: Partial<AuthSessionDraft>) =>
     onChange(value.map((row, i) => (i === index ? { ...row, ...patch } : row)));
 
+  const loadCookieFile = async (index: number, file: File) => {
+    const text = await file.text();
+    let cookie = "";
+    try {
+      const parsed = JSON.parse(text);
+      const rows = Array.isArray(parsed?.cookies)
+        ? parsed.cookies
+        : Array.isArray(parsed)
+          ? parsed
+          : [];
+      cookie = rows
+        .filter((c: any) => c && c.name && c.value !== undefined)
+        .map((c: any) => `${c.name}=${c.value}`)
+        .join("; ");
+    } catch {
+      cookie = text
+        .split(/\r?\n/)
+        .filter(
+          (line) =>
+            line && (!line.startsWith("#") || line.startsWith("#HttpOnly_")),
+        )
+        .map((line) => {
+          const parts = line.replace(/^#HttpOnly_/, "").split("\t");
+          return parts.length >= 7 ? `${parts[5]}=${parts[6]}` : "";
+        })
+        .filter(Boolean)
+        .join("; ");
+    }
+    if (cookie) update(index, { cookie });
+  };
+
   return (
     <div className="space-y-3">
       {value.map((row, index) => (
@@ -84,14 +115,25 @@ export default function AuthSessionsEditor({
               autoComplete="off"
             />
           ) : (
-            <textarea
-              rows={2}
-              value={row.cookie}
-              onChange={(e) => update(index, { cookie: e.target.value })}
-              placeholder="Cookie header from a signed-in session: session=...; other=..."
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 font-mono text-sm text-white"
-              autoComplete="off"
-            />
+            <div className="space-y-2">
+              <textarea
+                rows={2}
+                value={row.cookie}
+                onChange={(e) => update(index, { cookie: e.target.value })}
+                placeholder="Cookie header from a signed-in session: session=...; other=..."
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                autoComplete="off"
+              />
+              <input
+                type="file"
+                accept=".txt,.json"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) void loadCookieFile(index, file);
+                }}
+                className="text-xs text-gray-400"
+              />
+            </div>
           )}
         </div>
       ))}
