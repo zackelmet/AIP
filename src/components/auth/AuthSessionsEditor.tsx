@@ -66,14 +66,14 @@ export default function AuthSessionsEditor({
       {value.map((row, index) => (
         <div
           key={index}
-          className="rounded-lg border border-white/10 bg-white/5 p-4 space-y-3"
+          className="rounded-lg border border-[var(--border)] bg-[var(--panel-soft)] p-4 space-y-3"
         >
           <div className="grid gap-3 sm:grid-cols-[1fr_150px_1fr_auto]">
             <input
               value={row.label}
               onChange={(e) => update(index, { label: e.target.value })}
               placeholder="Role label (e.g. admin)"
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="w-full rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[#34D399] focus:outline-none focus:ring-2 focus:ring-[#34D399]/20"
               autoComplete="off"
             />
             <select
@@ -85,7 +85,7 @@ export default function AuthSessionsEditor({
                   cookie: "",
                 })
               }
-              className="w-full rounded-lg border border-white/10 bg-[#0a141f] px-3 py-2 text-sm text-white"
+              className="theme-select w-full rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[#34D399] focus:outline-none focus:ring-2 focus:ring-[#34D399]/20"
             >
               <option value="bearer">Bearer token</option>
               <option value="cookie">Cookie header</option>
@@ -94,13 +94,13 @@ export default function AuthSessionsEditor({
               value={row.checkUrl}
               onChange={(e) => update(index, { checkUrl: e.target.value })}
               placeholder="Protected URL (401 signed out, 200 signed in)"
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+              className="w-full rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[#34D399] focus:outline-none focus:ring-2 focus:ring-[#34D399]/20"
               autoComplete="off"
             />
             <button
               type="button"
               onClick={() => onChange(value.filter((_, i) => i !== index))}
-              className="rounded-lg border border-white/10 px-3 py-2 text-sm text-gray-300 hover:border-red-400/40 hover:text-red-300"
+              className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-muted)] hover:border-red-500/50 hover:text-red-500"
             >
               Remove
             </button>
@@ -111,7 +111,7 @@ export default function AuthSessionsEditor({
               value={row.token}
               onChange={(e) => update(index, { token: e.target.value })}
               placeholder="Bearer token (stored encrypted, never shown in reports)"
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+              className="w-full rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 font-mono text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[#34D399] focus:outline-none focus:ring-2 focus:ring-[#34D399]/20"
               autoComplete="off"
             />
           ) : (
@@ -121,7 +121,7 @@ export default function AuthSessionsEditor({
                 value={row.cookie}
                 onChange={(e) => update(index, { cookie: e.target.value })}
                 placeholder="Cookie header from a signed-in session: session=...; other=..."
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 font-mono text-sm text-white"
+                className="w-full rounded-lg border border-[var(--input-border)] bg-[var(--input-bg)] px-3 py-2 font-mono text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-[#34D399] focus:outline-none focus:ring-2 focus:ring-[#34D399]/20"
                 autoComplete="off"
               />
               <input
@@ -131,7 +131,7 @@ export default function AuthSessionsEditor({
                   const file = e.target.files?.[0];
                   if (file) void loadCookieFile(index, file);
                 }}
-                className="text-xs text-gray-400"
+                className="text-xs text-[var(--text-muted)]"
               />
             </div>
           )}
@@ -141,7 +141,7 @@ export default function AuthSessionsEditor({
         <button
           type="button"
           onClick={() => onChange([...value, emptyAuthSession()])}
-          className="rounded-lg border border-[#34D399]/40 bg-[#34D399]/10 px-4 py-2 text-sm font-medium text-[#34D399] hover:bg-[#34D399]/20"
+          className="rounded-lg border border-[#34D399]/40 bg-[#34D399]/10 px-4 py-2 text-sm font-medium text-[var(--text-green)] hover:bg-[#34D399]/20"
         >
           + Add session
         </button>

@@ -68,6 +68,8 @@ body {
   --nav-bg: #0a141f;
   --nav-text: #ffffff;
   --nav-border: #34D399;
+  --input-bg: #0a1929;
+  --input-border: #334155;
 }
 
 .light-mode {
@@ -92,6 +94,8 @@ body {
   --nav-bg: #ffffff;
   --nav-text: #1a202c;
   --nav-border: #e2e8f0;
+  --input-bg: #f1f5f9;
+  --input-border: #cbd5e1;
 }
 
 body {
@@ -563,6 +567,17 @@ body[data-theme="cupcake"] {
 .neon-subtle {
 	color: var(--text-muted);
 	font-weight: var(--text-muted-weight, 400);
+}
+
+.theme-select {
+  color-scheme: var(--calendar-scheme);
+  background-color: var(--input-bg, #0a1929);
+  color: var(--text);
+}
+
+.theme-select option {
+  background-color: var(--input-bg, #0a1929);
+  color: var(--text);
 }
 
 .neon-input {
